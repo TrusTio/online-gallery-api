@@ -1,13 +1,12 @@
 package com.mine.gallery.persistence.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 import lombok.experimental.Accessors;
 
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -18,9 +17,13 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long user_id;
     private String username;
     private String email;
     private String password;
+
+    @JsonIgnoreProperties("user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Gallery> galleries;
 
 }
