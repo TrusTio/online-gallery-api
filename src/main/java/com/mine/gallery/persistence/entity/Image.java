@@ -6,8 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
-
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -15,28 +13,23 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import java.util.List;
+
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(chain = true)
-@Entity(name = "Galleries")
-public class Gallery {
+@Entity(name = "Images")
+public class Image {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long gallery_id;
+    private Long image_id;
 
     private String name;
 
-    @JsonIgnoreProperties("gallery")
-    @OneToMany(mappedBy = "gallery", cascade = CascadeType.ALL)
-    private List<Image> images;
-
-    @JsonIgnoreProperties("galleries")
+    @JsonIgnoreProperties("images")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @JoinColumn(name = "gallery_id", nullable = false)
+    private Gallery gallery;
 }
