@@ -14,7 +14,11 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
-
+/**
+ * Image entity that creates a table in the database which holds all the information for the image
+ *
+ * @author TrusTio
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

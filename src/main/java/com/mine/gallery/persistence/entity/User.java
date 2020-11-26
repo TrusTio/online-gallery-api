@@ -15,6 +15,11 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import java.util.List;
 
+/**
+ * User entity that creates a table in the database which holds all the information for the user
+ *
+ * @author TrusTio
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

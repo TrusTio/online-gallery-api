@@ -14,6 +14,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.logging.Logger;
 
+/**
+ * User controller that exposes user end points
+ *
+ * @author TrusTio
+ */
 @Controller
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RequestMapping(path = "api/v1/user")
@@ -24,18 +29,13 @@ public class UserController {
     @Autowired
     private com.mine.gallery.service.UserService userService;
 
-    @GetMapping("/signin")
-    String signIn() {
-
-        return "sign-in";
-    }
-
-    @GetMapping("/signup")
-    String signUp() {
-
-        return "sign-up";
-    }
-
+    /**
+     * A POST method that accepts {@link UserDTO UserDTO} body with it's parameters to create a new account in the database
+     * using the signUp service from {@link com.mine.gallery.service.UserService UserService}
+     *
+     * @param user
+     * @return a string saying "Signed up!"
+     */
     @PostMapping("/signup")
     public @ResponseBody
     String signUp(@RequestBody UserDTO user) {
@@ -45,6 +45,11 @@ public class UserController {
         return "Signed up!";
     }
 
+    /**
+     * A GET method that fetches all the users with their galleries and images
+     *
+     * @return JSON object with all the user information
+     */
     @GetMapping(path = "/all/users")
     public @ResponseBody
     Iterable<User> getAllUsers() {
