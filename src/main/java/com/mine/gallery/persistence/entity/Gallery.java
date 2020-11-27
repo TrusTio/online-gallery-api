@@ -20,6 +20,7 @@ import java.util.List;
 
 /**
  * Gallery entity that creates a table in the database which holds all the information for the galleries
+ *
  * @author TrusTio
  */
 @Data
@@ -31,7 +32,7 @@ public class Gallery {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long gallery_id;
+    private Long id;
 
     private String name;
 

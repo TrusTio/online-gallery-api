@@ -22,6 +22,5 @@ public class UserMapper {
                 .setUsername(user.getUsername())
                 .setEmail(user.getEmail())
                 .setPassword(user.getPassword());
-
     }
 }

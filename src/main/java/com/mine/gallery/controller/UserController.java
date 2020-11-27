@@ -33,8 +33,8 @@ public class UserController {
      * A POST method that accepts {@link UserDTO UserDTO} body with it's parameters to create a new account in the database
      * using the signUp service from {@link com.mine.gallery.service.UserService UserService}
      *
-     * @param user
-     * @return a string saying "Signed up!"
+     * @param user UserDTO object used to create new user
+     * @return String confirming the sign up
      */
     @PostMapping("/signup")
     public @ResponseBody
