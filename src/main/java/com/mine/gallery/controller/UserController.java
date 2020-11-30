@@ -6,12 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 
+import java.util.Optional;
 import java.util.logging.Logger;
 
 /**
@@ -56,5 +58,17 @@ public class UserController {
         // This returns a JSON or XML with the users
         Logger.getLogger(UserController.class.getName()).warning("Fetched all users!");
         return userRepository.findAll();
+    }
+
+    /**
+     * A GET method that fetches all the information about specific user using user id
+     * @param id the user id of the user to be fetched
+     * @return the found {@link User User} if such exists
+     */
+    @GetMapping(path = "/{id}")
+    public @ResponseBody
+    Optional<User> getUserById(@PathVariable("id") Long id){
+        Logger.getLogger(UserController.class.getName()).warning("Fetched user with id: " + id);
+        return userRepository.findById(id);
     }
 }
