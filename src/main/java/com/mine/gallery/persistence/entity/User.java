@@ -8,11 +8,15 @@ import lombok.experimental.Accessors;
 
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
+import javax.validation.constraints.Email;
 import java.util.List;
 
 /**
@@ -31,8 +35,11 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true, length = 20, nullable = false)
     private String username;
 
+    @Email(message = "Email should be valid")
+    @Column(unique = true, length = 40, nullable = false)
     private String email;
 
     private String password;

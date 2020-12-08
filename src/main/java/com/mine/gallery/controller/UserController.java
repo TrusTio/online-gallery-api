@@ -43,6 +43,7 @@ public class UserController {
     String signUp(@RequestBody UserDTO user) {
         Logger.getLogger(UserController.class.getName()).warning("Created new user!");
         Logger.getLogger(UserController.class.getName()).warning(user.toString());
+
         userService.signUp(user);
         return "Signed up!";
     }
@@ -55,19 +56,19 @@ public class UserController {
     @GetMapping(path = "/all/users")
     public @ResponseBody
     Iterable<User> getAllUsers() {
-        // This returns a JSON or XML with the users
         Logger.getLogger(UserController.class.getName()).warning("Fetched all users!");
         return userRepository.findAll();
     }
 
     /**
      * A GET method that fetches all the information about specific user using user id
+     *
      * @param id the user id of the user to be fetched
      * @return the found {@link User User} if such exists
      */
     @GetMapping(path = "/{id}")
     public @ResponseBody
-    Optional<User> getUserById(@PathVariable("id") Long id){
+    Optional<User> getUserById(@PathVariable("id") Long id) {
         Logger.getLogger(UserController.class.getName()).warning("Fetched user with id: " + id);
         return userRepository.findById(id);
     }
