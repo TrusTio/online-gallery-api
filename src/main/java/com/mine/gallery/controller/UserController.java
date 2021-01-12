@@ -77,10 +77,8 @@ public class UserController {
     public @ResponseBody
     Optional<User> getUserById(@PathVariable("id") Long id, Principal principal) {
         if (userRepository.findByUsername(principal.getName()).getRoles()
-                .contains(roleRepository.findByName(RoleName.ROLE_ADMIN).get())) {
-            return userRepository.findById(id);
-        }
-        if (userRepository.findById(id).get().getUsername().equals(principal.getName())) {
+                .contains(roleRepository.findByName(RoleName.ROLE_ADMIN).get())
+                || userRepository.findById(id).get().getUsername().equals(principal.getName())) {
             return userRepository.findById(id);
         } else {
             return Optional.empty();
