@@ -18,8 +18,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 
+import java.util.Date;
 import java.util.logging.Logger;
-
 
 import static com.mine.gallery.security.SecurityConstants.SECRET;
 
@@ -58,6 +58,7 @@ public class AuthorizationFilter extends BasicAuthenticationFilter {
      *
      * @param request request parameter to be used for authentication
      * @return returns new UsernamePasswordAuthenticationToken with user and list of authorities(roles)
+     * or null if the token has expired/is empty
      */
     private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) {
         String token = request.getHeader("Authorization");
@@ -67,6 +68,10 @@ public class AuthorizationFilter extends BasicAuthenticationFilter {
                     .setSigningKey(SECRET.getBytes())
                     .parseClaimsJws(token.replace("Bearer", ""))
                     .getBody();
+
+            if (new Date(System.currentTimeMillis()).after(claims.getExpiration())) {
+                return null;
+            }
 
             String user = claims.getSubject();
 
