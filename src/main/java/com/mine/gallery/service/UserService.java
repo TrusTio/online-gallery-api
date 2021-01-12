@@ -1,6 +1,10 @@
 package com.mine.gallery.service;
 
+import com.mine.gallery.persistence.entity.RoleName;
 import com.mine.gallery.persistence.entity.User;
+import com.mine.gallery.persistence.entity.UserRole;
+import com.mine.gallery.persistence.repository.UserRoleRepository;
+import com.mine.gallery.persistence.repository.UserRepository;
 import com.mine.gallery.service.dto.UserDTO;
 import com.mine.gallery.service.mapper.UserMapper;
 import lombok.AllArgsConstructor;
@@ -15,6 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -29,9 +34,13 @@ import java.util.Set;
 @Data
 public class UserService {
     @Autowired
-    private com.mine.gallery.persistence.repository.UserRepository userRepository;
+    private UserRepository userRepository;
 
-    private BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+    @Autowired
+    private UserRoleRepository userRoleRepository;
+
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
@@ -50,10 +59,13 @@ public class UserService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email taken!");
         }
 
+        UserRole userRole = userRoleRepository.findByName(RoleName.ROLE_ADMIN).get();
+
         User user = new User()
                 .setUsername(userDTO.getUsername())
                 .setEmail(userDTO.getEmail())
-                .setPassword(bCryptPasswordEncoder.encode(userDTO.getPassword()));
+                .setPassword(bCryptPasswordEncoder.encode(userDTO.getPassword()))
+                .setRoles(Collections.singleton(userRole));
 
         Set<ConstraintViolation<User>> violations = validator.validate(user);
         if (violations.isEmpty()) {

@@ -1,7 +1,13 @@
 package com.mine.gallery;
 
+import com.mine.gallery.persistence.entity.RoleName;
+import com.mine.gallery.persistence.entity.UserRole;
+import com.mine.gallery.persistence.repository.UserRoleRepository;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 /**
  * Starting point of the application. The only functionality
@@ -18,4 +24,16 @@ public class GalleryApplication {
         SpringApplication.run(GalleryApplication.class, args);
     }
 
+    @Bean
+    public BCryptPasswordEncoder bCryptPasswordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public CommandLineRunner demoData(UserRoleRepository userRoleRepository) {
+        return  args -> {
+            userRoleRepository.save(new UserRole(1L, RoleName.ROLE_ADMIN));
+            userRoleRepository.save(new UserRole(2L, RoleName.ROLE_USER));
+        };
+    }
 }

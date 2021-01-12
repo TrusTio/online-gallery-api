@@ -13,6 +13,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import java.io.Serializable;
 
 /**
  * Image entity that creates a table in the database which holds all the information for the image
@@ -24,7 +25,7 @@ import javax.persistence.ManyToOne;
 @AllArgsConstructor
 @Accessors(chain = true)
 @Entity(name = "Images")
-public class Image {
+public class Image implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -16,6 +16,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -28,7 +29,7 @@ import java.util.List;
 @AllArgsConstructor
 @Accessors(chain = true)
 @Entity(name = "Galleries")
-public class Gallery {
+public class Gallery implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

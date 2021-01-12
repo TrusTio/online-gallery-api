@@ -3,6 +3,7 @@ package com.mine.gallery.controller;
 import com.mine.gallery.persistence.entity.User;
 import com.mine.gallery.service.dto.UserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 
+import java.security.Principal;
 import java.util.Optional;
 import java.util.logging.Logger;
 
@@ -41,12 +43,12 @@ public class UserController {
     @PostMapping("/signup")
     public @ResponseBody
     String signUp(@RequestBody UserDTO user) {
-        Logger.getLogger(UserController.class.getName()).warning("Created new user!");
-        Logger.getLogger(UserController.class.getName()).warning(user.toString());
-
         userService.signUp(user);
+        Logger.getLogger(UserController.class.getName()).info("Created new user!");
         return "Signed up!";
     }
+
+    //TODO: Restrict only to admin
 
     /**
      * A GET method that fetches all the users with their galleries and images
@@ -55,10 +57,12 @@ public class UserController {
      */
     @GetMapping(path = "/all/users")
     public @ResponseBody
-    Iterable<User> getAllUsers() {
-        Logger.getLogger(UserController.class.getName()).warning("Fetched all users!");
+    Iterable<User> getAllUsers(Principal principal) {
+        Logger.getLogger(UserController.class.getName()).info("Fetched all users!");
         return userRepository.findAll();
     }
+
+    //TODO: check if the user is ADMIN or USER and implement the security based on that
 
     /**
      * A GET method that fetches all the information about specific user using user id
@@ -68,8 +72,11 @@ public class UserController {
      */
     @GetMapping(path = "/{id}")
     public @ResponseBody
-    Optional<User> getUserById(@PathVariable("id") Long id) {
-        Logger.getLogger(UserController.class.getName()).warning("Fetched user with id: " + id);
-        return userRepository.findById(id);
+    Optional<User> getUserById(@PathVariable("id") Long id, Principal principal) {
+        if (userRepository.findById(id).get().getUsername().equals(principal.getName())) {
+            return userRepository.findById(id);
+        } else {
+            return Optional.empty();
+        }
     }
 }

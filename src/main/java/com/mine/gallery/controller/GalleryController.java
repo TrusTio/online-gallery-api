@@ -35,9 +35,8 @@ public class GalleryController {
     @PostMapping("/create")
     public @ResponseBody
     String create(@RequestBody GalleryDTO galleryDTO) {
-        Logger.getLogger(UserController.class.getName()).warning("Created new gallery!");
-        Logger.getLogger(UserController.class.getName()).warning(galleryDTO.toString());
         galleryService.create(galleryDTO);
+        Logger.getLogger(UserController.class.getName()).info("Created new gallery!");
         return "Gallery created!";
     }
 }
