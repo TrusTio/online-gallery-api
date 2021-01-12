@@ -1,8 +1,8 @@
 package com.mine.gallery;
 
 import com.mine.gallery.persistence.entity.RoleName;
-import com.mine.gallery.persistence.entity.UserRole;
-import com.mine.gallery.persistence.repository.UserRoleRepository;
+import com.mine.gallery.persistence.entity.Role;
+import com.mine.gallery.persistence.repository.RoleRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -29,11 +29,14 @@ public class GalleryApplication {
         return new BCryptPasswordEncoder();
     }
 
+    /**
+     * Inserts ADMIN and USER role in the database on startup
+     */
     @Bean
-    public CommandLineRunner demoData(UserRoleRepository userRoleRepository) {
-        return  args -> {
-            userRoleRepository.save(new UserRole(1L, RoleName.ROLE_ADMIN));
-            userRoleRepository.save(new UserRole(2L, RoleName.ROLE_USER));
+    public CommandLineRunner demoData(RoleRepository roleRepository) {
+        return args -> {
+            roleRepository.save(new Role(1L, RoleName.ROLE_ADMIN));
+            roleRepository.save(new Role(2L, RoleName.ROLE_USER));
         };
     }
 }

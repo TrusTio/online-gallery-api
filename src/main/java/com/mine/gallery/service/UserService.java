@@ -2,8 +2,8 @@ package com.mine.gallery.service;
 
 import com.mine.gallery.persistence.entity.RoleName;
 import com.mine.gallery.persistence.entity.User;
-import com.mine.gallery.persistence.entity.UserRole;
-import com.mine.gallery.persistence.repository.UserRoleRepository;
+import com.mine.gallery.persistence.entity.Role;
+import com.mine.gallery.persistence.repository.RoleRepository;
 import com.mine.gallery.persistence.repository.UserRepository;
 import com.mine.gallery.service.dto.UserDTO;
 import com.mine.gallery.service.mapper.UserMapper;
@@ -37,7 +37,7 @@ public class UserService {
     private UserRepository userRepository;
 
     @Autowired
-    private UserRoleRepository userRoleRepository;
+    private RoleRepository roleRepository;
 
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -59,13 +59,13 @@ public class UserService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email taken!");
         }
 
-        UserRole userRole = userRoleRepository.findByName(RoleName.ROLE_ADMIN).get();
+        Role role = roleRepository.findByName(RoleName.ROLE_ADMIN).get();
 
         User user = new User()
                 .setUsername(userDTO.getUsername())
                 .setEmail(userDTO.getEmail())
                 .setPassword(bCryptPasswordEncoder.encode(userDTO.getPassword()))
-                .setRoles(Collections.singleton(userRole));
+                .setRoles(Collections.singleton(role));
 
         Set<ConstraintViolation<User>> violations = validator.validate(user);
         if (violations.isEmpty()) {

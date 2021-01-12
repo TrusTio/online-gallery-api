@@ -1,7 +1,7 @@
 package com.mine.gallery.persistence.repository;
 
 import com.mine.gallery.persistence.entity.RoleName;
-import com.mine.gallery.persistence.entity.UserRole;
+import com.mine.gallery.persistence.entity.Role;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.Optional;
@@ -11,6 +11,7 @@ import java.util.Optional;
  *
  * @author TrusTio
  */
-public interface UserRoleRepository extends CrudRepository<UserRole, Integer> {
-        Optional<UserRole> findByName(RoleName roleName);
+public interface RoleRepository extends CrudRepository<Role, Integer> {
+    Optional<Role> findByName(RoleName roleName);
+
 }

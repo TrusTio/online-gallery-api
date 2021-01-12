@@ -1,7 +1,7 @@
 package com.mine.gallery.service.dto;
 
 
-import com.mine.gallery.persistence.entity.UserRole;
+import com.mine.gallery.persistence.entity.Role;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,5 +22,5 @@ public class UserDTO {
     private String username;
     private String email;
     private String password;
-    private Set<UserRole> roles;
+    private Set<Role> roles;
 }

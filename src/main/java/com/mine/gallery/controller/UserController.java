@@ -73,6 +73,7 @@ public class UserController {
     @GetMapping(path = "/{id}")
     public @ResponseBody
     Optional<User> getUserById(@PathVariable("id") Long id, Principal principal) {
+
         if (userRepository.findById(id).get().getUsername().equals(principal.getName())) {
             return userRepository.findById(id);
         } else {
