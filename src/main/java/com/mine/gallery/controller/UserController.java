@@ -1,5 +1,6 @@
 package com.mine.gallery.controller;
 
+import com.mine.gallery.persistence.entity.RoleName;
 import com.mine.gallery.persistence.entity.User;
 import com.mine.gallery.service.dto.UserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,8 @@ public class UserController {
     private com.mine.gallery.persistence.repository.UserRepository userRepository;
     @Autowired
     private com.mine.gallery.service.UserService userService;
+    @Autowired
+    private com.mine.gallery.persistence.repository.RoleRepository roleRepository;
 
     /**
      * A POST method that accepts {@link UserDTO UserDTO} body with it's parameters to create a new account in the database
@@ -48,13 +51,13 @@ public class UserController {
         return "Signed up!";
     }
 
-    //TODO: Restrict only to admin
-
     /**
      * A GET method that fetches all the users with their galleries and images
+     * Only users with role ADMIN can access this endpoint.
      *
      * @return JSON object with all the user information
      */
+    @Secured("ROLE_ADMIN")
     @GetMapping(path = "/all/users")
     public @ResponseBody
     Iterable<User> getAllUsers(Principal principal) {
@@ -62,10 +65,10 @@ public class UserController {
         return userRepository.findAll();
     }
 
-    //TODO: check if the user is ADMIN or USER and implement the security based on that
-
     /**
      * A GET method that fetches all the information about specific user using user id
+     * Users with role USER can access only their own user information.
+     * Users with role ADMIN can access information about all users.
      *
      * @param id the user id of the user to be fetched
      * @return the found {@link User User} if such exists
@@ -73,7 +76,10 @@ public class UserController {
     @GetMapping(path = "/{id}")
     public @ResponseBody
     Optional<User> getUserById(@PathVariable("id") Long id, Principal principal) {
-
+        if (userRepository.findByUsername(principal.getName()).getRoles()
+                .contains(roleRepository.findByName(RoleName.ROLE_ADMIN).get())) {
+            return userRepository.findById(id);
+        }
         if (userRepository.findById(id).get().getUsername().equals(principal.getName())) {
             return userRepository.findById(id);
         } else {
