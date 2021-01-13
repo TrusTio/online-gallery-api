@@ -14,4 +14,7 @@ public interface GalleryRepository extends CrudRepository<Gallery, Integer> {
     Optional<Gallery> findById(Long id);
 
     Optional<Gallery> findByName(String name);
+
+    Optional<Gallery> findByNameAndUserId(String name, Long userId);
+
 }

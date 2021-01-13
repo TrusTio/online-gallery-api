@@ -46,9 +46,10 @@ public class GalleryController {
         if (userRepository.findByUsername(principal.getName()).getRoles()
                 .contains(roleRepository.findByName(RoleName.ROLE_ADMIN).get())
                 || userRepository.findByUsername(principal.getName()).getId().equals(galleryDTO.getUserId())) {
-            galleryService.create(galleryDTO);
-            Logger.getLogger(UserController.class.getName()).info("Created new gallery!");
-            return "Gallery created!";
+            if (galleryService.create(galleryDTO) != null) {
+                Logger.getLogger(UserController.class.getName()).info("Created new gallery!");
+                return "Gallery created!";
+            }
         }
         return "Failed to create gallery!";
     }
