@@ -6,6 +6,7 @@ import com.mine.gallery.service.dto.UserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,7 +16,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 
+import javax.validation.Valid;
 import java.security.Principal;
+
 import java.util.Optional;
 import java.util.logging.Logger;
 
@@ -45,8 +48,8 @@ public class UserController {
      */
     @PostMapping("/signup")
     public @ResponseBody
-    String signUp(@RequestBody UserDTO user) {
-        userService.signUp(user);
+    String signUp(@Valid @RequestBody UserDTO user, Errors errors) throws Exception {
+        userService.signUp(user, errors);
         Logger.getLogger(UserController.class.getName()).info("Created new user!");
         return "Signed up!";
     }

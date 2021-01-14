@@ -40,6 +40,7 @@ dependencies {
 	compile group: 'org.springframework.security', name: 'spring-security-web', version: '5.4.1'
 	compile group: 'org.springframework.security', name: 'spring-security-config', version: '5.4.1'
 	compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.2'
+	compile group: 'org.passay', name: 'passay', version: '1.0'
 
 
 

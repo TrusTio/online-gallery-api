@@ -1,5 +1,6 @@
 package com.mine.gallery.service;
 
+import com.mine.gallery.exception.user.SignUpValidationException;
 import com.mine.gallery.persistence.entity.RoleName;
 import com.mine.gallery.persistence.entity.User;
 import com.mine.gallery.persistence.entity.Role;
@@ -14,14 +15,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.Errors;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.List;
 
 /**
  * Service class for the {@link com.mine.gallery.controller.UserController UserController}
@@ -45,18 +48,41 @@ public class UserService {
     Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
     /**
+     * Checks if the email and username are taken and throws an exception if it fails to.
+     * Then validates them and throws an exception if it fails to.
      * Creates a new {@link User User} and assigns the values of the DTO to it, then adds it to the database
      * using {@link com.mine.gallery.persistence.repository.UserRepository UserRepository}
      *
      * @param userDTO The UserDTO object to be added as User in the databse
      * @return The UserDTO object saved in the database as User
      */
-    public UserDTO signUp(UserDTO userDTO) {
+    public UserDTO signUp(UserDTO userDTO, Errors errors) {
         if (userRepository.existsByUsername(userDTO.getUsername())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username taken!");
+            throw new SignUpValidationException("Username taken!");
         }
+
         if (userRepository.existsByEmail(userDTO.getEmail())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email taken!");
+            throw new SignUpValidationException("Email taken!");
+        }
+
+        if (errors.hasErrors()) {
+            // Extract ConstraintViolation list from body errors
+            List<ConstraintViolation<?>> violationsList = new ArrayList<>();
+            for (ObjectError e : errors.getAllErrors()) {
+                violationsList.add(e.unwrap(ConstraintViolation.class));
+            }
+            StringBuilder stringBuilder = new StringBuilder();
+
+            // Construct a helpful message for each input violation
+            for (ConstraintViolation<?> violation : violationsList) {
+                stringBuilder
+                        .append(violation.getPropertyPath())
+                        .append(" ")
+                        .append(violation.getMessage())
+                        .append("\n");
+            }
+            String exceptionMessage = stringBuilder.toString();
+            throw new SignUpValidationException(exceptionMessage);
         }
 
         // set new accounts to normal users by default
@@ -66,14 +92,10 @@ public class UserService {
                 .setUsername(userDTO.getUsername())
                 .setEmail(userDTO.getEmail())
                 .setPassword(bCryptPasswordEncoder.encode(userDTO.getPassword()))
+                .setPassword(userDTO.getPassword())
                 .setRoles(Collections.singleton(role));
 
-        Set<ConstraintViolation<User>> violations = validator.validate(user);
-        if (violations.isEmpty()) {
-            return UserMapper.toUserDto(userRepository.save(user));
-        } else {
-            Iterator<ConstraintViolation<User>> iterator = violations.iterator();
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, iterator.next().getMessage());
-        }
+        return UserMapper.toUserDto(userRepository.save(user));
+
     }
 }

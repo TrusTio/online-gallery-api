@@ -18,7 +18,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
-import javax.validation.constraints.Email;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.List;
@@ -43,11 +42,10 @@ public class User implements Serializable {
     @Column(unique = true, length = 20, nullable = false)
     private String username;
 
-    @Email(message = "Email should be valid")
     @Column(unique = true, length = 40, nullable = false)
     private String email;
 
-    @Column(unique = false, length = 100, nullable = false)
+    @Column(nullable = false)
     private String password;
 
     @ManyToMany(fetch = FetchType.EAGER)
