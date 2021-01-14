@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.security.Principal;
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.logging.Logger;
 
 /**
@@ -44,7 +43,7 @@ public class GalleryController {
      */
     @PostMapping("/create")
     public @ResponseBody
-    String create(@RequestBody GalleryDTO galleryDTO, Principal principal) throws SQLIntegrityConstraintViolationException {
+    String create(@RequestBody GalleryDTO galleryDTO, Principal principal){
         if (userRepository.findByUsername(principal.getName()).getRoles()
                 .contains(roleRepository.findByName(RoleName.ROLE_ADMIN).get())
                 || userRepository.findByUsername(principal.getName()).getId().equals(galleryDTO.getUserId())) {

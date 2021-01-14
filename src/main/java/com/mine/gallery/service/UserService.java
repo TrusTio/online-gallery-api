@@ -59,7 +59,8 @@ public class UserService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email taken!");
         }
 
-        Role role = roleRepository.findByName(RoleName.ROLE_ADMIN).get();
+        // set new accounts to normal users by default
+        Role role = roleRepository.findByName(RoleName.ROLE_USER).get();
 
         User user = new User()
                 .setUsername(userDTO.getUsername())
