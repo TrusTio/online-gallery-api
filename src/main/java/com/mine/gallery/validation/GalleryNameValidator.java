@@ -6,16 +6,21 @@ import org.passay.PasswordData;
 import org.passay.PasswordValidator;
 import org.passay.RuleResult;
 
-
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.util.Arrays;
 
+/**
+ * Gallery name Validator that implements {@link ConstraintValidator ConstraintValidator}.
+ * Uses the passay library to validate the gallery name field.
+ *
+ * @author TrusTio
+ */
 public class GalleryNameValidator implements ConstraintValidator<ValidGalleryName, String> {
 
     @Override
     public boolean isValid(String galleryName, ConstraintValidatorContext context) {
-        char illegalChars[] = ("~`!@#$%^&*()-+{}[]<>?/]\\").toCharArray();
+        char[] illegalChars = ("~`!@#$%^&*()-+{}[]<>?/]\\").toCharArray();
         PasswordValidator validator = new PasswordValidator(Arrays.asList(
                 new LengthRule(1, 50),
                 new IllegalCharacterRule(illegalChars)
@@ -23,10 +28,6 @@ public class GalleryNameValidator implements ConstraintValidator<ValidGalleryNam
 
         RuleResult result = validator.validate(new PasswordData(galleryName));
 
-        if (result.isValid()) {
-            return true;
-        }
-
-        return false;
+        return result.isValid();
     }
 }

@@ -15,10 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-
 import javax.validation.Valid;
 import java.security.Principal;
-
 import java.util.Optional;
 import java.util.logging.Logger;
 
@@ -48,7 +46,7 @@ public class UserController {
      */
     @PostMapping("/signup")
     public @ResponseBody
-    String signUp(@Valid @RequestBody UserDTO user, Errors errors) throws Exception {
+    String signUp(@Valid @RequestBody UserDTO user, Errors errors) {
         userService.signUp(user, errors);
         Logger.getLogger(UserController.class.getName()).info("Created new user!");
         return "Signed up!";

@@ -12,8 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 
-import java.util.logging.Logger;
-
 
 /**
  * Service class for the {@link com.mine.gallery.controller.GalleryController GalleryController}
@@ -31,7 +29,8 @@ public class GalleryService {
     private com.mine.gallery.persistence.repository.UserRepository userRepository;
 
     /**
-     * Creates a new {@link Gallery Gallery} and assigns the values of the DTO to it, then adds it to the database
+     * Checks if the gallery name is valid. Then creates a new {@link Gallery Gallery}
+     * and assigns the values of the DTO to it, then adds it to the database
      * using {@link com.mine.gallery.persistence.repository.GalleryRepository GalleryRepository}
      *
      * @param galleryDTO The GalleryDTO object to be added as Gallery in the database

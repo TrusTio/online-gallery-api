@@ -7,6 +7,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
+/**
+ * Username Validator that implements {@link ConstraintValidator ConstraintValidator}.
+ * Validates if the given username field is valid by matching it with a regex pattern.
+ *
+ * @author TrusTio
+ */
 public class UsernameValidator implements ConstraintValidator<ValidUsername, String> {
     private static final String USERNAME_PATTERN = "^[a-zA-Z0-9]([._-](?![._-])|[a-zA-Z0-9]){3,18}[a-zA-Z0-9]$";
     private static final Pattern PATTERN = Pattern.compile(USERNAME_PATTERN);

@@ -13,6 +13,11 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import java.io.Serializable;
 
+/**
+ * Role entity that creates a table in the database which holds the Roles
+ *
+ * @author TrusTio
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

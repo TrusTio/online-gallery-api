@@ -1,7 +1,7 @@
 package com.mine.gallery;
 
-import com.mine.gallery.persistence.entity.RoleName;
 import com.mine.gallery.persistence.entity.Role;
+import com.mine.gallery.persistence.entity.RoleName;
 import com.mine.gallery.persistence.repository.RoleRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;

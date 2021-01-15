@@ -82,7 +82,6 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
-
     /**
      * Builds a new {@link ResponseEntity ResponseEntity}
      *

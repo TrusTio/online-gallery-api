@@ -1,9 +1,9 @@
 package com.mine.gallery.service;
 
 import com.mine.gallery.exception.user.SignUpValidationException;
+import com.mine.gallery.persistence.entity.Role;
 import com.mine.gallery.persistence.entity.RoleName;
 import com.mine.gallery.persistence.entity.User;
-import com.mine.gallery.persistence.entity.Role;
 import com.mine.gallery.persistence.repository.RoleRepository;
 import com.mine.gallery.persistence.repository.UserRepository;
 import com.mine.gallery.service.dto.UserDTO;
@@ -31,16 +31,13 @@ import java.util.Collections;
 @NoArgsConstructor
 @Data
 public class UserService {
+    Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
     @Autowired
     private UserRepository userRepository;
-
     @Autowired
     private RoleRepository roleRepository;
-
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
-
-    Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
     /**
      * Checks if the email and username are taken and throws an exception if it fails to.

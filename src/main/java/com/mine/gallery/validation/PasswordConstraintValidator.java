@@ -1,9 +1,5 @@
 package com.mine.gallery.validation;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
-import java.util.Arrays;
-
 import org.passay.AlphabeticalSequenceRule;
 import org.passay.DigitCharacterRule;
 import org.passay.LengthRule;
@@ -16,8 +12,18 @@ import org.passay.SpecialCharacterRule;
 import org.passay.UppercaseCharacterRule;
 import org.passay.WhitespaceRule;
 
+import javax.validation.ConstraintValidator;
+import javax.validation.ConstraintValidatorContext;
+import java.util.Arrays;
+
 import static org.apache.tomcat.util.buf.StringUtils.join;
 
+/**
+ * Password Validator that implements {@link ConstraintValidator ConstraintValidator}.
+ * Uses the passay library to validate the password field.
+ *
+ * @author TrusTio
+ */
 public class PasswordConstraintValidator implements ConstraintValidator<ValidPassword, String> {
 
     @Override

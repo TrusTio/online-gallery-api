@@ -1,7 +1,7 @@
 package com.mine.gallery.persistence.repository;
 
-import com.mine.gallery.persistence.entity.RoleName;
 import com.mine.gallery.persistence.entity.Role;
+import com.mine.gallery.persistence.entity.RoleName;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.Optional;
