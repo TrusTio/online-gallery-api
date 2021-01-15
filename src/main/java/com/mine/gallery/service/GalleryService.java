@@ -1,13 +1,18 @@
 package com.mine.gallery.service;
 
+import com.mine.gallery.exception.gallery.CreateGalleryValidationException;
 import com.mine.gallery.persistence.entity.Gallery;
 import com.mine.gallery.service.dto.GalleryDTO;
 import com.mine.gallery.service.mapper.GalleryMapper;
+import com.mine.gallery.util.ExceptionStringUtil;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.Errors;
+
+import java.util.logging.Logger;
 
 
 /**
@@ -32,10 +37,16 @@ public class GalleryService {
      * @param galleryDTO The GalleryDTO object to be added as Gallery in the database
      * @return The GalleryDTO object saved in the database as Gallery
      */
-    public GalleryDTO create(GalleryDTO galleryDTO) {
+    public GalleryDTO create(GalleryDTO galleryDTO, Errors errors) {
         if (galleryRepository.findByNameAndUserId(galleryDTO.getName(), galleryDTO.getUserId()).isPresent()) {
-            return null;
+            throw new CreateGalleryValidationException("Duplicate gallery name.");
         }
+
+        if (errors.hasErrors()) {
+            String exceptionMessage = ExceptionStringUtil.exceptionMessageBuilder(errors);
+            throw new CreateGalleryValidationException(exceptionMessage);
+        }
+
         Gallery gallery = new Gallery()
                 .setName(galleryDTO.getName())
                 .setUser(userRepository.findById(galleryDTO.getUserId()).get());

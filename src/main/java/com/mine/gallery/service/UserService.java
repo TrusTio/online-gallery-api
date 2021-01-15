@@ -8,23 +8,18 @@ import com.mine.gallery.persistence.repository.RoleRepository;
 import com.mine.gallery.persistence.repository.UserRepository;
 import com.mine.gallery.service.dto.UserDTO;
 import com.mine.gallery.service.mapper.UserMapper;
+import com.mine.gallery.util.ExceptionStringUtil;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
-import org.springframework.validation.ObjectError;
-import org.springframework.web.server.ResponseStatusException;
 
-import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 /**
  * Service class for the {@link com.mine.gallery.controller.UserController UserController}
@@ -66,22 +61,7 @@ public class UserService {
         }
 
         if (errors.hasErrors()) {
-            // Extract ConstraintViolation list from body errors
-            List<ConstraintViolation<?>> violationsList = new ArrayList<>();
-            for (ObjectError e : errors.getAllErrors()) {
-                violationsList.add(e.unwrap(ConstraintViolation.class));
-            }
-            StringBuilder stringBuilder = new StringBuilder();
-
-            // Construct a helpful message for each input violation
-            for (ConstraintViolation<?> violation : violationsList) {
-                stringBuilder
-                        .append(violation.getPropertyPath())
-                        .append(" ")
-                        .append(violation.getMessage())
-                        .append("\n");
-            }
-            String exceptionMessage = stringBuilder.toString();
+            String exceptionMessage = ExceptionStringUtil.exceptionMessageBuilder(errors);
             throw new SignUpValidationException(exceptionMessage);
         }
 

@@ -1,6 +1,6 @@
 package com.mine.gallery.exception;
 
-import com.mine.gallery.exception.gallery.GalleryNameTakenException;
+import com.mine.gallery.exception.gallery.CreateGalleryValidationException;
 import com.mine.gallery.exception.user.SignUpValidationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -26,20 +26,19 @@ import java.util.Map;
 public class ControllerAdvisor extends ResponseEntityExceptionHandler {
 
     /**
-     * Handles GalleryNameTakenException
+     * Handles CreateGalleryValidationException
      *
      * @param e       GalleryNameTakenException
      * @param request WebRequest
      * @return ResponseEntity<Object>
      */
-    @ExceptionHandler(GalleryNameTakenException.class)
+    @ExceptionHandler(CreateGalleryValidationException.class)
     public ResponseEntity<Object> handleGalleryNameTaken(
-            GalleryNameTakenException e, WebRequest request) {
+            CreateGalleryValidationException e, WebRequest request) {
 
         ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST);
         apiError.setTimestamp(LocalDateTime.now())
-                .setMessage(e.getMessage())
-                .setDetail("No duplicate gallery names allowed.");
+                .setMessage(e.getMessage());
 
         return buildResponseEntity(apiError);
     }

@@ -1,16 +1,18 @@
 package com.mine.gallery.controller;
 
-import com.mine.gallery.exception.gallery.GalleryNameTakenException;
+import com.mine.gallery.exception.gallery.CreateGalleryValidationException;
 import com.mine.gallery.persistence.entity.RoleName;
 import com.mine.gallery.service.dto.GalleryDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.validation.Valid;
 import java.security.Principal;
 import java.util.logging.Logger;
 
@@ -43,15 +45,16 @@ public class GalleryController {
      */
     @PostMapping("/create")
     public @ResponseBody
-    String create(@RequestBody GalleryDTO galleryDTO, Principal principal){
+    String create(@Valid @RequestBody GalleryDTO galleryDTO, Errors errors, Principal principal) {
         if (userRepository.findByUsername(principal.getName()).getRoles()
                 .contains(roleRepository.findByName(RoleName.ROLE_ADMIN).get())
                 || userRepository.findByUsername(principal.getName()).getId().equals(galleryDTO.getUserId())) {
-            if (galleryService.create(galleryDTO) != null) {
+
+            if (galleryService.create(galleryDTO, errors) != null) {
                 Logger.getLogger(UserController.class.getName()).info("Created new gallery!");
                 return "Gallery created!";
             }
         }
-        throw new GalleryNameTakenException(galleryDTO.getName());
+        throw new CreateGalleryValidationException("You can't create a gallery in another profile.");
     }
 }
