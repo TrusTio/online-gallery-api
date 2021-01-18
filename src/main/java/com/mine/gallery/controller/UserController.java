@@ -85,4 +85,6 @@ public class UserController {
             return Optional.empty();
         }
     }
+    //TODO: Add Endpoint that returns only all the galleries of the user /{id}/galleries
+    //TODO: Add Endpoint that returns only all the images in a given gallery of the user /{id}/gallery/{galleryname}
 }

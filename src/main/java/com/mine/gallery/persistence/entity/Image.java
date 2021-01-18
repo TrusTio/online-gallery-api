@@ -33,6 +33,8 @@ public class Image implements Serializable {
 
     private String name;
 
+    private String location;
+
     @JsonIgnoreProperties("images")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "gallery_id", nullable = false)

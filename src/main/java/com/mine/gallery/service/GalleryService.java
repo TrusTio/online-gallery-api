@@ -50,6 +50,9 @@ public class GalleryService {
                 .setName(galleryDTO.getName())
                 .setUser(userRepository.findById(galleryDTO.getUserId()).get());
 
+        //TODO: 1 Create folder for the user if one doesn't exist
+
+        //TODO: 2 Create folder for the gallery
         return GalleryMapper.toGalleryDTO(galleryRepository.save(gallery));
     }
 }

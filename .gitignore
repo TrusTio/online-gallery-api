@@ -35,3 +35,6 @@ build/
 #Gradle
 .gradle/
 
+#Storage
+image-storage/
+
