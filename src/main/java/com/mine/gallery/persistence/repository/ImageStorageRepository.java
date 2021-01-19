@@ -7,9 +7,24 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-//TODO: Documentation
+/**
+ * Repository for the image storage.
+ *
+ * @author TrusTio
+ */
 @Repository
-public class FileSystemRepository {
+public class ImageStorageRepository {
+
+    /**
+     * Saves the image to local directory for using the userId and gallery name.
+     *
+     * @param content     byte[] content of the file to be saved
+     * @param userId      Long userId of the user
+     * @param galleryName String name of the gallery
+     * @param imageName   String name of the iamge
+     * @return
+     * @throws Exception
+     */
     public String save(byte[] content, Long userId, String galleryName, String imageName) throws Exception {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder
@@ -28,6 +43,12 @@ public class FileSystemRepository {
                 .toString();
     }
 
+    /**
+     * Finds the file in the system using the String path
+     *
+     * @param location String location of the file
+     * @return
+     */
     public FileSystemResource findInFileSystem(String location) {
         try {
             return new FileSystemResource(Paths.get(location));
@@ -37,6 +58,11 @@ public class FileSystemRepository {
         }
     }
 
+    /**
+     * Gets the local image storage path.
+     *
+     * @return String containing the image storage path
+     */
     private String getStoragePath() {
         StringBuilder stringBuilder = new StringBuilder();
         final String PROJECT_DIRECTORY = System.getProperty("user.dir");

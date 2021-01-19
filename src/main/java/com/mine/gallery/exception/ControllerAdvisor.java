@@ -3,6 +3,7 @@ package com.mine.gallery.exception;
 import com.mine.gallery.exception.gallery.CreateGalleryValidationException;
 import com.mine.gallery.exception.generic.UnauthorizedAccessException;
 import com.mine.gallery.exception.image.ImageNotFoundException;
+import com.mine.gallery.exception.image.ImageValidationException;
 import com.mine.gallery.exception.user.SignUpValidationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -89,6 +90,23 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
 
         return buildResponseEntity(apiError);
     }
+
+    /**
+     * Handles ImageValidationException
+     *
+     * @param e       ImageValidationException
+     * @param request WebRequest
+     * @return ResponseEntity<Object>
+     */
+    @ExceptionHandler(ImageValidationException.class)
+    public ResponseEntity<Object> handleImageValidation(
+            ImageValidationException e, WebRequest request) {
+
+        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, e.getMessage());
+
+        return buildResponseEntity(apiError);
+    }
+
 
     /**
      * Handles MethodArgumentNotValidException

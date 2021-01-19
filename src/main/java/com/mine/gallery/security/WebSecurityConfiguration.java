@@ -30,10 +30,9 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     private static final String[] AUTH_WHITELIST = {
             "/v3/api-docs/**",
             "/swagger-ui.html",
-            "/swagger-ui/**",
-            "/api/v1/image/upload"
+            "/swagger-ui/**"
     };
-    //TODO: remove upload from auth whitelist
+
     @Autowired
     private final UserDetailsServiceImpl userDetailsService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
