@@ -1,6 +1,7 @@
 package com.mine.gallery.controller;
 
 import com.mine.gallery.exception.generic.UnauthorizedAccessException;
+import com.mine.gallery.persistence.entity.Gallery;
 import com.mine.gallery.persistence.entity.RoleName;
 import com.mine.gallery.persistence.entity.User;
 import com.mine.gallery.service.dto.UserDTO;
@@ -18,8 +19,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.validation.Valid;
 import java.security.Principal;
+import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * User controller that exposes user end points
@@ -86,6 +89,30 @@ public class UserController {
             throw new UnauthorizedAccessException("Access denied, you can't check other users details.");
         }
     }
-    //TODO: Add Endpoint that returns only all the galleries of the user /{id}/galleries
+
+    /**
+     * A GET method that returns a list of the galleries a specific user has, using his id
+     * Users with role USER can access only their own user galleries.
+     * Users with role ADMIN can access the galleries of everyone.
+     *
+     * @param id Long id of the user
+     * @param principal Principal
+     * @return List<String> of the galleries
+     */
+    @GetMapping(path = "/{id}/galleries")
+    public @ResponseBody
+    List<String> getUserGalleries(@PathVariable("id") Long id, Principal principal) {
+        Logger.getLogger(UserController.class.getName()).info("Fetching user galleries!");
+        if (userRepository.findByUsername(principal.getName()).getRoles()
+                .contains(roleRepository.findByName(RoleName.ROLE_ADMIN).get())
+                || userRepository.findById(id).get().getUsername().equals(principal.getName())) {
+
+            return userRepository.findById(id).get().getGalleries()
+                    .stream().map(Gallery::getName)
+                    .collect(Collectors.toList());
+        } else {
+            throw new UnauthorizedAccessException("Access denied, you can't check other users details.");
+        }
+    }
     //TODO: Add Endpoint that returns only all the images in a given gallery of the user /{id}/gallery/{galleryname}
 }

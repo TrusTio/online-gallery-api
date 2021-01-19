@@ -20,7 +20,6 @@ import org.springframework.validation.Errors;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import java.util.Collections;
-import java.util.logging.Logger;
 
 /**
  * Service class for the {@link com.mine.gallery.controller.UserController UserController}
