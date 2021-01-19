@@ -1,5 +1,6 @@
 package com.mine.gallery.controller;
 
+import com.mine.gallery.exception.generic.UnauthorizedAccessException;
 import com.mine.gallery.persistence.entity.RoleName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
@@ -34,6 +35,9 @@ public class ImageController {
     @Autowired
     private com.mine.gallery.persistence.repository.RoleRepository roleRepository;
 
+    //TODO: Add documentation
+    //TODO: Add proper response and exception handling
+    //TODO: Add Validation
     @PostMapping("/upload")
     public @ResponseBody
     String uploadImage(@RequestParam("imageFile") MultipartFile image,
@@ -49,6 +53,7 @@ public class ImageController {
         return "Image Saved";
     }
 
+    //TODO: Add documentation and proper response and exception handling
     @GetMapping(value = "/{userId}/{galleryName}/{imageName}", produces = MediaType.IMAGE_JPEG_VALUE)
     public @ResponseBody
     FileSystemResource retrieveImage(@PathVariable Long userId,
@@ -61,7 +66,7 @@ public class ImageController {
             ;
             return fileLocationService.find(userId, galleryName, imageName);
         } else {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+            throw new UnauthorizedAccessException("Access denied, you can't check other users files.");
         }
     }
 

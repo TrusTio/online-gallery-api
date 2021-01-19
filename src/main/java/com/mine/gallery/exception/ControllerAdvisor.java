@@ -1,6 +1,8 @@
 package com.mine.gallery.exception;
 
 import com.mine.gallery.exception.gallery.CreateGalleryValidationException;
+import com.mine.gallery.exception.generic.UnauthorizedAccessException;
+import com.mine.gallery.exception.image.ImageNotFoundException;
 import com.mine.gallery.exception.user.SignUpValidationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -12,7 +14,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,9 +37,7 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
     public ResponseEntity<Object> handleGalleryNameTaken(
             CreateGalleryValidationException e, WebRequest request) {
 
-        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST);
-        apiError.setTimestamp(LocalDateTime.now())
-                .setMessage(e.getMessage());
+        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, e.getMessage());
 
         return buildResponseEntity(apiError);
     }
@@ -53,9 +52,40 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
     @ExceptionHandler(SignUpValidationException.class)
     public ResponseEntity<Object> handleSignUpValidation(
             SignUpValidationException e, WebRequest request) {
-        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST);
-        apiError.setTimestamp(LocalDateTime.now())
-                .setMessage(e.getMessage());
+
+        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, e.getMessage());
+
+        return buildResponseEntity(apiError);
+    }
+
+    /**
+     * Handles ImageNotFoundException
+     *
+     * @param e       ImageNotFoundException
+     * @param request WebRequest
+     * @return ResponseEntity<Object>
+     */
+    @ExceptionHandler(ImageNotFoundException.class)
+    public ResponseEntity<Object> handleImageNotFound(
+            ImageNotFoundException e, WebRequest request) {
+
+        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, e.getMessage());
+
+        return buildResponseEntity(apiError);
+    }
+
+    /**
+     * Handles UnauthorizedAccessException
+     *
+     * @param e       UnauthorizedAccessException
+     * @param request WebRequest
+     * @return ResponseEntity<Object>
+     */
+    @ExceptionHandler(UnauthorizedAccessException.class)
+    public ResponseEntity<Object> handleUnauthorizedAccess(
+            UnauthorizedAccessException e, WebRequest request) {
+
+        ApiError apiError = new ApiError(HttpStatus.UNAUTHORIZED, e.getMessage());
 
         return buildResponseEntity(apiError);
     }

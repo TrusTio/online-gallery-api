@@ -1,5 +1,6 @@
 package com.mine.gallery.controller;
 
+import com.mine.gallery.exception.generic.UnauthorizedAccessException;
 import com.mine.gallery.persistence.entity.RoleName;
 import com.mine.gallery.persistence.entity.User;
 import com.mine.gallery.service.dto.UserDTO;
@@ -82,7 +83,7 @@ public class UserController {
                 || userRepository.findById(id).get().getUsername().equals(principal.getName())) {
             return userRepository.findById(id);
         } else {
-            return Optional.empty();
+            throw new UnauthorizedAccessException("Access denied, you can't check other users details.");
         }
     }
     //TODO: Add Endpoint that returns only all the galleries of the user /{id}/galleries

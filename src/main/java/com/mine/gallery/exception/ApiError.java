@@ -22,8 +22,10 @@ public class ApiError {
     private String message;
     private String detail;
 
-    public ApiError(HttpStatus status) {
+    public ApiError(HttpStatus status, String message) {
         this.status = status;
         this.error = status.value();
+        this.timestamp = LocalDateTime.now();
+        this.message = message;
     }
 }

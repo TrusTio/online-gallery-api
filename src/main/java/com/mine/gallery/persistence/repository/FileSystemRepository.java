@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+//TODO: Documentation
 @Repository
 public class FileSystemRepository {
     public String save(byte[] content, Long userId, String galleryName, String imageName) throws Exception {
@@ -39,6 +40,7 @@ public class FileSystemRepository {
     private String getStoragePath() {
         StringBuilder stringBuilder = new StringBuilder();
         final String PROJECT_DIRECTORY = System.getProperty("user.dir");
+        //TODO: Can this be extracted elsewhere
         return stringBuilder.append(PROJECT_DIRECTORY).append("/image-storage").toString();
     }
 
