@@ -25,13 +25,11 @@ public class ImageStorageRepository {
      * @return
      * @throws Exception
      */
-    public String save(byte[] content, Long userId, String galleryName, String imageName) throws Exception {
+    public String save(byte[] content, String location) throws Exception {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder
                 .append(getStoragePath()).append("/")
-                .append(userId).append("/")
-                .append(galleryName).append("/")
-                .append(imageName);
+                .append(location);
         String imageLocation = stringBuilder.toString();
 
         Path newFile = Paths.get(imageLocation);
@@ -50,8 +48,11 @@ public class ImageStorageRepository {
      * @return
      */
     public FileSystemResource findInFileSystem(String location) {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(getStoragePath()).append("/")
+                .append(location);
         try {
-            return new FileSystemResource(Paths.get(location));
+            return new FileSystemResource(Paths.get(stringBuilder.toString()));
         } catch (Exception e) {
             // Handle access or file not found problems.
             throw new RuntimeException();

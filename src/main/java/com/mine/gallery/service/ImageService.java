@@ -4,9 +4,9 @@ import com.mine.gallery.exception.image.ImageNotFoundException;
 import com.mine.gallery.exception.image.ImageValidationException;
 import com.mine.gallery.persistence.entity.Gallery;
 import com.mine.gallery.persistence.entity.Image;
-import com.mine.gallery.persistence.repository.ImageStorageRepository;
 import com.mine.gallery.persistence.repository.GalleryRepository;
 import com.mine.gallery.persistence.repository.ImageRepository;
+import com.mine.gallery.persistence.repository.ImageStorageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Service;
@@ -44,17 +44,22 @@ public class ImageService {
                         .get().getId()).isPresent()) {
             throw new ImageValidationException("Image with that name already exists.");
         }
+
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder
+                .append("/")
+                .append(userId).append("/")
+                .append(galleryName).append("/")
+                .append(image.getOriginalFilename());
+        String imageLocation = stringBuilder.toString();
+
         if (isValidImage(image)) {
-            String location = imageStorageRepository.save(
-                    image.getBytes(),
-                    gallery.getUser().getId(),
-                    gallery.getName(),
-                    image.getOriginalFilename());
+            imageStorageRepository.save(image.getBytes(), imageLocation);
 
             return imageRepository.save(new Image()
                     .setName(image.getOriginalFilename())
                     .setGallery(gallery)
-                    .setLocation(location))
+                    .setLocation(imageLocation))
                     .getId();
         }
         return null;
