@@ -6,20 +6,19 @@ import com.mine.gallery.service.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
 
 
-@Controller
+@RestController
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RequestMapping(path = "api/v1/image")
 public class ImageController {
@@ -47,10 +46,9 @@ public class ImageController {
      * @throws Exception
      */
     @PostMapping("/upload")
-    public @ResponseBody
-    String uploadImage(@RequestParam("imageFile") MultipartFile image,
-                       @RequestParam("galleryName") String galleryName,
-                       Principal principal
+    public String uploadImage(@RequestParam("imageFile") MultipartFile image,
+                              @RequestParam("galleryName") String galleryName,
+                              Principal principal
     ) throws Exception {
         imageService.save(image,
                 galleryName,
@@ -71,11 +69,10 @@ public class ImageController {
      * @throws Exception
      */
     @GetMapping(value = "/{userId}/{galleryName}/{imageName}", produces = MediaType.IMAGE_JPEG_VALUE)
-    public @ResponseBody
-    FileSystemResource retrieveImage(@PathVariable Long userId,
-                                     @PathVariable String galleryName,
-                                     @PathVariable String imageName,
-                                     Principal principal) throws Exception {
+    public FileSystemResource retrieveImage(@PathVariable Long userId,
+                                            @PathVariable String galleryName,
+                                            @PathVariable String imageName,
+                                            Principal principal) throws Exception {
         if (userRepository.findByUsername(principal.getName()).getRoles()
                 .contains(roleRepository.findByName(RoleName.ROLE_ADMIN).get())
                 || userRepository.findById(userId).get().getUsername().equals(principal.getName())) {

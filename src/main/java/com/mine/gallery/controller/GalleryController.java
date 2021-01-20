@@ -4,13 +4,12 @@ import com.mine.gallery.exception.gallery.CreateGalleryValidationException;
 import com.mine.gallery.persistence.entity.RoleName;
 import com.mine.gallery.service.dto.GalleryDTO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.security.Principal;
@@ -21,7 +20,7 @@ import java.util.logging.Logger;
  *
  * @author TrusTio
  */
-@Controller
+@RestController
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RequestMapping(path = "api/v1/gallery")
 public class GalleryController {
@@ -44,8 +43,7 @@ public class GalleryController {
      * @return String confirming the creation
      */
     @PostMapping("/create")
-    public @ResponseBody
-    String create(@Valid @RequestBody GalleryDTO galleryDTO, Errors errors, Principal principal) {
+    public String create(@Valid @RequestBody GalleryDTO galleryDTO, Errors errors, Principal principal) {
         if (userRepository.findByUsername(principal.getName()).getRoles()
                 .contains(roleRepository.findByName(RoleName.ROLE_ADMIN).get())
                 || userRepository.findByUsername(principal.getName()).getId().equals(galleryDTO.getUserId())) {

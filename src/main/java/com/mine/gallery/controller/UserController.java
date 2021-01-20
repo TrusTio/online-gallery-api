@@ -9,7 +9,6 @@ import com.mine.gallery.service.dto.UserDTO;
 import com.mine.gallery.service.mapper.ImageMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.stereotype.Controller;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,7 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.security.Principal;
@@ -31,7 +30,7 @@ import java.util.stream.Collectors;
  *
  * @author TrusTio
  */
-@Controller
+@RestController
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RequestMapping(path = "api/v1/user")
 public class UserController {
@@ -54,8 +53,7 @@ public class UserController {
      * @return String confirming the sign up
      */
     @PostMapping("/signup")
-    public @ResponseBody
-    String signUp(@Valid @RequestBody UserDTO user, Errors errors) {
+    public String signUp(@Valid @RequestBody UserDTO user, Errors errors) {
         userService.signUp(user, errors);
         Logger.getLogger(UserController.class.getName()).info("Created new user!");
         return "Signed up!";
@@ -69,8 +67,7 @@ public class UserController {
      */
     @Secured("ROLE_ADMIN")
     @GetMapping(path = "/all/users")
-    public @ResponseBody
-    Iterable<User> getAllUsers(Principal principal) {
+    public Iterable<User> getAllUsers(Principal principal) {
         Logger.getLogger(UserController.class.getName()).info("Fetched all users!");
         return userRepository.findAll();
     }
@@ -84,8 +81,7 @@ public class UserController {
      * @return the found {@link User User} if such exists
      */
     @GetMapping(path = "/{id}")
-    public @ResponseBody
-    Optional<User> getUserById(@PathVariable("id") Long id, Principal principal) {
+    public Optional<User> getUserById(@PathVariable("id") Long id, Principal principal) {
         if (userRepository.findByUsername(principal.getName()).getRoles()
                 .contains(roleRepository.findByName(RoleName.ROLE_ADMIN).get())
                 || userRepository.findById(id).get().getUsername().equals(principal.getName())) {
@@ -105,8 +101,7 @@ public class UserController {
      * @return List<String> of the galleries
      */
     @GetMapping(path = "/{id}/galleries")
-    public @ResponseBody
-    List<String> getUserGalleries(@PathVariable("id") Long id, Principal principal) {
+    public List<String> getUserGalleries(@PathVariable("id") Long id, Principal principal) {
         Logger.getLogger(UserController.class.getName()).info("Fetching user galleries!");
         if (userRepository.findByUsername(principal.getName()).getRoles()
                 .contains(roleRepository.findByName(RoleName.ROLE_ADMIN).get())
@@ -125,21 +120,21 @@ public class UserController {
      * GET method that returns a list of the images(name and url) the user has in specific gallery
      * Users with role USER can access only their own user images.
      * Users with role ADMIN can access the images of everyone.
+     *
      * @param id
      * @param galleryName
      * @param principal
      * @return
      */
     @GetMapping(path = "/{id}/gallery/{galleryName}")
-    public @ResponseBody
-    List<ImageDTO> getUserGalleryImages(@PathVariable("id") Long id,
-                                      @PathVariable("galleryName") String galleryName,
-                                      Principal principal) {
+    public List<ImageDTO> getUserGalleryImages(@PathVariable("id") Long id,
+                                               @PathVariable("galleryName") String galleryName,
+                                               Principal principal) {
         if (userRepository.findByUsername(principal.getName()).getRoles()
                 .contains(roleRepository.findByName(RoleName.ROLE_ADMIN).get())
                 || userRepository.findById(id).get().getUsername().equals(principal.getName())) {
 
-             return galleryRepository.findByNameAndUserId(galleryName, id).get().getImages()
+            return galleryRepository.findByNameAndUserId(galleryName, id).get().getImages()
                     .stream().map(ImageMapper::toImageDTO)
                     .collect(Collectors.toList());
         } else {
