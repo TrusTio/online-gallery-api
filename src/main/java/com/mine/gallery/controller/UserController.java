@@ -4,7 +4,9 @@ import com.mine.gallery.exception.generic.UnauthorizedAccessException;
 import com.mine.gallery.persistence.entity.Gallery;
 import com.mine.gallery.persistence.entity.RoleName;
 import com.mine.gallery.persistence.entity.User;
+import com.mine.gallery.service.dto.ImageDTO;
 import com.mine.gallery.service.dto.UserDTO;
+import com.mine.gallery.service.mapper.ImageMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
@@ -40,6 +42,9 @@ public class UserController {
     private com.mine.gallery.service.UserService userService;
     @Autowired
     private com.mine.gallery.persistence.repository.RoleRepository roleRepository;
+    @Autowired
+    private com.mine.gallery.persistence.repository.GalleryRepository galleryRepository;
+
 
     /**
      * A POST method that accepts {@link UserDTO UserDTO} body with it's parameters to create a new account in the database
@@ -91,11 +96,11 @@ public class UserController {
     }
 
     /**
-     * A GET method that returns a list of the galleries a specific user has, using his id
+     * A GET method that returns a list of the gallery names a specific user has, using his id
      * Users with role USER can access only their own user galleries.
      * Users with role ADMIN can access the galleries of everyone.
      *
-     * @param id Long id of the user
+     * @param id        Long id of the user
      * @param principal Principal
      * @return List<String> of the galleries
      */
@@ -110,9 +115,35 @@ public class UserController {
             return userRepository.findById(id).get().getGalleries()
                     .stream().map(Gallery::getName)
                     .collect(Collectors.toList());
+
         } else {
             throw new UnauthorizedAccessException("Access denied, you can't check other users details.");
         }
     }
-    //TODO: Add Endpoint that returns only all the images in a given gallery of the user /{id}/gallery/{galleryname}
+
+    /**
+     * GET method that returns a list of the images(name and url) the user has in specific gallery
+     * Users with role USER can access only their own user images.
+     * Users with role ADMIN can access the images of everyone.
+     * @param id
+     * @param galleryName
+     * @param principal
+     * @return
+     */
+    @GetMapping(path = "/{id}/gallery/{galleryName}")
+    public @ResponseBody
+    List<ImageDTO> getUserGalleryImages(@PathVariable("id") Long id,
+                                      @PathVariable("galleryName") String galleryName,
+                                      Principal principal) {
+        if (userRepository.findByUsername(principal.getName()).getRoles()
+                .contains(roleRepository.findByName(RoleName.ROLE_ADMIN).get())
+                || userRepository.findById(id).get().getUsername().equals(principal.getName())) {
+
+             return galleryRepository.findByNameAndUserId(galleryName, id).get().getImages()
+                    .stream().map(ImageMapper::toImageDTO)
+                    .collect(Collectors.toList());
+        } else {
+            throw new UnauthorizedAccessException("Access denied, you can't check other users details.");
+        }
+    }
 }
