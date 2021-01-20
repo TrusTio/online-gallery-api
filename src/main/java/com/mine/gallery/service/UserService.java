@@ -17,8 +17,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 
-import javax.validation.Validation;
-import javax.validation.Validator;
 import java.util.Collections;
 
 /**
@@ -31,7 +29,6 @@ import java.util.Collections;
 @NoArgsConstructor
 @Data
 public class UserService {
-    Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
     @Autowired
     private UserRepository userRepository;
     @Autowired

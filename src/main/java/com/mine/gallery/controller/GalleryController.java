@@ -2,6 +2,9 @@ package com.mine.gallery.controller;
 
 import com.mine.gallery.exception.gallery.CreateGalleryValidationException;
 import com.mine.gallery.persistence.entity.RoleName;
+import com.mine.gallery.persistence.repository.RoleRepository;
+import com.mine.gallery.persistence.repository.UserRepository;
+import com.mine.gallery.service.GalleryService;
 import com.mine.gallery.service.dto.GalleryDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
@@ -25,13 +28,11 @@ import java.util.logging.Logger;
 @RequestMapping(path = "api/v1/gallery")
 public class GalleryController {
     @Autowired
-    private com.mine.gallery.persistence.repository.GalleryRepository galleryRepository;
+    private GalleryService galleryService;
     @Autowired
-    private com.mine.gallery.service.GalleryService galleryService;
+    private UserRepository userRepository;
     @Autowired
-    private com.mine.gallery.persistence.repository.UserRepository userRepository;
-    @Autowired
-    private com.mine.gallery.persistence.repository.RoleRepository roleRepository;
+    private RoleRepository roleRepository;
 
     /**
      * A POST method that accepts {@link GalleryDTO GalleryDTO} body with it's parameters to create a new gallery in the database

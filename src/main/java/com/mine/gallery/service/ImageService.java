@@ -20,11 +20,11 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public class ImageService {
     @Autowired
-    ImageStorageRepository imageStorageRepository;
+    private ImageStorageRepository imageStorageRepository;
     @Autowired
-    ImageRepository imageRepository;
+    private ImageRepository imageRepository;
     @Autowired
-    GalleryRepository galleryRepository;
+    private GalleryRepository galleryRepository;
 
     /**
      * Validates the {@link MultipartFile MultipartFile} then saves the file

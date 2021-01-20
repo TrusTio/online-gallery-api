@@ -2,6 +2,8 @@ package com.mine.gallery.service;
 
 import com.mine.gallery.exception.gallery.CreateGalleryValidationException;
 import com.mine.gallery.persistence.entity.Gallery;
+import com.mine.gallery.persistence.repository.GalleryRepository;
+import com.mine.gallery.persistence.repository.UserRepository;
 import com.mine.gallery.service.dto.GalleryDTO;
 import com.mine.gallery.service.mapper.GalleryMapper;
 import com.mine.gallery.util.ExceptionStringUtil;
@@ -24,9 +26,9 @@ import org.springframework.validation.Errors;
 @Data
 public class GalleryService {
     @Autowired
-    private com.mine.gallery.persistence.repository.GalleryRepository galleryRepository;
+    private GalleryRepository galleryRepository;
     @Autowired
-    private com.mine.gallery.persistence.repository.UserRepository userRepository;
+    private UserRepository userRepository;
 
     /**
      * Checks if the gallery name is valid. Then creates a new {@link Gallery Gallery}

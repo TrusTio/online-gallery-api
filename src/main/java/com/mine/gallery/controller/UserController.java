@@ -4,6 +4,10 @@ import com.mine.gallery.exception.generic.UnauthorizedAccessException;
 import com.mine.gallery.persistence.entity.Gallery;
 import com.mine.gallery.persistence.entity.RoleName;
 import com.mine.gallery.persistence.entity.User;
+import com.mine.gallery.persistence.repository.GalleryRepository;
+import com.mine.gallery.persistence.repository.RoleRepository;
+import com.mine.gallery.persistence.repository.UserRepository;
+import com.mine.gallery.service.UserService;
 import com.mine.gallery.service.dto.ImageDTO;
 import com.mine.gallery.service.dto.UserDTO;
 import com.mine.gallery.service.mapper.ImageMapper;
@@ -36,13 +40,13 @@ import java.util.stream.Collectors;
 public class UserController {
 
     @Autowired
-    private com.mine.gallery.persistence.repository.UserRepository userRepository;
+    private UserRepository userRepository;
     @Autowired
-    private com.mine.gallery.service.UserService userService;
+    private UserService userService;
     @Autowired
-    private com.mine.gallery.persistence.repository.RoleRepository roleRepository;
+    private RoleRepository roleRepository;
     @Autowired
-    private com.mine.gallery.persistence.repository.GalleryRepository galleryRepository;
+    private GalleryRepository galleryRepository;
 
 
     /**

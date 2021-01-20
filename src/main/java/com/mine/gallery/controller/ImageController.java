@@ -2,6 +2,8 @@ package com.mine.gallery.controller;
 
 import com.mine.gallery.exception.generic.UnauthorizedAccessException;
 import com.mine.gallery.persistence.entity.RoleName;
+import com.mine.gallery.persistence.repository.RoleRepository;
+import com.mine.gallery.persistence.repository.UserRepository;
 import com.mine.gallery.service.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
@@ -23,15 +25,11 @@ import java.security.Principal;
 @RequestMapping(path = "api/v1/image")
 public class ImageController {
     @Autowired
-    private com.mine.gallery.persistence.repository.ImageRepository imageRepository;
-    @Autowired
-    private com.mine.gallery.persistence.repository.GalleryRepository galleryRepository;
-    @Autowired
     private ImageService imageService;
     @Autowired
-    private com.mine.gallery.persistence.repository.UserRepository userRepository;
+    private UserRepository userRepository;
     @Autowired
-    private com.mine.gallery.persistence.repository.RoleRepository roleRepository;
+    private RoleRepository roleRepository;
 
     //TODO: Add a way to set custom name to the image with optional param
 
