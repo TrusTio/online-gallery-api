@@ -12,6 +12,8 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Date;
+
 /**
  * Service class used by {@link com.mine.gallery.controller.ImageController ImageController}.
  *
@@ -45,24 +47,25 @@ public class ImageService {
             throw new ImageValidationException("Image with that name already exists.");
         }
 
+        String imageName = String.format("%s-%s", new Date().getTime(), image.getOriginalFilename());
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder
                 .append("/")
                 .append(userId).append("/")
                 .append(galleryName).append("/")
-                .append(image.getOriginalFilename());
+                .append(imageName);
+
         String imageLocation = stringBuilder.toString();
 
-        if (isValidImage(image)) {
-            imageStorageRepository.save(image.getBytes(), imageLocation);
+        isValidImage(image);
 
-            return imageRepository.save(new Image()
-                    .setName(image.getOriginalFilename())
-                    .setGallery(gallery)
-                    .setLocation(imageLocation))
-                    .getId();
-        }
-        return null;
+        imageStorageRepository.save(image.getBytes(), imageLocation);
+
+        return imageRepository.save(new Image()
+                .setName(imageName)
+                .setGallery(gallery)
+                .setLocation(imageLocation))
+                .getId();
     }
 
     /**
