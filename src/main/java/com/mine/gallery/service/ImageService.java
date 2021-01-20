@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
+import java.util.Optional;
 
 /**
  * Service class used by {@link com.mine.gallery.controller.ImageController ImageController}.
@@ -41,9 +42,7 @@ public class ImageService {
     public Long save(MultipartFile image, String galleryName, Long userId) throws Exception {
         Gallery gallery = galleryRepository.findByNameAndUserId(galleryName, userId).get();
 
-        if (imageRepository.findByNameAndGalleryId(image.getOriginalFilename(),
-                galleryRepository.findByNameAndUserId(galleryName, userId)
-                        .get().getId()).isPresent()) {
+        if (getImage(userId, galleryName, image.getOriginalFilename()).isPresent()) {
             throw new ImageValidationException("Image with that name already exists.");
         }
 
@@ -80,15 +79,26 @@ public class ImageService {
      */
     public FileSystemResource find(Long userId, String galleryName, String imageName) {
 
-        Image image = imageRepository.findByNameAndGalleryId(imageName,
-                galleryRepository.findByNameAndUserId(galleryName, userId)
-                        .get().getId())
+        Image image = getImage(userId, galleryName, imageName)
                 .orElseThrow(() -> new ImageNotFoundException("No image found."));
 
         return imageStorageRepository.findInFileSystem(image.getLocation());
     }
 
-    //TODO: add file name validation
+    /**
+     * Deletes an image.
+     *
+     * @param userId      Long id of the user
+     * @param galleryName String name of the gallery
+     * @param imageName   String name of the image
+     */
+    public void deleteImage(Long userId, String galleryName, String imageName) {
+        Image image = getImage(userId, galleryName, imageName)
+                .orElseThrow(() -> new ImageNotFoundException("No image found."));
+
+        imageStorageRepository.delete(image.getLocation());
+        imageRepository.delete(image);
+    }
 
     /**
      * Checks whether the image is valid by checking
@@ -112,5 +122,11 @@ public class ImageService {
             throw new ImageValidationException("The file should be a valid image with jpg/png extension.");
         }
         return true;
+    }
+
+    private Optional<Image> getImage(Long userId, String galleryName, String imageName) {
+        return imageRepository.findByNameAndGalleryId(imageName,
+                galleryRepository.findByNameAndUserId(galleryName, userId)
+                        .get().getId());
     }
 }

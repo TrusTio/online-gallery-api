@@ -18,10 +18,7 @@ public class ImageStorageRepository {
     /**
      * Saves the image to local directory for using the userId and gallery name.
      *
-     * @param content     byte[] content of the file to be saved
-     * @param userId      Long userId of the user
-     * @param galleryName String name of the gallery
-     * @param imageName   String name of the iamge
+     * @param content byte[] content of the file to be saved
      * @return
      * @throws Exception
      */
@@ -53,6 +50,24 @@ public class ImageStorageRepository {
                 .append(location);
         try {
             return new FileSystemResource(Paths.get(stringBuilder.toString()));
+        } catch (Exception e) {
+            // Handle access or file not found problems.
+            throw new RuntimeException();
+        }
+    }
+
+    /**
+     * Deletes the image in the specified location.
+     *
+     * @param location String location of the image to be deleted
+     */
+    public void delete(String location) {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(getStoragePath()).append("/")
+                .append(location);
+
+        try {
+            Files.delete(Paths.get(stringBuilder.toString()));
         } catch (Exception e) {
             // Handle access or file not found problems.
             throw new RuntimeException();

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,8 +32,6 @@ public class ImageController {
     @Autowired
     private RoleRepository roleRepository;
 
-    //TODO: Add a way to set custom name to the image with optional param
-
     /**
      * A POST method that lets the user upload an image
      * to his own gallery.
@@ -51,6 +50,7 @@ public class ImageController {
         imageService.save(image,
                 galleryName,
                 userRepository.findByUsername(principal.getName()).getId());
+        //TODO: Change response to 201
         return "Image Saved";
     }
 
@@ -74,7 +74,37 @@ public class ImageController {
         if (userRepository.findByUsername(principal.getName()).getRoles()
                 .contains(roleRepository.findByName(RoleName.ROLE_ADMIN).get())
                 || userRepository.findById(userId).get().getUsername().equals(principal.getName())) {
+
             return imageService.find(userId, galleryName, imageName);
+        } else {
+            throw new UnauthorizedAccessException("Access denied, you can't check other users files.");
+        }
+    }
+
+    /**
+     * DELETE method that deletes a specific image
+     * Users with role USER can delete only their own images.
+     * Users with role ADMIN can delete any images.
+     *
+     * @param userId      Long the user id of the image
+     * @param galleryName String name of the gallery
+     * @param imageName   String name of the image
+     * @param principal   Principal
+     * @return
+     * @throws Exception
+     */
+    @DeleteMapping(value = "/{userId}/{galleryName}/{imageName}")
+    public String deleteImage(@PathVariable Long userId,
+                              @PathVariable String galleryName,
+                              @PathVariable String imageName,
+                              Principal principal) throws Exception {
+        if (userRepository.findByUsername(principal.getName()).getRoles()
+                .contains(roleRepository.findByName(RoleName.ROLE_ADMIN).get())
+                || userRepository.findById(userId).get().getUsername().equals(principal.getName())) {
+
+            imageService.deleteImage(userId, galleryName, imageName);
+
+            return "Image Deleted";
         } else {
             throw new UnauthorizedAccessException("Access denied, you can't check other users files.");
         }

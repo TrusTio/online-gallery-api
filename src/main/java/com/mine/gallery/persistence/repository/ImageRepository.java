@@ -14,4 +14,6 @@ public interface ImageRepository extends CrudRepository<Image, Integer> {
     Optional<Image> findById(Long id);
 
     Optional<Image> findByNameAndGalleryId(String name, Long galleryId);
+
+    void delete(Image image);
 }
