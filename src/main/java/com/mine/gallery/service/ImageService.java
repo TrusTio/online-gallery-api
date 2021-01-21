@@ -96,7 +96,7 @@ public class ImageService {
         Image image = getImage(userId, galleryName, imageName)
                 .orElseThrow(() -> new ImageNotFoundException("No image found."));
 
-        imageStorageRepository.delete(image.getLocation());
+        imageStorageRepository.deleteImage(image.getLocation());
         imageRepository.delete(image);
     }
 
@@ -124,6 +124,14 @@ public class ImageService {
         return true;
     }
 
+    /**
+     * Returns the {@link Image Image} object based on user id, gallery name and image name
+     *
+     * @param userId      Long user id
+     * @param galleryName String name of the gallery
+     * @param imageName   String name of the image
+     * @return Optional<Image>
+     */
     private Optional<Image> getImage(Long userId, String galleryName, String imageName) {
         return imageRepository.findByNameAndGalleryId(imageName,
                 galleryRepository.findByNameAndUserId(galleryName, userId)

@@ -1,6 +1,7 @@
 package com.mine.gallery.controller;
 
 import com.mine.gallery.exception.gallery.CreateGalleryValidationException;
+import com.mine.gallery.exception.generic.UnauthorizedAccessException;
 import com.mine.gallery.persistence.entity.RoleName;
 import com.mine.gallery.persistence.repository.RoleRepository;
 import com.mine.gallery.persistence.repository.UserRepository;
@@ -9,6 +10,8 @@ import com.mine.gallery.service.dto.GalleryDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -55,5 +58,31 @@ public class GalleryController {
             }
         }
         throw new CreateGalleryValidationException("You can't create a gallery in another profile.");
+    }
+
+    /**
+     * DELETE Method that deletes a gallery of a specific user and the contents it has.
+     * Users with role USER can only delete galleries for their own accounts.
+     * Users with role ADMIN can delete galleries in any account.
+     *
+     * @param username String username of the gallery owner
+     * @param galleryName String gallery name to be deleted
+     * @param principal Principal
+     * @return
+     */
+    @DeleteMapping("/{username}/{galleryName}")
+    public String delete(@PathVariable("username") String username,
+                         @PathVariable("galleryName") String galleryName,
+                         Principal principal) {
+        Logger.getLogger(GalleryController.class.getName()).info(username);
+        if (userRepository.findByUsername(principal.getName()).getRoles()
+                .contains(roleRepository.findByName(RoleName.ROLE_ADMIN).get())
+                || username.equals(principal.getName())) {
+
+            galleryService.delete(username, galleryName);
+
+            return "Gallery deleted";
+        }
+        throw new UnauthorizedAccessException("Can't delete the gallery of another user");
     }
 }

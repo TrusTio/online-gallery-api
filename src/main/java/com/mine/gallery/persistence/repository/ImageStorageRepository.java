@@ -2,6 +2,7 @@ package com.mine.gallery.persistence.repository;
 
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.FileSystemUtils;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -61,13 +62,26 @@ public class ImageStorageRepository {
      *
      * @param location String location of the image to be deleted
      */
-    public void delete(String location) {
+    public void deleteImage(String location) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(getStoragePath()).append("/")
                 .append(location);
 
         try {
             Files.delete(Paths.get(stringBuilder.toString()));
+        } catch (Exception e) {
+            // Handle access or file not found problems.
+            throw new RuntimeException();
+        }
+    }
+
+    public void deleteGallery(Long userId, String galleryName){
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(getStoragePath()).append("/")
+                .append(userId).append("/")
+                .append(galleryName);
+        try {
+            FileSystemUtils.deleteRecursively(Paths.get(stringBuilder.toString()));
         } catch (Exception e) {
             // Handle access or file not found problems.
             throw new RuntimeException();

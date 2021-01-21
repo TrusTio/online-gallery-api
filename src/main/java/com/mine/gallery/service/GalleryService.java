@@ -3,6 +3,7 @@ package com.mine.gallery.service;
 import com.mine.gallery.exception.gallery.CreateGalleryValidationException;
 import com.mine.gallery.persistence.entity.Gallery;
 import com.mine.gallery.persistence.repository.GalleryRepository;
+import com.mine.gallery.persistence.repository.ImageStorageRepository;
 import com.mine.gallery.persistence.repository.UserRepository;
 import com.mine.gallery.service.dto.GalleryDTO;
 import com.mine.gallery.service.mapper.GalleryMapper;
@@ -29,6 +30,8 @@ public class GalleryService {
     private GalleryRepository galleryRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private ImageStorageRepository imageStorageRepository;
 
     /**
      * Checks if the gallery name is valid. Then creates a new {@link Gallery Gallery}
@@ -53,5 +56,17 @@ public class GalleryService {
                 .setUser(userRepository.findById(galleryDTO.getUserId()).get());
 
         return GalleryMapper.toGalleryDTO(galleryRepository.save(gallery));
+    }
+
+    /**
+     * Deletes a gallery and it's contents.
+     *
+     * @param username    String username used to find the gallery
+     * @param galleryName String name of the gallery to be deleted
+     */
+    public void delete(String username, String galleryName) {
+        Gallery gallery = galleryRepository.findByNameAndUserId(galleryName, userRepository.findByUsername(username).getId()).get();
+        imageStorageRepository.deleteGallery(userRepository.findByUsername(username).getId(), galleryName);
+        galleryRepository.delete(gallery);
     }
 }

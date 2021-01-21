@@ -17,4 +17,5 @@ public interface GalleryRepository extends CrudRepository<Gallery, Integer> {
 
     Optional<Gallery> findByNameAndUserId(String name, Long userId);
 
+    void delete(Gallery gallery);
 }
