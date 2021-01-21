@@ -65,9 +65,9 @@ public class GalleryController {
      * Users with role USER can only delete galleries for their own accounts.
      * Users with role ADMIN can delete galleries in any account.
      *
-     * @param username String username of the gallery owner
+     * @param username    String username of the gallery owner
      * @param galleryName String gallery name to be deleted
-     * @param principal Principal
+     * @param principal   Principal
      * @return
      */
     @DeleteMapping("/{username}/{galleryName}")

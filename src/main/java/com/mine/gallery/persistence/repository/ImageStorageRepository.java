@@ -1,10 +1,14 @@
 package com.mine.gallery.persistence.repository;
 
+import com.mine.gallery.exception.image.ImageValidationException;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.FileSystemUtils;
 
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -75,7 +79,42 @@ public class ImageStorageRepository {
         }
     }
 
-    public void deleteGallery(Long userId, String galleryName){
+    /**
+     * Rename image on local storage.
+     *
+     * @param location     String location of the image to be renamed
+     * @param newImageName String new image name
+     * @return new name of the image with the extension
+     */
+    public String renameImage(String location, String newImageName) {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(getStoragePath()).append("/")
+                .append(location);
+
+        try {
+            Path source = Paths.get(stringBuilder.toString());
+            String extension = FilenameUtils.getExtension(stringBuilder.toString());
+            String nameWithExtension = newImageName + "." + extension;
+
+            Files.move(source, source.resolveSibling(nameWithExtension));
+            
+            return nameWithExtension;
+        } catch (FileAlreadyExistsException e) {
+            throw new ImageValidationException("Image with that name already exists.");
+        } catch (InvalidPathException e) {
+            throw new ImageValidationException("Invalid image name.");
+        } catch (Exception e) {
+            throw new RuntimeException(e.getClass().toString());
+        }
+    }
+
+    /**
+     * Deletes the gallery at the specified location and it's contents
+     *
+     * @param userId      Long id of the user owning the gallery
+     * @param galleryName String name of the gallery
+     */
+    public void deleteGallery(Long userId, String galleryName) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(getStoragePath()).append("/")
                 .append(userId).append("/")

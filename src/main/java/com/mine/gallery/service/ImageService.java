@@ -101,6 +101,32 @@ public class ImageService {
     }
 
     /**
+     * Renames the image.
+     *
+     * @param userId       Long id of the user
+     * @param galleryName  String name of the gallery
+     * @param imageName    String name of the image
+     * @param newImageName String new name for the image
+     */
+    public void renameImage(Long userId, String galleryName, String imageName, String newImageName) {
+        Image image = getImage(userId, galleryName, imageName)
+                .orElseThrow(() -> new ImageNotFoundException("No image found."));
+
+        newImageName = imageStorageRepository.renameImage(image.getLocation(), newImageName);
+        image.setName(newImageName);
+
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("/")
+                .append(userId).append("/")
+                .append(galleryName).append("/")
+                .append(newImageName);
+
+        image.setLocation(stringBuilder.toString());
+
+        imageRepository.save(image);
+    }
+
+    /**
      * Checks whether the image is valid by checking
      * if it's empty, bigger than 8 mb, not jpg/png
      * <p>

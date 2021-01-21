@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -105,6 +106,23 @@ public class ImageController {
             imageService.deleteImage(userId, galleryName, imageName);
 
             return "Image Deleted";
+        } else {
+            throw new UnauthorizedAccessException("Access denied, you can't check other users files.");
+        }
+    }
+
+    @PutMapping(value = "/{userId}/{galleryName}/{imageName}")
+    public String renameImage(@PathVariable Long userId,
+                              @PathVariable String galleryName,
+                              @PathVariable String imageName,
+                              @RequestParam String newImageName,
+                              Principal principal) {
+        if (userRepository.findByUsername(principal.getName()).getRoles()
+                .contains(roleRepository.findByName(RoleName.ROLE_ADMIN).get())
+                || userRepository.findById(userId).get().getUsername().equals(principal.getName())) {
+
+            imageService.renameImage(userId, galleryName, imageName, newImageName);
+            return "Image Renamed";
         } else {
             throw new UnauthorizedAccessException("Access denied, you can't check other users files.");
         }
