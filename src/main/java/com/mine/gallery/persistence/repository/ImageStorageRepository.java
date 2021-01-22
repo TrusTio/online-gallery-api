@@ -1,5 +1,6 @@
 package com.mine.gallery.persistence.repository;
 
+import com.mine.gallery.exception.gallery.GalleryValidationException;
 import com.mine.gallery.exception.image.ImageValidationException;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.core.io.FileSystemResource;
@@ -97,7 +98,7 @@ public class ImageStorageRepository {
             String nameWithExtension = newImageName + "." + extension;
 
             Files.move(source, source.resolveSibling(nameWithExtension));
-            
+
             return nameWithExtension;
         } catch (FileAlreadyExistsException e) {
             throw new ImageValidationException("Image with that name already exists.");
@@ -124,6 +125,32 @@ public class ImageStorageRepository {
         } catch (Exception e) {
             // Handle access or file not found problems.
             throw new RuntimeException();
+        }
+    }
+
+    /**
+     * Renames a gallery on the local storage.
+     *
+     * @param userId         Long id of the user owning the gallery
+     * @param galleryName    String name of the gallery
+     * @param newGalleryName String new name for the gallery
+     */
+    public void renameGallery(Long userId, String galleryName, String newGalleryName) {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(getStoragePath()).append("/")
+                .append(userId).append("/")
+                .append(galleryName);
+        try {
+            Path source = Paths.get(stringBuilder.toString());
+
+            Files.move(source, source.resolveSibling(newGalleryName));
+
+        } catch (FileAlreadyExistsException e) {
+            throw new GalleryValidationException("Gallery with that name already exists.");
+        } catch (InvalidPathException e) {
+            throw new GalleryValidationException("Invalid gallery name.");
+        } catch (Exception e) {
+            throw new RuntimeException(e.getClass().toString());
         }
     }
 

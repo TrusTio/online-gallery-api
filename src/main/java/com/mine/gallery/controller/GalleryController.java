@@ -1,6 +1,6 @@
 package com.mine.gallery.controller;
 
-import com.mine.gallery.exception.gallery.CreateGalleryValidationException;
+import com.mine.gallery.exception.gallery.GalleryValidationException;
 import com.mine.gallery.exception.generic.UnauthorizedAccessException;
 import com.mine.gallery.persistence.entity.RoleName;
 import com.mine.gallery.persistence.repository.RoleRepository;
@@ -13,8 +13,10 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
@@ -57,7 +59,7 @@ public class GalleryController {
                 return "Gallery created!";
             }
         }
-        throw new CreateGalleryValidationException("You can't create a gallery in another profile.");
+        throw new GalleryValidationException("You can't create a gallery in another profile.");
     }
 
     /**
@@ -74,7 +76,6 @@ public class GalleryController {
     public String delete(@PathVariable("username") String username,
                          @PathVariable("galleryName") String galleryName,
                          Principal principal) {
-        Logger.getLogger(GalleryController.class.getName()).info(username);
         if (userRepository.findByUsername(principal.getName()).getRoles()
                 .contains(roleRepository.findByName(RoleName.ROLE_ADMIN).get())
                 || username.equals(principal.getName())) {
@@ -84,5 +85,21 @@ public class GalleryController {
             return "Gallery deleted";
         }
         throw new UnauthorizedAccessException("Can't delete the gallery of another user");
+    }
+
+    @PutMapping("/{username}/{galleryName}")
+    public String rename(@PathVariable("username") String username,
+                         @PathVariable("galleryName") String galleryName,
+                         @RequestParam String newGalleryName,
+                         Principal principal) {
+        if (userRepository.findByUsername(principal.getName()).getRoles()
+                .contains(roleRepository.findByName(RoleName.ROLE_ADMIN).get())
+                || username.equals(principal.getName())) {
+
+            galleryService.rename(username, galleryName, newGalleryName);
+
+            return "Gallery renamed";
+        }
+        throw new UnauthorizedAccessException("Can't rename the gallery of another user");
     }
 }

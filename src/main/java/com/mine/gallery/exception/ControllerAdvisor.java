@@ -1,6 +1,7 @@
 package com.mine.gallery.exception;
 
-import com.mine.gallery.exception.gallery.CreateGalleryValidationException;
+import com.mine.gallery.exception.gallery.GalleryValidationException;
+import com.mine.gallery.exception.gallery.GalleryNotFoundException;
 import com.mine.gallery.exception.generic.UnauthorizedAccessException;
 import com.mine.gallery.exception.image.ImageNotFoundException;
 import com.mine.gallery.exception.image.ImageValidationException;
@@ -34,11 +35,27 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
      * @param request WebRequest
      * @return ResponseEntity<Object>
      */
-    @ExceptionHandler(CreateGalleryValidationException.class)
+    @ExceptionHandler(GalleryValidationException.class)
     public ResponseEntity<Object> handleGalleryNameTaken(
-            CreateGalleryValidationException e, WebRequest request) {
+            GalleryValidationException e, WebRequest request) {
 
         ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, e.getMessage());
+
+        return buildResponseEntity(apiError);
+    }
+
+    /**
+     * Handles GalleryNotFoundException
+     *
+     * @param e       GalleryNotFoundException
+     * @param request WebRequest
+     * @return ResponseEntity<Object>
+     */
+    @ExceptionHandler(GalleryNotFoundException.class)
+    public ResponseEntity<Object> handleGalleryNotFound(
+            GalleryNotFoundException e, WebRequest request) {
+
+        ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, e.getMessage());
 
         return buildResponseEntity(apiError);
     }
@@ -70,7 +87,7 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
     public ResponseEntity<Object> handleImageNotFound(
             ImageNotFoundException e, WebRequest request) {
 
-        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, e.getMessage());
+        ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, e.getMessage());
 
         return buildResponseEntity(apiError);
     }

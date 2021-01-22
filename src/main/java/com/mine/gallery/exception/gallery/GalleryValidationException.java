@@ -5,8 +5,8 @@ package com.mine.gallery.exception.gallery;
  *
  * @author TrusTio
  */
-public class CreateGalleryValidationException extends RuntimeException {
-    public CreateGalleryValidationException(String message) {
+public class GalleryValidationException extends RuntimeException {
+    public GalleryValidationException(String message) {
         super(message);
     }
 }

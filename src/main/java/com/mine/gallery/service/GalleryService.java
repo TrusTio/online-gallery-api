@@ -1,8 +1,11 @@
 package com.mine.gallery.service;
 
-import com.mine.gallery.exception.gallery.CreateGalleryValidationException;
+import com.mine.gallery.exception.gallery.GalleryNotFoundException;
+import com.mine.gallery.exception.gallery.GalleryValidationException;
 import com.mine.gallery.persistence.entity.Gallery;
+import com.mine.gallery.persistence.entity.Image;
 import com.mine.gallery.persistence.repository.GalleryRepository;
+import com.mine.gallery.persistence.repository.ImageRepository;
 import com.mine.gallery.persistence.repository.ImageStorageRepository;
 import com.mine.gallery.persistence.repository.UserRepository;
 import com.mine.gallery.service.dto.GalleryDTO;
@@ -32,6 +35,8 @@ public class GalleryService {
     private UserRepository userRepository;
     @Autowired
     private ImageStorageRepository imageStorageRepository;
+    @Autowired
+    private ImageRepository imageRepository;
 
     /**
      * Checks if the gallery name is valid. Then creates a new {@link Gallery Gallery}
@@ -43,12 +48,12 @@ public class GalleryService {
      */
     public GalleryDTO create(GalleryDTO galleryDTO, Errors errors) {
         if (galleryRepository.findByNameAndUserId(galleryDTO.getName(), galleryDTO.getUserId()).isPresent()) {
-            throw new CreateGalleryValidationException("Duplicate gallery name.");
+            throw new GalleryValidationException("Duplicate gallery name.");
         }
 
         if (errors.hasErrors()) {
             String exceptionMessage = ExceptionStringUtil.exceptionMessageBuilder(errors);
-            throw new CreateGalleryValidationException(exceptionMessage);
+            throw new GalleryValidationException(exceptionMessage);
         }
 
         Gallery gallery = new Gallery()
@@ -68,5 +73,39 @@ public class GalleryService {
         Gallery gallery = galleryRepository.findByNameAndUserId(galleryName, userRepository.findByUsername(username).getId()).get();
         imageStorageRepository.deleteGallery(userRepository.findByUsername(username).getId(), galleryName);
         galleryRepository.delete(gallery);
+    }
+
+    /**
+     * Renames a gallery.
+     * Checks if the given gallery exists, if it does, attempts to rename the gallery on the local storage.
+     * Then updates the gallery name in the database, after that changes the location of the
+     * images in the database to their new location.
+     *
+     * @param username
+     * @param galleryName
+     * @param newGalleryName
+     */
+    public void rename(String username, String galleryName, String newGalleryName) {
+        Gallery gallery = galleryRepository.findByNameAndUserId(galleryName, userRepository.findByUsername(username).getId())
+                .orElseThrow(() -> new GalleryNotFoundException(
+                        String.format("Gallery with name '%s' was not found.", galleryName)));
+
+        imageStorageRepository.renameGallery(
+                userRepository.findByUsername(username).getId(),
+                galleryName,
+                newGalleryName);
+
+        StringBuilder updatedImageLocation = new StringBuilder();
+        updatedImageLocation.append("/")
+                .append(userRepository.findByUsername(username).getId()).append("/")
+                .append(newGalleryName).append("/");
+
+        gallery.setName(newGalleryName);
+        galleryRepository.save(gallery);
+
+        Iterable<Image> iterable = imageRepository.findAllByGalleryId(gallery.getId());
+        iterable.forEach(image -> image.setLocation(updatedImageLocation.toString() + image.getName()));
+
+        imageRepository.saveAll(iterable);
     }
 }
