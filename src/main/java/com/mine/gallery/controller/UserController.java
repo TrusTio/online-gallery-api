@@ -27,7 +27,6 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.List;
-import java.util.Optional;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -84,15 +83,15 @@ public class UserController {
      * Users with role USER can access only their own user information.
      * Users with role ADMIN can access information about all users.
      *
-     * @param id the user id of the user to be fetched
+     * @param username the username of the user to be fetched
      * @return the found {@link User User} if such exists
      */
-    @GetMapping(path = "/{id}")
-    public Optional<User> getUserById(@PathVariable("id") Long id, Principal principal) {
+    @GetMapping(path = "/{username}")
+    public User getUserById(@PathVariable("username") String username, Principal principal) {
         if (userRepository.findByUsername(principal.getName()).getRoles()
                 .contains(roleRepository.findByName(RoleName.ROLE_ADMIN).get())
-                || userRepository.findById(id).get().getUsername().equals(principal.getName())) {
-            return userRepository.findById(id);
+                || username.equals(principal.getName())) {
+            return userRepository.findByUsername(username);
         } else {
             throw new UnauthorizedAccessException("Access denied, you can't check other users details.");
         }
@@ -119,7 +118,7 @@ public class UserController {
                     .collect(Collectors.toList());
 
         } else {
-            throw new UnauthorizedAccessException("Access denied, you can't check other users details.");
+            throw new UnauthorizedAccessException("Access denied, you can't check other users galleries.");
         }
     }
 
@@ -145,7 +144,7 @@ public class UserController {
                     .stream().map(ImageMapper::toImageDTO)
                     .collect(Collectors.toList());
         } else {
-            throw new UnauthorizedAccessException("Access denied, you can't check other users details.");
+            throw new UnauthorizedAccessException("Access denied, you can't check other users images.");
         }
     }
 }
