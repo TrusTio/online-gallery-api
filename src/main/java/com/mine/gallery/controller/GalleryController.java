@@ -8,6 +8,8 @@ import com.mine.gallery.persistence.repository.UserRepository;
 import com.mine.gallery.service.GalleryService;
 import com.mine.gallery.service.dto.GalleryDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -49,14 +51,17 @@ public class GalleryController {
      * @return String confirming the creation
      */
     @PostMapping("/create")
-    public String create(@Valid @RequestBody GalleryDTO galleryDTO, Errors errors, Principal principal) {
+    public ResponseEntity<String> create(@Valid @RequestBody GalleryDTO galleryDTO,
+                                         Errors errors,
+                                         Principal principal) {
         if (userRepository.findByUsername(principal.getName()).getRoles()
                 .contains(roleRepository.findByName(RoleName.ROLE_ADMIN).get())
                 || userRepository.findByUsername(principal.getName()).getId().equals(galleryDTO.getUserId())) {
 
             if (galleryService.create(galleryDTO, errors) != null) {
                 Logger.getLogger(UserController.class.getName()).info("Created new gallery!");
-                return "Gallery created!";
+
+                return new ResponseEntity<>("Gallery created successfully", HttpStatus.CREATED);
             }
         }
         throw new GalleryValidationException("You can't create a gallery in another profile.");
@@ -73,32 +78,32 @@ public class GalleryController {
      * @return
      */
     @DeleteMapping("/{username}/{galleryName}")
-    public String delete(@PathVariable("username") String username,
-                         @PathVariable("galleryName") String galleryName,
-                         Principal principal) {
+    public ResponseEntity<String> delete(@PathVariable("username") String username,
+                                         @PathVariable("galleryName") String galleryName,
+                                         Principal principal) {
         if (userRepository.findByUsername(principal.getName()).getRoles()
                 .contains(roleRepository.findByName(RoleName.ROLE_ADMIN).get())
                 || username.equals(principal.getName())) {
 
             galleryService.delete(username, galleryName);
 
-            return "Gallery deleted";
+            return new ResponseEntity<>("Gallery deleted successfully", HttpStatus.ACCEPTED);
         }
         throw new UnauthorizedAccessException("Can't delete the gallery of another user");
     }
 
     @PutMapping("/{username}/{galleryName}")
-    public String rename(@PathVariable("username") String username,
-                         @PathVariable("galleryName") String galleryName,
-                         @RequestParam String newGalleryName,
-                         Principal principal) {
+    public ResponseEntity<String> rename(@PathVariable("username") String username,
+                                         @PathVariable("galleryName") String galleryName,
+                                         @RequestParam String newGalleryName,
+                                         Principal principal) {
         if (userRepository.findByUsername(principal.getName()).getRoles()
                 .contains(roleRepository.findByName(RoleName.ROLE_ADMIN).get())
                 || username.equals(principal.getName())) {
 
             galleryService.rename(username, galleryName, newGalleryName);
 
-            return "Gallery renamed";
+            return new ResponseEntity<>("Gallery updated successfully", HttpStatus.ACCEPTED);
         }
         throw new UnauthorizedAccessException("Can't rename the gallery of another user");
     }

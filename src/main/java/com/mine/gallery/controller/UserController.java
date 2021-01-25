@@ -12,6 +12,8 @@ import com.mine.gallery.service.dto.ImageDTO;
 import com.mine.gallery.service.dto.UserDTO;
 import com.mine.gallery.service.mapper.ImageMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -57,10 +59,11 @@ public class UserController {
      * @return String confirming the sign up
      */
     @PostMapping("/signup")
-    public String signUp(@Valid @RequestBody UserDTO user, Errors errors) {
+    public ResponseEntity<String> signUp(@Valid @RequestBody UserDTO user, Errors errors) {
         userService.signUp(user, errors);
         Logger.getLogger(UserController.class.getName()).info("Created new user!");
-        return "Signed up!";
+
+        return new ResponseEntity<>("User created successfully", HttpStatus.CREATED);
     }
 
     /**

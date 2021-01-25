@@ -7,7 +7,9 @@ import com.mine.gallery.persistence.repository.UserRepository;
 import com.mine.gallery.service.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -44,15 +46,14 @@ public class ImageController {
      * @throws Exception
      */
     @PostMapping("/upload")
-    public String uploadImage(@RequestParam("imageFile") MultipartFile image,
-                              @RequestParam("galleryName") String galleryName,
-                              Principal principal
+    public ResponseEntity<String> uploadImage(@RequestParam("imageFile") MultipartFile image,
+                                              @RequestParam("galleryName") String galleryName,
+                                              Principal principal
     ) throws Exception {
         imageService.save(image,
                 galleryName,
                 userRepository.findByUsername(principal.getName()).getId());
-        //TODO: Change response to 201
-        return "Image Saved";
+        return new ResponseEntity<>("Image uploaded successfully", HttpStatus.CREATED);
     }
 
     /**
@@ -95,36 +96,37 @@ public class ImageController {
      * @throws Exception
      */
     @DeleteMapping(value = "/{userId}/{galleryName}/{imageName}")
-    public String deleteImage(@PathVariable Long userId,
-                              @PathVariable String galleryName,
-                              @PathVariable String imageName,
-                              Principal principal) throws Exception {
+    public ResponseEntity<String> deleteImage(@PathVariable Long userId,
+                                              @PathVariable String galleryName,
+                                              @PathVariable String imageName,
+                                              Principal principal) throws Exception {
         if (userRepository.findByUsername(principal.getName()).getRoles()
                 .contains(roleRepository.findByName(RoleName.ROLE_ADMIN).get())
                 || userRepository.findById(userId).get().getUsername().equals(principal.getName())) {
 
             imageService.deleteImage(userId, galleryName, imageName);
 
-            return "Image Deleted";
+            return new ResponseEntity<>("Image deleted successfully", HttpStatus.ACCEPTED);
         } else {
-            throw new UnauthorizedAccessException("Access denied, you can't check other users files.");
+            throw new UnauthorizedAccessException("Access denied, you can't delete other users files.");
         }
     }
 
     @PutMapping(value = "/{userId}/{galleryName}/{imageName}")
-    public String renameImage(@PathVariable Long userId,
-                              @PathVariable String galleryName,
-                              @PathVariable String imageName,
-                              @RequestParam String newImageName,
-                              Principal principal) {
+    public ResponseEntity<String> renameImage(@PathVariable Long userId,
+                                              @PathVariable String galleryName,
+                                              @PathVariable String imageName,
+                                              @RequestParam String newImageName,
+                                              Principal principal) {
         if (userRepository.findByUsername(principal.getName()).getRoles()
                 .contains(roleRepository.findByName(RoleName.ROLE_ADMIN).get())
                 || userRepository.findById(userId).get().getUsername().equals(principal.getName())) {
 
             imageService.renameImage(userId, galleryName, imageName, newImageName);
-            return "Image Renamed";
+
+            return new ResponseEntity<>("Image renamed successfully", HttpStatus.ACCEPTED);
         } else {
-            throw new UnauthorizedAccessException("Access denied, you can't check other users files.");
+            throw new UnauthorizedAccessException("Access denied, you can't rename other users files.");
         }
     }
 
