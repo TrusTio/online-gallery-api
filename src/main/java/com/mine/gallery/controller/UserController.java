@@ -1,8 +1,6 @@
 package com.mine.gallery.controller;
 
-import com.mine.gallery.exception.generic.UnauthorizedAccessException;
 import com.mine.gallery.persistence.entity.Gallery;
-import com.mine.gallery.persistence.entity.RoleName;
 import com.mine.gallery.persistence.entity.User;
 import com.mine.gallery.persistence.repository.GalleryRepository;
 import com.mine.gallery.persistence.repository.RoleRepository;
@@ -44,8 +42,6 @@ public class UserController {
     private UserRepository userRepository;
     @Autowired
     private UserService userService;
-    @Autowired
-    private RoleRepository roleRepository;
     @Autowired
     private GalleryRepository galleryRepository;
 
@@ -97,24 +93,18 @@ public class UserController {
      * Users with role USER can access only their own user galleries.
      * Users with role ADMIN can access the galleries of everyone.
      *
-     * @param id        Long id of the user
+     * @param username  String username of the user
      * @param principal Principal
      * @return List<String> of the galleries
      */
-    @GetMapping(path = "/{id}/galleries")
-    public List<String> getUserGalleries(@PathVariable("id") Long id, Principal principal) {
+    @PreAuthorize("#username == #principal.name || hasRole('ROLE_ADMIN')")
+    @GetMapping(path = "/{username}/galleries")
+    public List<String> getUserGalleries(@PathVariable("username") String username, Principal principal) {
         Logger.getLogger(UserController.class.getName()).info("Fetching user galleries!");
-        if (userRepository.findByUsername(principal.getName()).getRoles()
-                .contains(roleRepository.findByName(RoleName.ROLE_ADMIN).get())
-                || userRepository.findById(id).get().getUsername().equals(principal.getName())) {
 
-            return userRepository.findById(id).get().getGalleries()
-                    .stream().map(Gallery::getName)
-                    .collect(Collectors.toList());
-
-        } else {
-            throw new UnauthorizedAccessException("Access denied, you can't check other users galleries.");
-        }
+        return userRepository.findByUsername(username).getGalleries()
+                .stream().map(Gallery::getName)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -122,24 +112,20 @@ public class UserController {
      * Users with role USER can access only their own user images.
      * Users with role ADMIN can access the images of everyone.
      *
-     * @param id
+     * @param username
      * @param galleryName
      * @param principal
      * @return
      */
-    @GetMapping(path = "/{id}/gallery/{galleryName}")
-    public List<ImageDTO> getUserGalleryImages(@PathVariable("id") Long id,
+    @PreAuthorize("#username == #principal.name || hasRole('ROLE_ADMIN')")
+    @GetMapping(path = "/{username}/gallery/{galleryName}")
+    public List<ImageDTO> getUserGalleryImages(@PathVariable("username") String username,
                                                @PathVariable("galleryName") String galleryName,
                                                Principal principal) {
-        if (userRepository.findByUsername(principal.getName()).getRoles()
-                .contains(roleRepository.findByName(RoleName.ROLE_ADMIN).get())
-                || userRepository.findById(id).get().getUsername().equals(principal.getName())) {
 
-            return galleryRepository.findByNameAndUserId(galleryName, id).get().getImages()
-                    .stream().map(ImageMapper::toImageDTO)
-                    .collect(Collectors.toList());
-        } else {
-            throw new UnauthorizedAccessException("Access denied, you can't check other users images.");
-        }
+        return galleryRepository.findByNameAndUserId(galleryName, userRepository.findByUsername(username).getId()).get()
+                .getImages()
+                .stream().map(ImageMapper::toImageDTO)
+                .collect(Collectors.toList());
     }
 }
