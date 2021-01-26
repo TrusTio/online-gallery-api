@@ -43,7 +43,6 @@ public class ImageController {
      * @param galleryName String name of the gallery
      * @param principal   Principal
      * @return String
-     * @throws Exception
      */
     @PostMapping("/upload")
     public ResponseEntity<String> uploadImage(@RequestParam("imageFile") MultipartFile image,
@@ -65,7 +64,6 @@ public class ImageController {
      * @param imageName   String name of the image
      * @param principal   Principal
      * @return FileSystemResource
-     * @throws Exception
      */
     @GetMapping(value = "/{userId}/{galleryName}/{imageName}", produces = MediaType.IMAGE_JPEG_VALUE)
     public FileSystemResource retrieveImage(@PathVariable Long userId,
@@ -91,8 +89,7 @@ public class ImageController {
      * @param galleryName String name of the gallery
      * @param imageName   String name of the image
      * @param principal   Principal
-     * @return
-     * @throws Exception
+     * @return ResponseEntity<String>
      */
     @DeleteMapping(value = "/{userId}/{galleryName}/{imageName}")
     public ResponseEntity<String> deleteImage(@PathVariable Long userId,
@@ -111,6 +108,7 @@ public class ImageController {
         }
     }
 
+    //TODO: Add doc
     @PutMapping(value = "/{userId}/{galleryName}/{imageName}")
     public ResponseEntity<String> renameImage(@PathVariable Long userId,
                                               @PathVariable String galleryName,

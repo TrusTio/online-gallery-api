@@ -14,7 +14,7 @@ import com.mine.gallery.service.mapper.ImageMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -71,7 +71,7 @@ public class UserController {
      *
      * @return JSON object with all the user information
      */
-    @Secured("ROLE_ADMIN")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping(path = "/all/users")
     public Iterable<User> getAllUsers(Principal principal) {
         Logger.getLogger(UserController.class.getName()).info("Fetched all users!");
@@ -86,15 +86,10 @@ public class UserController {
      * @param username the username of the user to be fetched
      * @return the found {@link User User} if such exists
      */
+    @PreAuthorize("#username == #principal.name || hasRole('ROLE_ADMIN')")
     @GetMapping(path = "/{username}")
-    public User getUserById(@PathVariable("username") String username, Principal principal) {
-        if (userRepository.findByUsername(principal.getName()).getRoles()
-                .contains(roleRepository.findByName(RoleName.ROLE_ADMIN).get())
-                || username.equals(principal.getName())) {
-            return userRepository.findByUsername(username);
-        } else {
-            throw new UnauthorizedAccessException("Access denied, you can't check other users details.");
-        }
+    public User getUserByUsername(@PathVariable("username") String username, Principal principal) {
+        return userRepository.findByUsername(username);
     }
 
     /**

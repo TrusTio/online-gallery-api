@@ -1,7 +1,7 @@
 package com.mine.gallery.exception;
 
-import com.mine.gallery.exception.gallery.GalleryValidationException;
 import com.mine.gallery.exception.gallery.GalleryNotFoundException;
+import com.mine.gallery.exception.gallery.GalleryValidationException;
 import com.mine.gallery.exception.generic.UnauthorizedAccessException;
 import com.mine.gallery.exception.image.ImageNotFoundException;
 import com.mine.gallery.exception.image.ImageValidationException;
@@ -9,6 +9,7 @@ import com.mine.gallery.exception.user.SignUpValidationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -124,6 +125,21 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
         return buildResponseEntity(apiError);
     }
 
+    /**
+     * Handles AccessDeniedException thrown by @PreAuthorize method annotation
+     *
+     * @param e       AccessDeniedException
+     * @param request WebRequest
+     * @return ResponseEntity<Object>
+     */
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Object> handleAccessDenied(
+            AccessDeniedException e, WebRequest request) {
+
+        ApiError apiError = new ApiError(HttpStatus.UNAUTHORIZED, e.getMessage());
+
+        return buildResponseEntity(apiError);
+    }
 
     /**
      * Handles MethodArgumentNotValidException

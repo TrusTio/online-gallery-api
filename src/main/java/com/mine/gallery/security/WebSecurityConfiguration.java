@@ -24,7 +24,7 @@ import static com.mine.gallery.security.SecurityConstants.SIGN_UP_URL;
  */
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(
-        securedEnabled = true
+        prePostEnabled = true
 )
 public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     private static final String[] AUTH_WHITELIST = {
