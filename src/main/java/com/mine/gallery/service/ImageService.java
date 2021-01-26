@@ -12,8 +12,10 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.Optional;
+import java.util.logging.Logger;
 
 /**
  * Service class used by {@link com.mine.gallery.controller.ImageController ImageController}.
@@ -39,7 +41,7 @@ public class ImageService {
      * @return
      * @throws Exception
      */
-    public Long save(MultipartFile image, String galleryName, Long userId) throws Exception {
+    public Long save(MultipartFile image, String galleryName, Long userId) {
         Gallery gallery = galleryRepository.findByNameAndUserId(galleryName, userId).get();
 
         if (getImage(userId, galleryName, image.getOriginalFilename()).isPresent()) {
@@ -58,7 +60,12 @@ public class ImageService {
 
         isValidImage(image);
 
-        imageStorageRepository.save(image.getBytes(), imageLocation);
+        try {
+            imageStorageRepository.save(image.getBytes(), imageLocation);
+        } catch (IOException e) {
+            Logger.getLogger(ImageService.class.getName()).warning(e.getMessage());
+        }
+
 
         return imageRepository.save(new Image()
                 .setName(imageName)

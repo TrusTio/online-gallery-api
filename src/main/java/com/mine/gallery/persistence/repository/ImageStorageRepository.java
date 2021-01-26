@@ -25,10 +25,9 @@ public class ImageStorageRepository {
      * Saves the image to local directory for using the userId and gallery name.
      *
      * @param content byte[] content of the file to be saved
-     * @return
-     * @throws Exception
+     * @return String with absolute path to the uploaded file
      */
-    public String save(byte[] content, String location) throws Exception {
+    public String save(byte[] content, String location) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder
                 .append(getStoragePath()).append("/")
@@ -36,9 +35,13 @@ public class ImageStorageRepository {
         String imageLocation = stringBuilder.toString();
 
         Path newFile = Paths.get(imageLocation);
-        Files.createDirectories(newFile.getParent());
+        try {
+            Files.createDirectories(newFile.getParent());
 
-        Files.write(newFile, content);
+            Files.write(newFile, content);
+        } catch (Exception e) {
+            throw new RuntimeException(e.getClass().toString());
+        }
 
         return newFile.toAbsolutePath()
                 .toString();
@@ -54,11 +57,11 @@ public class ImageStorageRepository {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(getStoragePath()).append("/")
                 .append(location);
+
         try {
             return new FileSystemResource(Paths.get(stringBuilder.toString()));
         } catch (Exception e) {
-            // Handle access or file not found problems.
-            throw new RuntimeException();
+            throw new RuntimeException(e.getClass().toString());
         }
     }
 
@@ -75,8 +78,7 @@ public class ImageStorageRepository {
         try {
             Files.delete(Paths.get(stringBuilder.toString()));
         } catch (Exception e) {
-            // Handle access or file not found problems.
-            throw new RuntimeException();
+            throw new RuntimeException(e.getClass().toString());
         }
     }
 
@@ -120,11 +122,11 @@ public class ImageStorageRepository {
         stringBuilder.append(getStoragePath()).append("/")
                 .append(userId).append("/")
                 .append(galleryName);
+
         try {
             FileSystemUtils.deleteRecursively(Paths.get(stringBuilder.toString()));
         } catch (Exception e) {
-            // Handle access or file not found problems.
-            throw new RuntimeException();
+            throw new RuntimeException(e.getClass().toString());
         }
     }
 
@@ -140,11 +142,11 @@ public class ImageStorageRepository {
         stringBuilder.append(getStoragePath()).append("/")
                 .append(userId).append("/")
                 .append(galleryName);
+
         try {
             Path source = Paths.get(stringBuilder.toString());
 
             Files.move(source, source.resolveSibling(newGalleryName));
-
         } catch (FileAlreadyExistsException e) {
             throw new GalleryValidationException("Gallery with that name already exists.");
         } catch (InvalidPathException e) {

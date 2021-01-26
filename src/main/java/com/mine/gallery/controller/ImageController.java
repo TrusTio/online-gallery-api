@@ -48,8 +48,7 @@ public class ImageController {
     @PostMapping("/upload")
     public ResponseEntity<String> uploadImage(@RequestParam("imageFile") MultipartFile image,
                                               @RequestParam("galleryName") String galleryName,
-                                              Principal principal
-    ) throws Exception {
+                                              Principal principal) {
         imageService.save(image,
                 galleryName,
                 userRepository.findByUsername(principal.getName()).getId());
@@ -72,7 +71,7 @@ public class ImageController {
     public FileSystemResource retrieveImage(@PathVariable Long userId,
                                             @PathVariable String galleryName,
                                             @PathVariable String imageName,
-                                            Principal principal) throws Exception {
+                                            Principal principal) {
         if (userRepository.findByUsername(principal.getName()).getRoles()
                 .contains(roleRepository.findByName(RoleName.ROLE_ADMIN).get())
                 || userRepository.findById(userId).get().getUsername().equals(principal.getName())) {
@@ -99,7 +98,7 @@ public class ImageController {
     public ResponseEntity<String> deleteImage(@PathVariable Long userId,
                                               @PathVariable String galleryName,
                                               @PathVariable String imageName,
-                                              Principal principal) throws Exception {
+                                              Principal principal) {
         if (userRepository.findByUsername(principal.getName()).getRoles()
                 .contains(roleRepository.findByName(RoleName.ROLE_ADMIN).get())
                 || userRepository.findById(userId).get().getUsername().equals(principal.getName())) {
