@@ -1,8 +1,5 @@
 package com.mine.gallery.controller;
 
-import com.mine.gallery.exception.gallery.GalleryValidationException;
-import com.mine.gallery.exception.generic.UnauthorizedAccessException;
-import com.mine.gallery.persistence.entity.RoleName;
 import com.mine.gallery.persistence.repository.RoleRepository;
 import com.mine.gallery.persistence.repository.UserRepository;
 import com.mine.gallery.service.GalleryService;
@@ -10,6 +7,7 @@ import com.mine.gallery.service.dto.GalleryDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -50,21 +48,16 @@ public class GalleryController {
      * @param galleryDTO GalleryDTO object/body used to create new gallery
      * @return String confirming the creation
      */
+    @PreAuthorize("@securityService.hasAccess(#galleryDTO.userId, #principal.name) || hasRole('ROLE_ADMIN')")
     @PostMapping("/create")
     public ResponseEntity<String> create(@Valid @RequestBody GalleryDTO galleryDTO,
                                          Errors errors,
                                          Principal principal) {
-        if (userRepository.findByUsername(principal.getName()).getRoles()
-                .contains(roleRepository.findByName(RoleName.ROLE_ADMIN).get())
-                || userRepository.findByUsername(principal.getName()).getId().equals(galleryDTO.getUserId())) {
 
-            if (galleryService.create(galleryDTO, errors) != null) {
-                Logger.getLogger(UserController.class.getName()).info("Created new gallery!");
+        galleryService.create(galleryDTO, errors);
+        Logger.getLogger(UserController.class.getName()).info("Created new gallery!");
 
-                return new ResponseEntity<>("Gallery created successfully", HttpStatus.CREATED);
-            }
-        }
-        throw new GalleryValidationException("You can't create a gallery in another profile.");
+        return new ResponseEntity<>("Gallery created successfully", HttpStatus.CREATED);
     }
 
     /**
@@ -77,34 +70,37 @@ public class GalleryController {
      * @param principal   Principal
      * @return
      */
+    @PreAuthorize("#username == #principal.name || hasRole('ROLE_ADMIN')")
     @DeleteMapping("/{username}/{galleryName}")
     public ResponseEntity<String> delete(@PathVariable("username") String username,
                                          @PathVariable("galleryName") String galleryName,
                                          Principal principal) {
-        if (userRepository.findByUsername(principal.getName()).getRoles()
-                .contains(roleRepository.findByName(RoleName.ROLE_ADMIN).get())
-                || username.equals(principal.getName())) {
 
-            galleryService.delete(username, galleryName);
+        galleryService.delete(username, galleryName);
 
-            return new ResponseEntity<>("Gallery deleted successfully", HttpStatus.ACCEPTED);
-        }
-        throw new UnauthorizedAccessException("Can't delete the gallery of another user");
+        return new ResponseEntity<>("Gallery deleted successfully", HttpStatus.ACCEPTED);
     }
 
+    /**
+     * PUT Method that renames the given gallery.
+     * Users with role USER can only rename galleries for their own accounts.
+     * Users with role ADMIN can rename galleries in any account.
+     *
+     * @param username       String username of the gallery owner
+     * @param galleryName    String gallery name to be renamed
+     * @param newGalleryName String new gallery name
+     * @param principal      Principal
+     * @return ResponseEntity<String>
+     */
+    @PreAuthorize("#username == #principal.name || hasRole('ROLE_ADMIN')")
     @PutMapping("/{username}/{galleryName}")
     public ResponseEntity<String> rename(@PathVariable("username") String username,
                                          @PathVariable("galleryName") String galleryName,
                                          @RequestParam String newGalleryName,
                                          Principal principal) {
-        if (userRepository.findByUsername(principal.getName()).getRoles()
-                .contains(roleRepository.findByName(RoleName.ROLE_ADMIN).get())
-                || username.equals(principal.getName())) {
 
-            galleryService.rename(username, galleryName, newGalleryName);
+        galleryService.rename(username, galleryName, newGalleryName);
 
-            return new ResponseEntity<>("Gallery updated successfully", HttpStatus.ACCEPTED);
-        }
-        throw new UnauthorizedAccessException("Can't rename the gallery of another user");
+        return new ResponseEntity<>("Gallery updated successfully", HttpStatus.ACCEPTED);
     }
 }

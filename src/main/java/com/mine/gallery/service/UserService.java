@@ -42,7 +42,7 @@ public class UserService {
      * Creates a new {@link User User} and assigns the values of the DTO to it, then adds it to the database
      * using {@link com.mine.gallery.persistence.repository.UserRepository UserRepository}
      *
-     * @param userDTO The UserDTO object to be added as User in the databse
+     * @param userDTO The UserDTO object to be added as User in the database
      * @return The UserDTO object saved in the database as User
      */
     public UserDTO signUp(UserDTO userDTO, Errors errors) {

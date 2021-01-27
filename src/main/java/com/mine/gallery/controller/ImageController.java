@@ -108,7 +108,18 @@ public class ImageController {
         }
     }
 
-    //TODO: Add doc
+    /**
+     * PUT Method that renames a specific image.
+     * Users with role USER can rename only their own images.
+     * Users with role ADMIN can rename any images.
+     *
+     * @param userId       Long the user id of the image
+     * @param galleryName  String name of the gallery
+     * @param imageName    String name of the image
+     * @param newImageName String new name for the image
+     * @param principal    Principal
+     * @return ResponseEntity<String>
+     */
     @PutMapping(value = "/{userId}/{galleryName}/{imageName}")
     public ResponseEntity<String> renameImage(@PathVariable Long userId,
                                               @PathVariable String galleryName,

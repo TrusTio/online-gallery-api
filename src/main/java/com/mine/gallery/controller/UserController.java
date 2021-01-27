@@ -3,7 +3,6 @@ package com.mine.gallery.controller;
 import com.mine.gallery.persistence.entity.Gallery;
 import com.mine.gallery.persistence.entity.User;
 import com.mine.gallery.persistence.repository.GalleryRepository;
-import com.mine.gallery.persistence.repository.RoleRepository;
 import com.mine.gallery.persistence.repository.UserRepository;
 import com.mine.gallery.service.UserService;
 import com.mine.gallery.service.dto.ImageDTO;
@@ -89,7 +88,7 @@ public class UserController {
     }
 
     /**
-     * A GET method that returns a list of the gallery names a specific user has, using his id
+     * A GET method that returns a list of the gallery names a specific user has, using his username
      * Users with role USER can access only their own user galleries.
      * Users with role ADMIN can access the galleries of everyone.
      *
@@ -112,10 +111,10 @@ public class UserController {
      * Users with role USER can access only their own user images.
      * Users with role ADMIN can access the images of everyone.
      *
-     * @param username
-     * @param galleryName
-     * @param principal
-     * @return
+     * @param username    String username of the user
+     * @param galleryName String gallery name
+     * @param principal   Principal
+     * @return List<ImageDTO>
      */
     @PreAuthorize("#username == #principal.name || hasRole('ROLE_ADMIN')")
     @GetMapping(path = "/{username}/gallery/{galleryName}")
