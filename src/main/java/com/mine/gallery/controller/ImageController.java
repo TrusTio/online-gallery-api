@@ -10,6 +10,7 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -50,7 +51,7 @@ public class ImageController {
                                               Principal principal) {
         imageService.save(image,
                 galleryName,
-                userRepository.findByUsername(principal.getName()).getId());
+                principal.getName());
         return new ResponseEntity<>("Image uploaded successfully", HttpStatus.CREATED);
     }
 
@@ -59,25 +60,20 @@ public class ImageController {
      * Users with role USER can access only their own images.
      * Users with role ADMIN can access all images.
      *
-     * @param userId      Long the user id of the image
+     * @param username    String the username of the image
      * @param galleryName String name of the gallery
      * @param imageName   String name of the image
      * @param principal   Principal
      * @return FileSystemResource
      */
-    @GetMapping(value = "/{userId}/{galleryName}/{imageName}", produces = MediaType.IMAGE_JPEG_VALUE)
-    public FileSystemResource retrieveImage(@PathVariable Long userId,
-                                            @PathVariable String galleryName,
-                                            @PathVariable String imageName,
+    @PreAuthorize("#username == #principal.name || hasRole('ROLE_ADMIN')")
+    @GetMapping(value = "/{username}/{galleryName}/{imageName}", produces = MediaType.IMAGE_JPEG_VALUE)
+    public FileSystemResource retrieveImage(@PathVariable("username") String username,
+                                            @PathVariable("galleryName") String galleryName,
+                                            @PathVariable("imageName") String imageName,
                                             Principal principal) {
-        if (userRepository.findByUsername(principal.getName()).getRoles()
-                .contains(roleRepository.findByName(RoleName.ROLE_ADMIN).get())
-                || userRepository.findById(userId).get().getUsername().equals(principal.getName())) {
 
-            return imageService.find(userId, galleryName, imageName);
-        } else {
-            throw new UnauthorizedAccessException("Access denied, you can't check other users files.");
-        }
+        return imageService.find(username, galleryName, imageName);
     }
 
     /**
@@ -85,27 +81,20 @@ public class ImageController {
      * Users with role USER can delete only their own images.
      * Users with role ADMIN can delete any images.
      *
-     * @param userId      Long the user id of the image
+     * @param username    String the username of the image
      * @param galleryName String name of the gallery
      * @param imageName   String name of the image
      * @param principal   Principal
      * @return ResponseEntity<String>
      */
-    @DeleteMapping(value = "/{userId}/{galleryName}/{imageName}")
-    public ResponseEntity<String> deleteImage(@PathVariable Long userId,
-                                              @PathVariable String galleryName,
-                                              @PathVariable String imageName,
+    @PreAuthorize("#username == #principal.name || hasRole('ROLE_ADMIN')")
+    @DeleteMapping(value = "/{username}/{galleryName}/{imageName}")
+    public ResponseEntity<String> deleteImage(@PathVariable("username") String username,
+                                              @PathVariable("galleryName") String galleryName,
+                                              @PathVariable("imageName") String imageName,
                                               Principal principal) {
-        if (userRepository.findByUsername(principal.getName()).getRoles()
-                .contains(roleRepository.findByName(RoleName.ROLE_ADMIN).get())
-                || userRepository.findById(userId).get().getUsername().equals(principal.getName())) {
-
-            imageService.deleteImage(userId, galleryName, imageName);
-
-            return new ResponseEntity<>("Image deleted successfully", HttpStatus.ACCEPTED);
-        } else {
-            throw new UnauthorizedAccessException("Access denied, you can't delete other users files.");
-        }
+        imageService.deleteImage(username, galleryName, imageName);
+        return new ResponseEntity<>("Image deleted successfully", HttpStatus.ACCEPTED);
     }
 
     /**
@@ -113,29 +102,24 @@ public class ImageController {
      * Users with role USER can rename only their own images.
      * Users with role ADMIN can rename any images.
      *
-     * @param userId       Long the user id of the image
+     * @param username    String the username of the image
      * @param galleryName  String name of the gallery
      * @param imageName    String name of the image
      * @param newImageName String new name for the image
      * @param principal    Principal
      * @return ResponseEntity<String>
      */
-    @PutMapping(value = "/{userId}/{galleryName}/{imageName}")
-    public ResponseEntity<String> renameImage(@PathVariable Long userId,
-                                              @PathVariable String galleryName,
-                                              @PathVariable String imageName,
+    @PreAuthorize("#username == #principal.name || hasRole('ROLE_ADMIN')")
+    @PutMapping(value = "/{username}/{galleryName}/{imageName}")
+    public ResponseEntity<String> renameImage(@PathVariable("username") String username,
+                                              @PathVariable("galleryName") String galleryName,
+                                              @PathVariable("imageName") String imageName,
                                               @RequestParam String newImageName,
                                               Principal principal) {
-        if (userRepository.findByUsername(principal.getName()).getRoles()
-                .contains(roleRepository.findByName(RoleName.ROLE_ADMIN).get())
-                || userRepository.findById(userId).get().getUsername().equals(principal.getName())) {
 
-            imageService.renameImage(userId, galleryName, imageName, newImageName);
+            imageService.renameImage(username, galleryName, imageName, newImageName);
 
             return new ResponseEntity<>("Image renamed successfully", HttpStatus.ACCEPTED);
-        } else {
-            throw new UnauthorizedAccessException("Access denied, you can't rename other users files.");
-        }
     }
 
 }

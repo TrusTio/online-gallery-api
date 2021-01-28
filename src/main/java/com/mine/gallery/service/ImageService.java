@@ -7,6 +7,7 @@ import com.mine.gallery.persistence.entity.Image;
 import com.mine.gallery.persistence.repository.GalleryRepository;
 import com.mine.gallery.persistence.repository.ImageRepository;
 import com.mine.gallery.persistence.repository.ImageStorageRepository;
+import com.mine.gallery.persistence.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Service;
@@ -30,6 +31,8 @@ public class ImageService {
     private ImageRepository imageRepository;
     @Autowired
     private GalleryRepository galleryRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     /**
      * Validates the {@link MultipartFile MultipartFile} then saves the file
@@ -37,11 +40,12 @@ public class ImageService {
      *
      * @param image       MultipartFile file to be saved
      * @param galleryName String name of the gallery
-     * @param userId      Long id of the user
+     * @param username       String username of the user
      * @return
      * @throws Exception
      */
-    public Long save(MultipartFile image, String galleryName, Long userId) {
+    public Long save(MultipartFile image, String galleryName, String username) {
+        Long userId = userRepository.findByUsername(username).getId();
         Gallery gallery = galleryRepository.findByNameAndUserId(galleryName, userId).get();
 
         if (getImage(userId, galleryName, image.getOriginalFilename()).isPresent()) {
@@ -52,7 +56,7 @@ public class ImageService {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder
                 .append("/")
-                .append(userId).append("/")
+                .append(username).append("/")
                 .append(galleryName).append("/")
                 .append(imageName);
 
@@ -79,12 +83,13 @@ public class ImageService {
      * <p>
      * Throws {@link ImageValidationException ImageValidationException} if it's not found.
      *
-     * @param userId      Long id of the user
+     * @param username       String username of the user
      * @param galleryName String name of the gallery
      * @param imageName   String name of the image
      * @return FileSystemResource
      */
-    public FileSystemResource find(Long userId, String galleryName, String imageName) {
+    public FileSystemResource find(String username, String galleryName, String imageName) {
+        Long userId = userRepository.findByUsername(username).getId();
 
         Image image = getImage(userId, galleryName, imageName)
                 .orElseThrow(() -> new ImageNotFoundException("No image found."));
@@ -95,11 +100,13 @@ public class ImageService {
     /**
      * Deletes an image.
      *
-     * @param userId      Long id of the user
+     * @param username       String username of the user
      * @param galleryName String name of the gallery
      * @param imageName   String name of the image
      */
-    public void deleteImage(Long userId, String galleryName, String imageName) {
+    public void deleteImage(String username, String galleryName, String imageName) {
+        Long userId = userRepository.findByUsername(username).getId();
+
         Image image = getImage(userId, galleryName, imageName)
                 .orElseThrow(() -> new ImageNotFoundException("No image found."));
 
@@ -110,12 +117,14 @@ public class ImageService {
     /**
      * Renames the image.
      *
-     * @param userId       Long id of the user
+     * @param username       String username of the user
      * @param galleryName  String name of the gallery
      * @param imageName    String name of the image
      * @param newImageName String new name for the image
      */
-    public void renameImage(Long userId, String galleryName, String imageName, String newImageName) {
+    public void renameImage(String username, String galleryName, String imageName, String newImageName) {
+        Long userId = userRepository.findByUsername(username).getId();
+
         Image image = getImage(userId, galleryName, imageName)
                 .orElseThrow(() -> new ImageNotFoundException("No image found."));
 
@@ -124,7 +133,7 @@ public class ImageService {
 
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("/")
-                .append(userId).append("/")
+                .append(username).append("/")
                 .append(galleryName).append("/")
                 .append(newImageName);
 
