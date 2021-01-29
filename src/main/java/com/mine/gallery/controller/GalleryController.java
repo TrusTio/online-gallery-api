@@ -1,7 +1,5 @@
 package com.mine.gallery.controller;
 
-import com.mine.gallery.persistence.repository.RoleRepository;
-import com.mine.gallery.persistence.repository.UserRepository;
 import com.mine.gallery.security.IdUsernamePasswordAuthenticationToken;
 import com.mine.gallery.service.GalleryService;
 import com.mine.gallery.service.dto.GalleryDTO;
@@ -64,19 +62,19 @@ public class GalleryController {
      * Users with role USER can only delete galleries for their own accounts.
      * Users with role ADMIN can delete galleries in any account.
      *
-     * @param id             Long id of the gallery owner
+     * @param userId             Long id of the gallery owner
      * @param galleryName    String gallery name to be deleted
      * @param authentication IdUsernamePasswordAuthenticationToken
      * @return ResponseEntity<String>
      */
-    @PreAuthorize("#id == #authentication.id || hasRole('ROLE_ADMIN')")
-    @DeleteMapping("/{id}/{galleryName}")
-    public ResponseEntity<String> delete(@PathVariable("id") Long id,
+    @PreAuthorize("#userId == #authentication.id || hasRole('ROLE_ADMIN')")
+    @DeleteMapping("/{userId}/{galleryName}")
+    public ResponseEntity<String> delete(@PathVariable("userId") Long userId,
                                          @PathVariable("galleryName") String galleryName,
                                          @CurrentSecurityContext(expression = "authentication")
                                                  IdUsernamePasswordAuthenticationToken authentication) {
 
-        galleryService.delete(id, galleryName);
+        galleryService.delete(userId, galleryName);
 
         return new ResponseEntity<>("Gallery deleted successfully", HttpStatus.ACCEPTED);
     }
@@ -86,21 +84,21 @@ public class GalleryController {
      * Users with role USER can only rename galleries for their own accounts.
      * Users with role ADMIN can rename galleries in any account.
      *
-     * @param id             Long id of the gallery owner
+     * @param userId             Long id of the gallery owner
      * @param galleryName    String gallery name to be renamed
      * @param newGalleryName String new gallery name
      * @param authentication IdUsernamePasswordAuthenticationToken
      * @return ResponseEntity<String>
      */
-    @PreAuthorize("#id == #authentication.id || hasRole('ROLE_ADMIN')")
-    @PutMapping("/{id}/{galleryName}")
-    public ResponseEntity<String> rename(@PathVariable("id") Long id,
+    @PreAuthorize("#userId == #authentication.id || hasRole('ROLE_ADMIN')")
+    @PutMapping("/{userId}/{galleryName}")
+    public ResponseEntity<String> rename(@PathVariable("userId") Long userId,
                                          @PathVariable("galleryName") String galleryName,
                                          @RequestParam String newGalleryName,
                                          @CurrentSecurityContext(expression = "authentication")
                                                  IdUsernamePasswordAuthenticationToken authentication) {
 
-        galleryService.rename(id, galleryName, newGalleryName);
+        galleryService.rename(userId, galleryName, newGalleryName);
 
         return new ResponseEntity<>("Gallery updated successfully", HttpStatus.ACCEPTED);
     }

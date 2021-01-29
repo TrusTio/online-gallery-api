@@ -40,12 +40,10 @@ public class ImageService {
      *
      * @param image       MultipartFile file to be saved
      * @param galleryName String name of the gallery
-     * @param username       String username of the user
+     * @param userId      Long user id of the user
      * @return
-     * @throws Exception
      */
-    public Long save(MultipartFile image, String galleryName, String username) {
-        Long userId = userRepository.findByUsername(username).getId();
+    public Long save(MultipartFile image, String galleryName, Long userId) {
         Gallery gallery = galleryRepository.findByNameAndUserId(galleryName, userId).get();
 
         if (getImage(userId, galleryName, image.getOriginalFilename()).isPresent()) {
@@ -56,7 +54,7 @@ public class ImageService {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder
                 .append("/")
-                .append(username).append("/")
+                .append(userId).append("/")
                 .append(galleryName).append("/")
                 .append(imageName);
 
@@ -83,14 +81,12 @@ public class ImageService {
      * <p>
      * Throws {@link ImageValidationException ImageValidationException} if it's not found.
      *
-     * @param username       String username of the user
+     * @param userId      Long id of the user
      * @param galleryName String name of the gallery
      * @param imageName   String name of the image
      * @return FileSystemResource
      */
-    public FileSystemResource find(String username, String galleryName, String imageName) {
-        Long userId = userRepository.findByUsername(username).getId();
-
+    public FileSystemResource find(Long userId, String galleryName, String imageName) {
         Image image = getImage(userId, galleryName, imageName)
                 .orElseThrow(() -> new ImageNotFoundException("No image found."));
 
@@ -100,13 +96,11 @@ public class ImageService {
     /**
      * Deletes an image.
      *
-     * @param username       String username of the user
+     * @param userId      Long id of the user
      * @param galleryName String name of the gallery
      * @param imageName   String name of the image
      */
-    public void deleteImage(String username, String galleryName, String imageName) {
-        Long userId = userRepository.findByUsername(username).getId();
-
+    public void deleteImage(Long userId, String galleryName, String imageName) {
         Image image = getImage(userId, galleryName, imageName)
                 .orElseThrow(() -> new ImageNotFoundException("No image found."));
 
@@ -117,13 +111,12 @@ public class ImageService {
     /**
      * Renames the image.
      *
-     * @param username       String username of the user
+     * @param userId       Long id of the user
      * @param galleryName  String name of the gallery
      * @param imageName    String name of the image
      * @param newImageName String new name for the image
      */
-    public void renameImage(String username, String galleryName, String imageName, String newImageName) {
-        Long userId = userRepository.findByUsername(username).getId();
+    public void renameImage(Long userId, String galleryName, String imageName, String newImageName) {
 
         Image image = getImage(userId, galleryName, imageName)
                 .orElseThrow(() -> new ImageNotFoundException("No image found."));
@@ -133,7 +126,7 @@ public class ImageService {
 
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("/")
-                .append(username).append("/")
+                .append(userId).append("/")
                 .append(galleryName).append("/")
                 .append(newImageName);
 
