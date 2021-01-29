@@ -2,12 +2,14 @@ package com.mine.gallery.controller;
 
 import com.mine.gallery.persistence.repository.RoleRepository;
 import com.mine.gallery.persistence.repository.UserRepository;
+import com.mine.gallery.security.IdUsernamePasswordAuthenticationToken;
 import com.mine.gallery.service.GalleryService;
 import com.mine.gallery.service.dto.GalleryDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.CurrentSecurityContext;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -20,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.security.Principal;
 import java.util.logging.Logger;
 
 /**
@@ -34,10 +35,6 @@ import java.util.logging.Logger;
 public class GalleryController {
     @Autowired
     private GalleryService galleryService;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private RoleRepository roleRepository;
 
     /**
      * A POST method that accepts {@link GalleryDTO GalleryDTO} body with it's parameters to create a new gallery in the database
@@ -45,14 +42,16 @@ public class GalleryController {
      * Users with role USER can only create galleries for their own accounts.
      * Users with role ADMIN can create galleries in any account.
      *
-     * @param galleryDTO GalleryDTO object/body used to create new gallery
+     * @param galleryDTO     GalleryDTO object/body used to create new gallery
+     * @param authentication IdUsernamePasswordAuthenticationToken hold information for the user
      * @return String confirming the creation
      */
-    @PreAuthorize("@securityService.hasAccess(#galleryDTO.userId, #principal.name) || hasRole('ROLE_ADMIN')")
+    @PreAuthorize("#galleryDTO.userId == #authentication.id  || hasRole('ROLE_ADMIN')")
     @PostMapping("/create")
     public ResponseEntity<String> create(@Valid @RequestBody GalleryDTO galleryDTO,
                                          Errors errors,
-                                         Principal principal) {
+                                         @CurrentSecurityContext(expression = "authentication")
+                                                 IdUsernamePasswordAuthenticationToken authentication) {
 
         galleryService.create(galleryDTO, errors);
         Logger.getLogger(UserController.class.getName()).info("Created new gallery!");
@@ -65,18 +64,19 @@ public class GalleryController {
      * Users with role USER can only delete galleries for their own accounts.
      * Users with role ADMIN can delete galleries in any account.
      *
-     * @param username    String username of the gallery owner
-     * @param galleryName String gallery name to be deleted
-     * @param principal   Principal
-     * @return
+     * @param id             Long id of the gallery owner
+     * @param galleryName    String gallery name to be deleted
+     * @param authentication IdUsernamePasswordAuthenticationToken
+     * @return ResponseEntity<String>
      */
-    @PreAuthorize("#username == #principal.name || hasRole('ROLE_ADMIN')")
-    @DeleteMapping("/{username}/{galleryName}")
-    public ResponseEntity<String> delete(@PathVariable("username") String username,
+    @PreAuthorize("#id == #authentication.id || hasRole('ROLE_ADMIN')")
+    @DeleteMapping("/{id}/{galleryName}")
+    public ResponseEntity<String> delete(@PathVariable("id") Long id,
                                          @PathVariable("galleryName") String galleryName,
-                                         Principal principal) {
+                                         @CurrentSecurityContext(expression = "authentication")
+                                                 IdUsernamePasswordAuthenticationToken authentication) {
 
-        galleryService.delete(username, galleryName);
+        galleryService.delete(id, galleryName);
 
         return new ResponseEntity<>("Gallery deleted successfully", HttpStatus.ACCEPTED);
     }
@@ -86,20 +86,21 @@ public class GalleryController {
      * Users with role USER can only rename galleries for their own accounts.
      * Users with role ADMIN can rename galleries in any account.
      *
-     * @param username       String username of the gallery owner
+     * @param id             Long id of the gallery owner
      * @param galleryName    String gallery name to be renamed
      * @param newGalleryName String new gallery name
-     * @param principal      Principal
+     * @param authentication IdUsernamePasswordAuthenticationToken
      * @return ResponseEntity<String>
      */
-    @PreAuthorize("#username == #principal.name || hasRole('ROLE_ADMIN')")
-    @PutMapping("/{username}/{galleryName}")
-    public ResponseEntity<String> rename(@PathVariable("username") String username,
+    @PreAuthorize("#id == #authentication.id || hasRole('ROLE_ADMIN')")
+    @PutMapping("/{id}/{galleryName}")
+    public ResponseEntity<String> rename(@PathVariable("id") Long id,
                                          @PathVariable("galleryName") String galleryName,
                                          @RequestParam String newGalleryName,
-                                         Principal principal) {
+                                         @CurrentSecurityContext(expression = "authentication")
+                                                 IdUsernamePasswordAuthenticationToken authentication) {
 
-        galleryService.rename(username, galleryName, newGalleryName);
+        galleryService.rename(id, galleryName, newGalleryName);
 
         return new ResponseEntity<>("Gallery updated successfully", HttpStatus.ACCEPTED);
     }

@@ -66,12 +66,12 @@ public class GalleryService {
     /**
      * Deletes a gallery and it's contents.
      *
-     * @param username    String username used to find the gallery
+     * @param id          Long id used to find the gallery
      * @param galleryName String name of the gallery to be deleted
      */
-    public void delete(String username, String galleryName) {
-        Gallery gallery = galleryRepository.findByNameAndUserId(galleryName, userRepository.findByUsername(username).getId()).get();
-        imageStorageRepository.deleteGallery(userRepository.findByUsername(username).getId(), galleryName);
+    public void delete(Long id, String galleryName) {
+        Gallery gallery = galleryRepository.findByNameAndUserId(galleryName, id).get();
+        imageStorageRepository.deleteGallery(id, galleryName);
         galleryRepository.delete(gallery);
     }
 
@@ -81,23 +81,23 @@ public class GalleryService {
      * Then updates the gallery name in the database, after that changes the location of the
      * images in the database to their new location.
      *
-     * @param username
-     * @param galleryName
-     * @param newGalleryName
+     * @param id             Long id of the user
+     * @param galleryName    String name of the gallery
+     * @param newGalleryName String new gallery name
      */
-    public void rename(String username, String galleryName, String newGalleryName) {
-        Gallery gallery = galleryRepository.findByNameAndUserId(galleryName, userRepository.findByUsername(username).getId())
+    public void rename(Long id, String galleryName, String newGalleryName) {
+        Gallery gallery = galleryRepository.findByNameAndUserId(galleryName, id)
                 .orElseThrow(() -> new GalleryNotFoundException(
                         String.format("Gallery with name '%s' was not found.", galleryName)));
 
         imageStorageRepository.renameGallery(
-                userRepository.findByUsername(username).getId(),
+                id,
                 galleryName,
                 newGalleryName);
 
         StringBuilder updatedImageLocation = new StringBuilder();
         updatedImageLocation.append("/")
-                .append(userRepository.findByUsername(username).getId()).append("/")
+                .append(id).append("/")
                 .append(newGalleryName).append("/");
 
         gallery.setName(newGalleryName);
