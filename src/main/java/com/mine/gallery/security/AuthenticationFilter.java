@@ -8,7 +8,6 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.servlet.FilterChain;
@@ -43,7 +42,8 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
      * {@inheritDoc}
      */
     @Override
-    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
+        Logger.getLogger(AuthenticationFilter.class.getName()).info("Attempting authentication!");
         try {
             UserDTO creds = new ObjectMapper()
                     .readValue(request.getInputStream(), UserDTO.class);
@@ -73,7 +73,8 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
                                             Authentication authentication) throws IOException, ServletException {
 
         if (authentication.getPrincipal() != null) {
-            org.springframework.security.core.userdetails.User user = (org.springframework.security.core.userdetails.User) authentication.getPrincipal();
+            CurrentUser user = (CurrentUser) authentication.getPrincipal();
+
             String login = user.getUsername();
 
             if (login != null && login.length() > 0) {
@@ -84,6 +85,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
                         authority -> roles.add(authority.getAuthority())
                 );
                 claims.put("roles", roles);
+                claims.put("id", user.getId());
 
                 String token = Jwts.builder()
                         .setClaims(claims)

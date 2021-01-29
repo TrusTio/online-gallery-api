@@ -3,7 +3,6 @@ package com.mine.gallery.security;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -44,7 +43,7 @@ public class AuthorizationFilter extends BasicAuthenticationFilter {
             return;
         }
         Logger.getLogger(AuthorizationFilter.class.getName()).info("Getting authentication!");
-        UsernamePasswordAuthenticationToken authenticationToken = getAuthentication(request);
+        IdUsernamePasswordAuthenticationToken authenticationToken = getAuthentication(request);
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         filterChain.doFilter(request, response);
     }
@@ -57,7 +56,7 @@ public class AuthorizationFilter extends BasicAuthenticationFilter {
      * @return returns new UsernamePasswordAuthenticationToken with user and list of authorities(roles)
      * or null if the token has expired/is empty
      */
-    private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) {
+    private IdUsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) {
         String token = request.getHeader("Authorization");
 
         if (token != null) {
@@ -71,8 +70,9 @@ public class AuthorizationFilter extends BasicAuthenticationFilter {
             }
 
             String user = claims.getSubject();
+            Long id = claims.get("id", Long.class);
 
-            ArrayList<String> roles = (ArrayList<String>) claims.get("roles");
+            ArrayList<String> roles =  claims.get("roles",ArrayList.class);
             ArrayList<GrantedAuthority> list = new ArrayList<>();
             if (roles != null) {
                 for (String a : roles) {
@@ -82,7 +82,7 @@ public class AuthorizationFilter extends BasicAuthenticationFilter {
             }
 
             if (user != null) {
-                return new UsernamePasswordAuthenticationToken(user, null, list);
+                return new IdUsernamePasswordAuthenticationToken(id, user, id, list);
             }
             return null;
         }

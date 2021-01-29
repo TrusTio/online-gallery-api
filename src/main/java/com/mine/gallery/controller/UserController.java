@@ -4,6 +4,7 @@ import com.mine.gallery.persistence.entity.Gallery;
 import com.mine.gallery.persistence.entity.User;
 import com.mine.gallery.persistence.repository.GalleryRepository;
 import com.mine.gallery.persistence.repository.UserRepository;
+import com.mine.gallery.security.IdUsernamePasswordAuthenticationToken;
 import com.mine.gallery.service.UserService;
 import com.mine.gallery.service.dto.ImageDTO;
 import com.mine.gallery.service.dto.UserDTO;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.CurrentSecurityContext;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,7 +24,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.security.Principal;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -68,7 +69,7 @@ public class UserController {
      */
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping(path = "/all/users")
-    public Iterable<User> getAllUsers(Principal principal) {
+    public Iterable<User> getAllUsers() {
         Logger.getLogger(UserController.class.getName()).info("Fetched all users!");
         return userRepository.findAll();
     }
@@ -78,30 +79,35 @@ public class UserController {
      * Users with role USER can access only their own user information.
      * Users with role ADMIN can access information about all users.
      *
-     * @param username the username of the user to be fetched
+     * @param id             Long id of the user to be fetched
+     * @param authentication IdUsernamePasswordAuthenticationToken holds information for the currently logged in user.
      * @return the found {@link User User} if such exists
      */
-    @PreAuthorize("#username == #principal.name || hasRole('ROLE_ADMIN')")
-    @GetMapping(path = "/{username}")
-    public User getUserByUsername(@PathVariable("username") String username, Principal principal) {
-        return userRepository.findByUsername(username);
+    @PreAuthorize("#id == #authentication.id || hasRole('ROLE_ADMIN')")
+    @GetMapping(path = "/{id}")
+    public User getUserByUsername(@PathVariable("id") Long id,
+                                  @CurrentSecurityContext(expression = "authentication")
+                                          IdUsernamePasswordAuthenticationToken authentication) {
+        return userRepository.findById(id).get();
     }
 
     /**
-     * A GET method that returns a list of the gallery names a specific user has, using his username
+     * A GET method that returns a list of the gallery names a specific user has, using his id
      * Users with role USER can access only their own user galleries.
      * Users with role ADMIN can access the galleries of everyone.
      *
-     * @param username  String username of the user
-     * @param principal Principal
+     * @param id             Long id of the user to be fetched
+     * @param authentication IdUsernamePasswordAuthenticationToken holds information for the currently logged in user.
      * @return List<String> of the galleries
      */
-    @PreAuthorize("#username == #principal.name || hasRole('ROLE_ADMIN')")
-    @GetMapping(path = "/{username}/galleries")
-    public List<String> getUserGalleries(@PathVariable("username") String username, Principal principal) {
+    @PreAuthorize("#id == #authentication.id || hasRole('ROLE_ADMIN')")
+    @GetMapping(path = "/{id}/galleries")
+    public List<String> getUserGalleries(@PathVariable("id") Long id,
+                                         @CurrentSecurityContext(expression = "authentication")
+                                                 IdUsernamePasswordAuthenticationToken authentication) {
         Logger.getLogger(UserController.class.getName()).info("Fetching user galleries!");
 
-        return userRepository.findByUsername(username).getGalleries()
+        return userRepository.findById(id).get().getGalleries()
                 .stream().map(Gallery::getName)
                 .collect(Collectors.toList());
     }
@@ -111,18 +117,19 @@ public class UserController {
      * Users with role USER can access only their own user images.
      * Users with role ADMIN can access the images of everyone.
      *
-     * @param username    String username of the user
-     * @param galleryName String gallery name
-     * @param principal   Principal
+     * @param id             Long id of the user to be fetched
+     * @param galleryName    String gallery name
+     * @param authentication IdUsernamePasswordAuthenticationToken holds information for the currently logged in user.
      * @return List<ImageDTO>
      */
-    @PreAuthorize("#username == #principal.name || hasRole('ROLE_ADMIN')")
-    @GetMapping(path = "/{username}/gallery/{galleryName}")
-    public List<ImageDTO> getUserGalleryImages(@PathVariable("username") String username,
+    @PreAuthorize("#id == #authentication.id || hasRole('ROLE_ADMIN')")
+    @GetMapping(path = "/{id}/gallery/{galleryName}")
+    public List<ImageDTO> getUserGalleryImages(@PathVariable("id") Long id,
                                                @PathVariable("galleryName") String galleryName,
-                                               Principal principal) {
+                                               @CurrentSecurityContext(expression = "authentication")
+                                                       IdUsernamePasswordAuthenticationToken authentication) {
 
-        return galleryRepository.findByNameAndUserId(galleryName, userRepository.findByUsername(username).getId()).get()
+        return galleryRepository.findByNameAndUserId(galleryName, id).get()
                 .getImages()
                 .stream().map(ImageMapper::toImageDTO)
                 .collect(Collectors.toList());
