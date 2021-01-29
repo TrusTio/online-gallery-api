@@ -62,7 +62,7 @@ public class GalleryController {
      * Users with role USER can only delete galleries for their own accounts.
      * Users with role ADMIN can delete galleries in any account.
      *
-     * @param userId             Long id of the gallery owner
+     * @param userId         Long id of the gallery owner
      * @param galleryName    String gallery name to be deleted
      * @param authentication IdUsernamePasswordAuthenticationToken
      * @return ResponseEntity<String>
@@ -84,7 +84,7 @@ public class GalleryController {
      * Users with role USER can only rename galleries for their own accounts.
      * Users with role ADMIN can rename galleries in any account.
      *
-     * @param userId             Long id of the gallery owner
+     * @param userId         Long id of the gallery owner
      * @param galleryName    String gallery name to be renamed
      * @param newGalleryName String new gallery name
      * @param authentication IdUsernamePasswordAuthenticationToken

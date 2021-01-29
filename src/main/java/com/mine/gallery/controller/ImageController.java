@@ -60,7 +60,7 @@ public class ImageController {
      * Users with role USER can access only their own images.
      * Users with role ADMIN can access all images.
      *
-     * @param userId             Long id of the user of the image
+     * @param userId         Long id of the user of the image
      * @param galleryName    String name of the gallery
      * @param imageName      String name of the image
      * @param authentication IdUsernamePasswordAuthenticationToken holds information for the current user
@@ -82,7 +82,7 @@ public class ImageController {
      * Users with role USER can delete only their own images.
      * Users with role ADMIN can delete any images.
      *
-     * @param userId             Long id of the user of the image
+     * @param userId         Long id of the user of the image
      * @param galleryName    String name of the gallery
      * @param imageName      String name of the image
      * @param authentication IdUsernamePasswordAuthenticationToken holds information for the current user
@@ -106,10 +106,10 @@ public class ImageController {
      * Users with role USER can rename only their own images.
      * Users with role ADMIN can rename any images.
      *
-     * @param userId             Long id of the user of the image
-     * @param galleryName  String name of the gallery
-     * @param imageName    String name of the image
-     * @param newImageName String new name for the image
+     * @param userId         Long id of the user of the image
+     * @param galleryName    String name of the gallery
+     * @param imageName      String name of the image
+     * @param newImageName   String new name for the image
      * @param authentication IdUsernamePasswordAuthenticationToken holds information for the current user
      * @return ResponseEntity<String>
      */
