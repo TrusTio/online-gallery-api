@@ -43,7 +43,7 @@ public class ImageController {
      * @param authentication IdUsernamePasswordAuthenticationToken holds information for the current user
      * @return ResponseEntity<String>
      */
-    @PostMapping("/upload")
+    @PostMapping(value = "/upload", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<String> uploadImage(@RequestParam("imageFile") MultipartFile image,
                                               @RequestParam("galleryName") String galleryName,
                                               @CurrentSecurityContext(expression = "authentication")
