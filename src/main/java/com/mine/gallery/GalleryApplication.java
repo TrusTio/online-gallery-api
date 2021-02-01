@@ -19,7 +19,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
  */
 @SpringBootApplication
 public class GalleryApplication {
-
     public static void main(String[] args) {
         SpringApplication.run(GalleryApplication.class, args);
     }
