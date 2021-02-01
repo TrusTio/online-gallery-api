@@ -1,13 +1,13 @@
-buildscript{
-	ext{
-		openApiUiVersion = '1.5.3'
-	}
+buildscript {
+    ext {
+        openApiUiVersion = '1.5.3'
+    }
 }
 
 plugins {
-	id 'org.springframework.boot' version '2.4.0'
-	id 'io.spring.dependency-management' version '1.0.10.RELEASE'
-	id 'java'
+    id 'org.springframework.boot' version '2.4.0'
+    id 'io.spring.dependency-management' version '1.0.10.RELEASE'
+    id 'java'
 }
 
 group = 'com.mine'
@@ -15,39 +15,42 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '1.8'
 
 configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	compile 'org.projectlombok:lombok'
-	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-	runtimeOnly 'mysql:mysql-connector-java'
-	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	compile group: 'org.springframework.security', name: 'spring-security-core', version: '5.4.1'
-	implementation "org.springdoc:springdoc-openapi-ui:${openApiUiVersion}"
-	compile group: 'org.springdoc', name: 'springdoc-openapi-security', version: '1.5.3'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
 
-	compile group: 'commons-io', name: 'commons-io', version: '2.8.0'
-	compile group: 'org.hibernate', name: 'hibernate-validator', version: '6.1.6.Final'
-	compile group: 'org.springframework.security', name: 'spring-security-web', version: '5.4.1'
-	compile group: 'org.springframework.security', name: 'spring-security-config', version: '5.4.1'
-	compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1'
-	compile group: 'org.passay', name: 'passay', version: '1.0'
+    implementation "org.springframework.security:spring-security-core:5.4.1"
+    implementation "org.springframework.security:spring-security-web:5.4.1"
+    implementation "org.springframework.security:spring-security-config:5.4.1"
 
+    implementation "org.springdoc:springdoc-openapi-ui:${openApiUiVersion}"
+    implementation "org.springdoc:springdoc-openapi-security:1.5.3"
 
+    implementation "org.projectlombok:lombok"
+    implementation "commons-io:commons-io:2.8.0"
+    implementation "org.hibernate:hibernate-validator:6.1.6.Final"
+    implementation "io.jsonwebtoken:jjwt:0.9.1"
+    implementation "org.passay:passay:1.0"
 
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    runtimeOnly 'mysql:mysql-connector-java'
+
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
 }
 
 test {
-	useJUnitPlatform()
+    useJUnitPlatform()
 }
