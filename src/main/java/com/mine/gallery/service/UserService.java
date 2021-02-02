@@ -69,6 +69,33 @@ public class UserService {
                 .setRoles(Collections.singleton(role));
 
         return UserMapper.toUserDto(userRepository.save(user));
+    }
 
+    /**
+     * Adds ADMIN role to the user.
+     *
+     * @param userId Long id of the user
+     */
+    public void setAdmin(Long userId) {
+        Role role = roleRepository.findByName(RoleName.ROLE_ADMIN).get();
+        User user = userRepository.findById(userId).get();
+
+        user.addRole(role);
+
+        userRepository.save(user);
+    }
+
+    /**
+     * Removes the ADMIN role from the user
+     *
+     * @param userId Long id of the user
+     */
+    public void removeAdmin(Long userId) {
+        Role role = roleRepository.findByName(RoleName.ROLE_ADMIN).get();
+        User user = userRepository.findById(userId).get();
+
+        user.removeRole(role);
+
+        userRepository.save(user);
     }
 }

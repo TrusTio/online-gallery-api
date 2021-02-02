@@ -57,4 +57,12 @@ public class User implements Serializable {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Gallery> galleries;
 
+    public void addRole(Role role) {
+        roles.add(role);
+    }
+
+    //@SQLUpdate(sql = "DELETE FROM user_roles WHERE user_id=4  ")
+    public void removeRole(Role role) {
+        roles.remove(role);
+    }
 }

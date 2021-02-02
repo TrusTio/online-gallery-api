@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -72,6 +73,36 @@ public class UserController {
     public Iterable<User> getAllUsers() {
         Logger.getLogger(UserController.class.getName()).info("Fetched all users!");
         return userRepository.findAll();
+    }
+
+    /**
+     * A PUT method that gives the user an ADMIN role to an user.
+     * Only users with role ADMIN can access this endpoint.
+     *
+     * @param id Long id of the user
+     * @return ResponseEntity<String>
+     */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PutMapping("/{id}/admin")
+    public ResponseEntity<String> setAdmin(@PathVariable("id") Long id) {
+        userService.setAdmin(id);
+
+        return new ResponseEntity<>("User updated to admin successfully", HttpStatus.ACCEPTED);
+    }
+
+    /**
+     * A PUT method that removes ADMIN role from the user.
+     * Only users with role ADMIN can access this endpoint.
+     *
+     * @param id Long id of the user
+     * @return ResponseEntity<String>
+     */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PutMapping("/{id}/noadmin")
+    public ResponseEntity<String> removeAdmin(@PathVariable("id") Long id) {
+        userService.removeAdmin(id);
+
+        return new ResponseEntity<>("User updated to normal user successfully", HttpStatus.ACCEPTED);
     }
 
     /**
