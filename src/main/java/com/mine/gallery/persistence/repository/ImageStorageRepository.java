@@ -27,7 +27,7 @@ public class ImageStorageRepository {
      * @param content byte[] content of the file to be saved
      * @return String with absolute path to the uploaded file
      */
-    public String save(byte[] content, String location) {
+    public String saveImage(byte[] content, String location) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder
                 .append(getStoragePath()).append("/")
@@ -44,6 +44,32 @@ public class ImageStorageRepository {
         }
 
         return newFile.toAbsolutePath()
+                .toString();
+    }
+
+    /**
+     * Creates a gallery folder on the local directory using location
+     *
+     * @param userId      Long user Id of the owner of the folder
+     * @param galleryName String name of the folder
+     * @return String with absolute path to the created folder
+     */
+    public String saveGallery(Long userId, String galleryName) {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder
+                .append(getStoragePath()).append("/")
+                .append(userId).append("/")
+                .append(galleryName);
+        String galleryLocation = stringBuilder.toString();
+
+        Path newFolder = Paths.get(galleryLocation);
+        try {
+            Files.createDirectories(newFolder);
+        } catch (Exception e) {
+            throw new RuntimeException(e.getClass().toString());
+        }
+
+        return newFolder.toAbsolutePath()
                 .toString();
     }
 

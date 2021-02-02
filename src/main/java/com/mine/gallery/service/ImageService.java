@@ -63,7 +63,7 @@ public class ImageService {
         isValidImage(image);
 
         try {
-            imageStorageRepository.save(image.getBytes(), imageLocation);
+            imageStorageRepository.saveImage(image.getBytes(), imageLocation);
         } catch (IOException e) {
             Logger.getLogger(ImageService.class.getName()).warning(e.getMessage());
         }

@@ -39,7 +39,7 @@ public class GalleryService {
     private ImageRepository imageRepository;
 
     /**
-     * Checks if the gallery name is valid. Then creates a new {@link Gallery Gallery}
+     * Checks if the gallery name is valid. Then creates a folder for it and a new {@link Gallery Gallery}
      * and assigns the values of the DTO to it, then adds it to the database
      * using {@link com.mine.gallery.persistence.repository.GalleryRepository GalleryRepository}
      *
@@ -59,6 +59,8 @@ public class GalleryService {
         Gallery gallery = new Gallery()
                 .setName(galleryDTO.getName())
                 .setUser(userRepository.findById(galleryDTO.getUserId()).get());
+
+        imageStorageRepository.saveGallery(gallery.getUser().getId(), gallery.getName());
 
         return GalleryMapper.toGalleryDTO(galleryRepository.save(gallery));
     }
