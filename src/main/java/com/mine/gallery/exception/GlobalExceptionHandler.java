@@ -10,6 +10,8 @@ import com.mine.gallery.exception.user.LoginException;
 import com.mine.gallery.exception.user.SignUpValidationException;
 import com.mine.gallery.exception.user.UserNotFoundException;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +33,7 @@ import java.util.Map;
  * @author TrusTio
  */
 @ControllerAdvice
-public class ControllerAdvisor extends ResponseEntityExceptionHandler {
+public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     /**
      * Handles CreateGalleryValidationException
@@ -203,6 +205,22 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<Object> handleAccessDenied(
             AccessDeniedException e, WebRequest request) {
+
+        ApiError apiError = new ApiError(HttpStatus.UNAUTHORIZED, e.getMessage());
+
+        return buildResponseEntity(apiError);
+    }
+
+    /**
+     * Handles MalformedJwtException and SignatureException
+     *
+     * @param e       MalformedJwtException
+     * @param request WebRequest
+     * @return ResponseEntity<Object>
+     */
+    @ExceptionHandler({MalformedJwtException.class, SignatureException.class})
+    public ResponseEntity<Object> handleMalformedJwt(
+            Exception e, WebRequest request) {
 
         ApiError apiError = new ApiError(HttpStatus.UNAUTHORIZED, e.getMessage());
 

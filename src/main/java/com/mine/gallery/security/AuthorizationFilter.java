@@ -2,6 +2,7 @@ package com.mine.gallery.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import org.springframework.security.access.AuthorizationServiceException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -40,7 +41,7 @@ public class AuthorizationFilter extends BasicAuthenticationFilter {
         String header = request.getHeader("Authorization");
         if (header == null || !header.startsWith("Bearer")) {
             filterChain.doFilter(request, response);
-            return;
+            throw new AuthorizationServiceException("Missing Authorization header or 'Bearer' prefix.");
         }
         Logger.getLogger(AuthorizationFilter.class.getName()).info("Getting authentication!");
         IdUsernamePasswordAuthenticationToken authenticationToken = getAuthentication(request);
@@ -72,7 +73,7 @@ public class AuthorizationFilter extends BasicAuthenticationFilter {
             String user = claims.getSubject();
             Long id = claims.get("id", Long.class);
 
-            ArrayList<String> roles =  claims.get("roles",ArrayList.class);
+            ArrayList<String> roles = claims.get("roles", ArrayList.class);
             ArrayList<GrantedAuthority> list = new ArrayList<>();
             if (roles != null) {
                 for (String a : roles) {
