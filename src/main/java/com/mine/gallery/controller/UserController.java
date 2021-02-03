@@ -118,8 +118,8 @@ public class UserController {
      */
     @PreAuthorize("#id == #authentication.id || hasRole('ROLE_ADMIN')")
     @GetMapping(path = "/{id}")
-    public User getUserByUsername(@PathVariable("id") Long id,
-                                  @CurrentSecurityContext(expression = "authentication")
+    public User getUserById(@PathVariable("id") Long id,
+                            @CurrentSecurityContext(expression = "authentication")
                                           IdUsernamePasswordAuthenticationToken authentication) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id));
