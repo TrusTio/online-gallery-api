@@ -1,11 +1,13 @@
 package com.mine.gallery.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mine.gallery.exception.user.LoginException;
 import com.mine.gallery.service.dto.UserDTO;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -57,6 +59,10 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
             );
         } catch (IOException e) {
             throw new RuntimeException("Could not read request" + e);
+        } catch (BadCredentialsException e) {
+            Logger.getLogger(AuthenticationFilter.class.getName()).info("Authentication failed!");
+            throw new LoginException("Incorrect username or password!") {
+            };
         }
     }
 

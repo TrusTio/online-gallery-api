@@ -5,7 +5,9 @@ import com.mine.gallery.exception.gallery.GalleryValidationException;
 import com.mine.gallery.exception.generic.UnauthorizedAccessException;
 import com.mine.gallery.exception.image.ImageNotFoundException;
 import com.mine.gallery.exception.image.ImageValidationException;
+import com.mine.gallery.exception.user.LoginException;
 import com.mine.gallery.exception.user.SignUpValidationException;
+import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -71,6 +73,38 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
     @ExceptionHandler(SignUpValidationException.class)
     public ResponseEntity<Object> handleSignUpValidation(
             SignUpValidationException e, WebRequest request) {
+
+        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, e.getMessage());
+
+        return buildResponseEntity(apiError);
+    }
+
+    /**
+     * Handles LoginException
+     *
+     * @param e       LoginException
+     * @param request WebRequest
+     * @return ResponseEntity<Object>
+     */
+    @ExceptionHandler(LoginException.class)
+    public ResponseEntity<Object> handleBadCredentials(
+            LoginException e, WebRequest request) {
+
+        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, e.getMessage());
+
+        return buildResponseEntity(apiError);
+    }
+
+    /**
+     * Handles ExpiredJwtException
+     *
+     * @param e       ExpiredJwtException
+     * @param request WebRequest
+     * @return ResponseEntity<Object>
+     */
+    @ExceptionHandler(ExpiredJwtException.class)
+    public ResponseEntity<Object> handleExpiredJwt(
+            ExpiredJwtException e, WebRequest request) {
 
         ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, e.getMessage());
 
