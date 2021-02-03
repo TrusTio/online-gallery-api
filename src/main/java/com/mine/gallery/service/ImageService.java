@@ -1,5 +1,6 @@
 package com.mine.gallery.service;
 
+import com.mine.gallery.exception.gallery.GalleryNotFoundException;
 import com.mine.gallery.exception.image.ImageNotFoundException;
 import com.mine.gallery.exception.image.ImageValidationException;
 import com.mine.gallery.persistence.entity.Gallery;
@@ -44,7 +45,9 @@ public class ImageService {
      * @return
      */
     public Long save(MultipartFile image, String galleryName, Long userId) {
-        Gallery gallery = galleryRepository.findByNameAndUserId(galleryName, userId).get();
+        Gallery gallery = galleryRepository.findByNameAndUserId(galleryName, userId)
+                .orElseThrow(() -> new GalleryNotFoundException(galleryName));
+
 
         if (getImage(userId, galleryName, image.getOriginalFilename()).isPresent()) {
             throw new ImageValidationException("Image with that name already exists.");
@@ -88,7 +91,7 @@ public class ImageService {
      */
     public FileSystemResource find(Long userId, String galleryName, String imageName) {
         Image image = getImage(userId, galleryName, imageName)
-                .orElseThrow(() -> new ImageNotFoundException("No image found."));
+                .orElseThrow(() -> new ImageNotFoundException(imageName));
 
         return imageStorageRepository.findInFileSystem(image.getLocation());
     }
@@ -102,7 +105,7 @@ public class ImageService {
      */
     public void deleteImage(Long userId, String galleryName, String imageName) {
         Image image = getImage(userId, galleryName, imageName)
-                .orElseThrow(() -> new ImageNotFoundException("No image found."));
+                .orElseThrow(() -> new ImageNotFoundException(imageName));
 
         imageStorageRepository.deleteImage(image.getLocation());
         imageRepository.delete(image);
@@ -119,7 +122,7 @@ public class ImageService {
     public void renameImage(Long userId, String galleryName, String imageName, String newImageName) {
 
         Image image = getImage(userId, galleryName, imageName)
-                .orElseThrow(() -> new ImageNotFoundException("No image found."));
+                .orElseThrow(() -> new ImageNotFoundException(imageName));
 
         newImageName = imageStorageRepository.renameImage(image.getLocation(), newImageName);
         image.setName(newImageName);
@@ -170,6 +173,7 @@ public class ImageService {
     private Optional<Image> getImage(Long userId, String galleryName, String imageName) {
         return imageRepository.findByNameAndGalleryId(imageName,
                 galleryRepository.findByNameAndUserId(galleryName, userId)
-                        .get().getId());
+                        .orElseThrow(() -> new GalleryNotFoundException(galleryName))
+                        .getId());
     }
 }

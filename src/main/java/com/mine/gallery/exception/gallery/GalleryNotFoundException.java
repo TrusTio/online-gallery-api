@@ -6,7 +6,7 @@ package com.mine.gallery.exception.gallery;
  * @author TrusTio
  */
 public class GalleryNotFoundException extends RuntimeException {
-    public GalleryNotFoundException(String message) {
-        super(message);
+    public GalleryNotFoundException(String galleryName) {
+        super(String.format("Gallery with name '%s' was not found.", galleryName));
     }
 }

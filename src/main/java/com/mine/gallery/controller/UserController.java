@@ -1,5 +1,7 @@
 package com.mine.gallery.controller;
 
+import com.mine.gallery.exception.gallery.GalleryNotFoundException;
+import com.mine.gallery.exception.user.UserNotFoundException;
 import com.mine.gallery.persistence.entity.Gallery;
 import com.mine.gallery.persistence.entity.User;
 import com.mine.gallery.persistence.repository.GalleryRepository;
@@ -119,7 +121,8 @@ public class UserController {
     public User getUserByUsername(@PathVariable("id") Long id,
                                   @CurrentSecurityContext(expression = "authentication")
                                           IdUsernamePasswordAuthenticationToken authentication) {
-        return userRepository.findById(id).get();
+        return userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException(id));
     }
 
     /**
@@ -138,7 +141,10 @@ public class UserController {
                                                  IdUsernamePasswordAuthenticationToken authentication) {
         Logger.getLogger(UserController.class.getName()).info("Fetching user galleries!");
 
-        return userRepository.findById(id).get().getGalleries()
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException(id));
+
+        return user.getGalleries()
                 .stream().map(Gallery::getName)
                 .collect(Collectors.toList());
     }
@@ -159,9 +165,10 @@ public class UserController {
                                                @PathVariable("galleryName") String galleryName,
                                                @CurrentSecurityContext(expression = "authentication")
                                                        IdUsernamePasswordAuthenticationToken authentication) {
+        Gallery gallery = galleryRepository.findByNameAndUserId(galleryName, id)
+                .orElseThrow(() -> new GalleryNotFoundException(galleryName));
 
-        return galleryRepository.findByNameAndUserId(galleryName, id).get()
-                .getImages()
+        return gallery.getImages()
                 .stream().map(ImageMapper::toImageDTO)
                 .collect(Collectors.toList());
     }

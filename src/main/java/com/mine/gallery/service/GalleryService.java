@@ -2,6 +2,7 @@ package com.mine.gallery.service;
 
 import com.mine.gallery.exception.gallery.GalleryNotFoundException;
 import com.mine.gallery.exception.gallery.GalleryValidationException;
+import com.mine.gallery.exception.user.UserNotFoundException;
 import com.mine.gallery.persistence.entity.Gallery;
 import com.mine.gallery.persistence.entity.Image;
 import com.mine.gallery.persistence.repository.GalleryRepository;
@@ -58,7 +59,8 @@ public class GalleryService {
 
         Gallery gallery = new Gallery()
                 .setName(galleryDTO.getName())
-                .setUser(userRepository.findById(galleryDTO.getUserId()).get());
+                .setUser(userRepository.findById(galleryDTO.getUserId())
+                        .orElseThrow(() -> new UserNotFoundException(galleryDTO.getUserId())));
 
         imageStorageRepository.saveGallery(gallery.getUser().getId(), gallery.getName());
 
@@ -72,7 +74,9 @@ public class GalleryService {
      * @param galleryName String name of the gallery to be deleted
      */
     public void delete(Long id, String galleryName) {
-        Gallery gallery = galleryRepository.findByNameAndUserId(galleryName, id).get();
+        Gallery gallery = galleryRepository.findByNameAndUserId(galleryName, id)
+                .orElseThrow(() -> new GalleryNotFoundException(galleryName));
+
         imageStorageRepository.deleteGallery(id, galleryName);
         galleryRepository.delete(gallery);
     }
@@ -88,9 +92,7 @@ public class GalleryService {
      * @param newGalleryName String new gallery name
      */
     public void rename(Long id, String galleryName, String newGalleryName) {
-        Gallery gallery = galleryRepository.findByNameAndUserId(galleryName, id)
-                .orElseThrow(() -> new GalleryNotFoundException(
-                        String.format("Gallery with name '%s' was not found.", galleryName)));
+        Gallery gallery = galleryRepository.findByNameAndUserId(galleryName, id).get();
 
         imageStorageRepository.renameGallery(
                 id,

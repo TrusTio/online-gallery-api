@@ -1,6 +1,8 @@
 package com.mine.gallery.service;
 
+import com.mine.gallery.exception.role.RoleNotFoundException;
 import com.mine.gallery.exception.user.SignUpValidationException;
+import com.mine.gallery.exception.user.UserNotFoundException;
 import com.mine.gallery.persistence.entity.Role;
 import com.mine.gallery.persistence.entity.RoleName;
 import com.mine.gallery.persistence.entity.User;
@@ -46,6 +48,7 @@ public class UserService {
      * @return The UserDTO object saved in the database as User
      */
     public UserDTO signUp(UserDTO userDTO, Errors errors) {
+
         if (userRepository.existsByUsername(userDTO.getUsername())) {
             throw new SignUpValidationException("Username taken!");
         }
@@ -60,7 +63,8 @@ public class UserService {
         }
 
         // set new accounts to normal users by default
-        Role role = roleRepository.findByName(RoleName.ROLE_USER).get();
+        Role role = roleRepository.findByName(RoleName.ROLE_ADMIN)
+                .orElseThrow(RoleNotFoundException::new);
 
         User user = new User()
                 .setUsername(userDTO.getUsername())
@@ -77,8 +81,10 @@ public class UserService {
      * @param userId Long id of the user
      */
     public void setAdmin(Long userId) {
-        Role role = roleRepository.findByName(RoleName.ROLE_ADMIN).get();
-        User user = userRepository.findById(userId).get();
+        Role role = roleRepository.findByName(RoleName.ROLE_ADMIN)
+                .orElseThrow(RoleNotFoundException::new);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(userId));
 
         user.addRole(role);
 
@@ -91,8 +97,10 @@ public class UserService {
      * @param userId Long id of the user
      */
     public void removeAdmin(Long userId) {
-        Role role = roleRepository.findByName(RoleName.ROLE_ADMIN).get();
-        User user = userRepository.findById(userId).get();
+        Role role = roleRepository.findByName(RoleName.ROLE_ADMIN)
+                .orElseThrow(RoleNotFoundException::new);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(userId));
 
         user.removeRole(role);
 

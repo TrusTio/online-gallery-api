@@ -6,7 +6,7 @@ package com.mine.gallery.exception.image;
  * @author TrusTio
  */
 public class ImageNotFoundException extends RuntimeException {
-    public ImageNotFoundException(String message) {
-        super(message);
+    public ImageNotFoundException(String imageName) {
+        super(String.format("Image with name '%s' was not found!", imageName));
     }
 }
