@@ -5,8 +5,10 @@ import com.mine.gallery.exception.gallery.GalleryValidationException;
 import com.mine.gallery.exception.generic.UnauthorizedAccessException;
 import com.mine.gallery.exception.image.ImageNotFoundException;
 import com.mine.gallery.exception.image.ImageValidationException;
+import com.mine.gallery.exception.role.RoleNotFoundException;
 import com.mine.gallery.exception.user.LoginException;
 import com.mine.gallery.exception.user.SignUpValidationException;
+import com.mine.gallery.exception.user.UserNotFoundException;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -90,7 +92,7 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
     public ResponseEntity<Object> handleBadCredentials(
             LoginException e, WebRequest request) {
 
-        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, e.getMessage());
+        ApiError apiError = new ApiError(HttpStatus.UNAUTHORIZED, e.getMessage());
 
         return buildResponseEntity(apiError);
     }
@@ -106,7 +108,7 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
     public ResponseEntity<Object> handleExpiredJwt(
             ExpiredJwtException e, WebRequest request) {
 
-        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, e.getMessage());
+        ApiError apiError = new ApiError(HttpStatus.UNAUTHORIZED, e.getMessage());
 
         return buildResponseEntity(apiError);
     }
@@ -121,6 +123,38 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
     @ExceptionHandler(ImageNotFoundException.class)
     public ResponseEntity<Object> handleImageNotFound(
             ImageNotFoundException e, WebRequest request) {
+
+        ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, e.getMessage());
+
+        return buildResponseEntity(apiError);
+    }
+
+    /**
+     * Handles UserNotFoundException
+     *
+     * @param e       UserNotFoundException
+     * @param request WebRequest
+     * @return ResponseEntity<Object>
+     */
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<Object> handleUserNotFound(
+            UserNotFoundException e, WebRequest request) {
+
+        ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, e.getMessage());
+
+        return buildResponseEntity(apiError);
+    }
+
+    /**
+     * Handles RoleNotFoundException
+     *
+     * @param e       RoleNotFoundException
+     * @param request WebRequest
+     * @return ResponseEntity<Object>
+     */
+    @ExceptionHandler(RoleNotFoundException.class)
+    public ResponseEntity<Object> handleRoleNotFound(
+            RoleNotFoundException e, WebRequest request) {
 
         ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, e.getMessage());
 
