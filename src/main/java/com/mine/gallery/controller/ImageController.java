@@ -43,17 +43,17 @@ public class ImageController {
      * to his own gallery.
      *
      * @param image          MultipartFile image to be uploaded
-     * @param galleryName    String name of the gallery
+     * @param galleryId      Long id of the gallery
      * @param authentication {@link IdUsernamePasswordAuthenticationToken} holds data for the current user
      * @return ResponseEntity<String>
      */
     @PostMapping(value = "/upload", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<String> uploadImage(@RequestParam("imageFile") MultipartFile image,
-                                              @RequestParam("galleryName") String galleryName,
+                                              @RequestParam("galleryId") Long galleryId,
                                               @CurrentSecurityContext(expression = "authentication")
                                                       IdUsernamePasswordAuthenticationToken authentication) {
         imageService.save(image,
-                galleryName,
+                galleryId,
                 authentication.getId());
 
         return new ResponseEntity<>("Image uploaded successfully", HttpStatus.CREATED);
@@ -65,20 +65,20 @@ public class ImageController {
      * Users with role ADMIN can access all images.
      *
      * @param userId         Long id of the user of the image
-     * @param galleryName    String name of the gallery
+     * @param galleryId      Long id of the gallery
      * @param imageName      String name of the image
      * @param authentication {@link IdUsernamePasswordAuthenticationToken} holds data for the current user
      * @return FileSystemResource
      */
     @PreAuthorize("#userId == #authentication.id || hasRole('ROLE_ADMIN')")
-    @GetMapping(value = "/{userId}/{galleryName}/{imageName}", produces = MediaType.IMAGE_JPEG_VALUE)
+    @GetMapping(value = "/{userId}/{galleryId}/{imageName}", produces = MediaType.IMAGE_JPEG_VALUE)
     public FileSystemResource retrieveImage(@PathVariable("userId") Long userId,
-                                            @PathVariable("galleryName") String galleryName,
+                                            @PathVariable("galleryId") Long galleryId,
                                             @PathVariable("imageName") String imageName,
                                             @CurrentSecurityContext(expression = "authentication")
                                                     IdUsernamePasswordAuthenticationToken authentication) {
 
-        return imageService.find(userId, galleryName, imageName);
+        return imageService.find(galleryId, imageName);
     }
 
     /**
@@ -87,20 +87,20 @@ public class ImageController {
      * Users with role ADMIN can delete any images.
      *
      * @param userId         Long id of the user of the image
-     * @param galleryName    String name of the gallery
+     * @param galleryId      Long id of the gallery
      * @param imageName      String name of the image
      * @param authentication {@link IdUsernamePasswordAuthenticationToken} holds data for the current user
      * @return ResponseEntity<String>
      */
     @PreAuthorize("#userId == #authentication.id || hasRole('ROLE_ADMIN')")
-    @DeleteMapping(value = "/{userId}/{galleryName}/{imageName}")
+    @DeleteMapping(value = "/{userId}/{galleryId}/{imageName}")
     public ResponseEntity<String> deleteImage(@PathVariable("userId") Long userId,
-                                              @PathVariable("galleryName") String galleryName,
+                                              @PathVariable("galleryId") Long galleryId,
                                               @PathVariable("imageName") String imageName,
                                               @CurrentSecurityContext(expression = "authentication")
                                                       IdUsernamePasswordAuthenticationToken authentication) {
 
-        imageService.deleteImage(userId, galleryName, imageName);
+        imageService.deleteImage(galleryId, imageName);
 
         return new ResponseEntity<>("Image deleted successfully", HttpStatus.ACCEPTED);
     }
@@ -111,22 +111,22 @@ public class ImageController {
      * Users with role ADMIN can rename any images.
      *
      * @param userId         Long id of the user of the image
-     * @param galleryName    String name of the gallery
+     * @param galleryId      Long id of the gallery
      * @param imageName      String name of the image
      * @param newImageName   String new name for the image
      * @param authentication {@link IdUsernamePasswordAuthenticationToken} holds data for the current user
      * @return ResponseEntity<String>
      */
     @PreAuthorize("#userId == #authentication.id || hasRole('ROLE_ADMIN')")
-    @PutMapping(value = "/{userId}/{galleryName}/{imageName}")
+    @PutMapping(value = "/{userId}/{galleryId}/{imageName}")
     public ResponseEntity<String> renameImage(@PathVariable("userId") Long userId,
-                                              @PathVariable("galleryName") String galleryName,
+                                              @PathVariable("galleryId") Long galleryId,
                                               @PathVariable("imageName") String imageName,
                                               @RequestParam String newImageName,
                                               @CurrentSecurityContext(expression = "authentication")
                                                       IdUsernamePasswordAuthenticationToken authentication) {
 
-        imageService.renameImage(userId, galleryName, imageName, newImageName);
+        imageService.renameImage(userId, galleryId, imageName, newImageName);
 
         return new ResponseEntity<>("Image renamed successfully", HttpStatus.ACCEPTED);
     }

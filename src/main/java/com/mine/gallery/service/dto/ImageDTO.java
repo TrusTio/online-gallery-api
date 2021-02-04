@@ -15,6 +15,7 @@ import lombok.experimental.Accessors;
 @AllArgsConstructor
 @Accessors(chain = true)
 public class ImageDTO {
+    private Long id;
     private String name;
     private String url;
 }

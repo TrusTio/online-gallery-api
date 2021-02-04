@@ -20,7 +20,11 @@ public class ImageMapper {
      */
     public static ImageDTO toImageDTO(Image image) {
         return new ImageDTO()
+                .setId(image.getId())
                 .setName(image.getName())
-                .setUrl("http://localhost:8080/api/v1/image" + image.getLocation());
+                .setUrl("http://localhost:8080/api/v1/image"
+                        + "/" + image.getGallery().getUser().getId()
+                        + "/" + image.getGallery().getId()
+                        + "/" + image.getName());
     }
 }
