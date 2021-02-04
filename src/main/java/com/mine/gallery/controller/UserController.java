@@ -130,6 +130,19 @@ public class UserController {
     }
 
     /**
+     * A GET method that fetches data for the currently logged in user.
+     *
+     * @param authentication {@link IdUsernamePasswordAuthenticationToken} holds information for the currently logged in user.
+     * @return the found {@link UserDTO} if such exists
+     */
+    @GetMapping(path = "/me")
+    public UserDTO getCurrentUser(@CurrentSecurityContext(expression = "authentication")
+                                          IdUsernamePasswordAuthenticationToken authentication) {
+        return UserMapper.toUserDto(userRepository.findById(authentication.getId())
+                .orElseThrow(() -> new UserNotFoundException(authentication.getId())));
+    }
+
+    /**
      * A GET method that returns a list of the gallery names a specific user has, using his id
      * Users with role USER can access only their own user galleries.
      * Users with role ADMIN can access the galleries of everyone.
