@@ -10,6 +10,7 @@ import com.mine.gallery.persistence.repository.ImageRepository;
 import com.mine.gallery.persistence.repository.ImageStorageRepository;
 import com.mine.gallery.persistence.repository.UserRepository;
 import com.mine.gallery.service.dto.GalleryDTO;
+import com.mine.gallery.service.dto.UserGalleriesDTO;
 import com.mine.gallery.service.mapper.GalleryMapper;
 import com.mine.gallery.util.ExceptionStringUtil;
 import lombok.AllArgsConstructor;
@@ -47,7 +48,7 @@ public class GalleryService {
      * @param galleryDTO The {@link GalleryDTO} object to be added as Gallery in the database
      * @return The {@link GalleryDTO} object saved as {@link Gallery} in the database as Gallery
      */
-    public GalleryDTO create(GalleryDTO galleryDTO, Errors errors) {
+    public UserGalleriesDTO create(GalleryDTO galleryDTO, Errors errors) {
         if (galleryRepository.findByNameAndUserId(galleryDTO.getName(), galleryDTO.getUserId()).isPresent()) {
             throw new GalleryValidationException("Duplicate gallery name.");
         }
@@ -64,20 +65,20 @@ public class GalleryService {
 
         imageStorageRepository.saveGallery(gallery.getUser().getId(), gallery.getName());
 
-        return GalleryMapper.toGalleryDTO(galleryRepository.save(gallery));
+        return GalleryMapper.toUserGalleriesDTO(galleryRepository.save(gallery));
     }
 
     /**
      * Deletes a gallery and it's contents.
      *
-     * @param id          Long id used to find the gallery
-     * @param galleryName String name of the gallery to be deleted
+     * @param id        Long id used to find the gallery
+     * @param galleryId Long id of the gallery to be deleted
      */
-    public void delete(Long id, String galleryName) {
-        Gallery gallery = galleryRepository.findByNameAndUserId(galleryName, id)
-                .orElseThrow(() -> new GalleryNotFoundException(galleryName));
+    public void delete(Long id, Long galleryId) {
+        Gallery gallery = galleryRepository.findById(galleryId)
+                .orElseThrow(() -> new GalleryNotFoundException("" + galleryId));
 
-        imageStorageRepository.deleteGallery(id, galleryName);
+        imageStorageRepository.deleteGallery(id, gallery.getName());
         galleryRepository.delete(gallery);
     }
 
@@ -88,15 +89,16 @@ public class GalleryService {
      * images in the database to their new location.
      *
      * @param id             Long id of the user
-     * @param galleryName    String name of the gallery
+     * @param galleryId      Long id of the gallery of the gallery
      * @param newGalleryName String new gallery name
      */
-    public void rename(Long id, String galleryName, String newGalleryName) {
-        Gallery gallery = galleryRepository.findByNameAndUserId(galleryName, id).get();
+    public void rename(Long id, Long galleryId, String newGalleryName) {
+        Gallery gallery = galleryRepository.findById(galleryId)
+                .orElseThrow(() -> new GalleryNotFoundException("" + galleryId));
 
         imageStorageRepository.renameGallery(
                 id,
-                galleryName,
+                gallery.getName(),
                 newGalleryName);
 
         StringBuilder updatedImageLocation = new StringBuilder();

@@ -63,18 +63,18 @@ public class GalleryController {
      * Users with role ADMIN can delete galleries in any account.
      *
      * @param userId         Long id of the gallery owner
-     * @param galleryName    String gallery name to be deleted
+     * @param galleryId      Long id of the gallery to be deleted
      * @param authentication {@link IdUsernamePasswordAuthenticationToken} holds data for the current user
      * @return ResponseEntity<String>
      */
     @PreAuthorize("#userId == #authentication.id || hasRole('ROLE_ADMIN')")
-    @DeleteMapping("/{userId}/{galleryName}")
+    @DeleteMapping("/{userId}/{galleryId}")
     public ResponseEntity<String> delete(@PathVariable("userId") Long userId,
-                                         @PathVariable("galleryName") String galleryName,
+                                         @PathVariable("galleryId") Long galleryId,
                                          @CurrentSecurityContext(expression = "authentication")
                                                  IdUsernamePasswordAuthenticationToken authentication) {
 
-        galleryService.delete(userId, galleryName);
+        galleryService.delete(userId, galleryId);
 
         return new ResponseEntity<>("Gallery deleted successfully", HttpStatus.ACCEPTED);
     }
@@ -85,20 +85,20 @@ public class GalleryController {
      * Users with role ADMIN can rename galleries in any account.
      *
      * @param userId         Long id of the gallery owner
-     * @param galleryName    String gallery name to be renamed
+     * @param galleryId      Long id of the gallery to be deleted
      * @param newGalleryName String new gallery name
      * @param authentication {@link IdUsernamePasswordAuthenticationToken} holds data for the current user
      * @return ResponseEntity<String>
      */
     @PreAuthorize("#userId == #authentication.id || hasRole('ROLE_ADMIN')")
-    @PutMapping("/{userId}/{galleryName}")
+    @PutMapping("/{userId}/{galleryId}")
     public ResponseEntity<String> rename(@PathVariable("userId") Long userId,
-                                         @PathVariable("galleryName") String galleryName,
+                                         @PathVariable("galleryId") Long galleryId,
                                          @RequestParam String newGalleryName,
                                          @CurrentSecurityContext(expression = "authentication")
                                                  IdUsernamePasswordAuthenticationToken authentication) {
 
-        galleryService.rename(userId, galleryName, newGalleryName);
+        galleryService.rename(userId, galleryId, newGalleryName);
 
         return new ResponseEntity<>("Gallery updated successfully", HttpStatus.ACCEPTED);
     }
