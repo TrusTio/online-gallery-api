@@ -11,6 +11,8 @@ import com.mine.gallery.service.UserService;
 import com.mine.gallery.service.dto.ImageDTO;
 import com.mine.gallery.service.dto.SignupUserDTO;
 import com.mine.gallery.service.dto.UserDTO;
+import com.mine.gallery.service.dto.UserGalleriesDTO;
+import com.mine.gallery.service.mapper.GalleryMapper;
 import com.mine.gallery.service.mapper.ImageMapper;
 import com.mine.gallery.service.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -149,18 +151,18 @@ public class UserController {
      *
      * @param id             Long id of the user to be fetched
      * @param authentication {@link IdUsernamePasswordAuthenticationToken} holds information for the currently logged in user.
-     * @return {@link List<String>} of the gallery names
+     * @return {@link List<UserGalleriesDTO>} of the gallery names
      */
     @PreAuthorize("#id == #authentication.id || hasRole('ROLE_ADMIN')")
     @GetMapping(path = "/{id}/galleries")
-    public List<String> getUserGalleries(@PathVariable("id") Long id,
-                                         @CurrentSecurityContext(expression = "authentication")
-                                                 IdUsernamePasswordAuthenticationToken authentication) {
+    public List<UserGalleriesDTO> getUserGalleries(@PathVariable("id") Long id,
+                                                   @CurrentSecurityContext(expression = "authentication")
+                                                           IdUsernamePasswordAuthenticationToken authentication) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id));
 
         return user.getGalleries()
-                .stream().map(Gallery::getName)
+                .stream().map(GalleryMapper::toUserGalleriesDTO)
                 .collect(Collectors.toList());
     }
 
@@ -170,18 +172,18 @@ public class UserController {
      * Users with role ADMIN can access the images of everyone.
      *
      * @param id             Long id of the user to be fetched
-     * @param galleryName    String gallery name
+     * @param galleryId      Long id of the gallery
      * @param authentication {@link IdUsernamePasswordAuthenticationToken} holds information for the currently logged in user.
      * @return {@link List<ImageDTO>}
      */
     @PreAuthorize("#id == #authentication.id || hasRole('ROLE_ADMIN')")
-    @GetMapping(path = "/{id}/gallery/{galleryName}")
+    @GetMapping(path = "/{id}/gallery/{galleryId}")
     public List<ImageDTO> getUserGalleryImages(@PathVariable("id") Long id,
-                                               @PathVariable("galleryName") String galleryName,
+                                               @PathVariable("galleryId") Long galleryId,
                                                @CurrentSecurityContext(expression = "authentication")
                                                        IdUsernamePasswordAuthenticationToken authentication) {
-        Gallery gallery = galleryRepository.findByNameAndUserId(galleryName, id)
-                .orElseThrow(() -> new GalleryNotFoundException(galleryName));
+        Gallery gallery = galleryRepository.findById(galleryId)
+                .orElseThrow(() -> new GalleryNotFoundException("" + galleryId));
 
         return gallery.getImages()
                 .stream().map(ImageMapper::toImageDTO)
