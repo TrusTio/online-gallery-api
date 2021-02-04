@@ -7,7 +7,7 @@ import org.springframework.data.repository.CrudRepository;
 import java.util.Optional;
 
 /**
- * Repository for the Role class/table
+ * Repository for the {@link Role} class/table
  *
  * @author TrusTio
  */

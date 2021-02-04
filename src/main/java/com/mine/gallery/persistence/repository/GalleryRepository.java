@@ -6,7 +6,7 @@ import org.springframework.data.repository.CrudRepository;
 import java.util.Optional;
 
 /**
- * Repository for the Gallery class/table
+ * Repository for the {@link Gallery} class/table
  *
  * @author TrusTio
  */

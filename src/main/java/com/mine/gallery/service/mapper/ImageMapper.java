@@ -5,7 +5,7 @@ import com.mine.gallery.service.dto.ImageDTO;
 import org.springframework.stereotype.Component;
 
 /**
- * Maps the {@link Image Image} object to a {@link ImageDTO ImageDTO} object
+ * Maps the {@link Image} object to a {@link ImageDTO} object
  *
  * @author TrusTio
  */
@@ -13,10 +13,10 @@ import org.springframework.stereotype.Component;
 public class ImageMapper {
 
     /**
-     * Returns new {@link ImageDTO ImageDTO} object created from the {@link Image Image} parameter
+     * Returns new {@link ImageDTO} object created from the {@link Image} parameter
      *
-     * @param image Image object to be mapped to ImageDTO object
-     * @return ImageDTO object with name and url
+     * @param image {@link Image} object to be mapped to ImageDTO object
+     * @return {@link ImageDTO} object with name and url
      */
     public static ImageDTO toImageDTO(Image image) {
         return new ImageDTO()

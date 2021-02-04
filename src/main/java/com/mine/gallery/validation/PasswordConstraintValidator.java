@@ -19,7 +19,7 @@ import java.util.Arrays;
 import static org.apache.tomcat.util.buf.StringUtils.join;
 
 /**
- * Password Validator that implements {@link ConstraintValidator ConstraintValidator}.
+ * Password Validator that implements {@link ConstraintValidator}.
  * Uses the passay library to validate the password field.
  *
  * @author TrusTio

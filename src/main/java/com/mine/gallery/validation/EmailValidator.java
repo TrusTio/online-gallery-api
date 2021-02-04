@@ -6,7 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Email Validator that implements {@link ConstraintValidator ConstraintValidator}.
+ * Email Validator that implements {@link ConstraintValidator}.
  * Validates if the given email field is valid by matching it with a regex pattern.
  *
  * @author TrusTio

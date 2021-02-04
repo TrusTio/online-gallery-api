@@ -2,12 +2,11 @@ package com.mine.gallery.persistence.repository;
 
 import com.mine.gallery.persistence.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.repository.CrudRepository;
 
 import java.util.Optional;
 
 /**
- * Repository for the User class/table
+ * Repository for the {@link User} class/table
  *
  * @author TrusTio
  */

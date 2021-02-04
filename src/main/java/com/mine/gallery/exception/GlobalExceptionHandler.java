@@ -36,9 +36,9 @@ import java.util.Map;
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     /**
-     * Handles CreateGalleryValidationException
+     * Handles {@link GalleryValidationException}
      *
-     * @param e       GalleryNameTakenException
+     * @param e       GalleryValidationException
      * @param request WebRequest
      * @return ResponseEntity<Object>
      */
@@ -52,9 +52,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
-     * Handles GalleryNotFoundException
+     * Handles {@link GalleryNotFoundException}
      *
-     * @param e       GalleryNotFoundException
+     * @param e       {@link GalleryNotFoundException}
      * @param request WebRequest
      * @return ResponseEntity<Object>
      */
@@ -68,9 +68,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
-     * Handles SignUpValidationException
+     * Handles {@link SignUpValidationException}
      *
-     * @param e       SignUpValidationException
+     * @param e       {@link SignUpValidationException}
      * @param request WebRequest
      * @return ResponseEntity<Object>
      */
@@ -84,9 +84,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
-     * Handles LoginException
+     * Handles {@link LoginException}
      *
-     * @param e       LoginException
+     * @param e       {@link LoginException}
      * @param request WebRequest
      * @return ResponseEntity<Object>
      */
@@ -100,25 +100,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
-     * Handles ExpiredJwtException
+     * Handles {@link ImageNotFoundException}
      *
-     * @param e       ExpiredJwtException
-     * @param request WebRequest
-     * @return ResponseEntity<Object>
-     */
-    @ExceptionHandler(ExpiredJwtException.class)
-    public ResponseEntity<Object> handleExpiredJwt(
-            ExpiredJwtException e, WebRequest request) {
-
-        ApiError apiError = new ApiError(HttpStatus.UNAUTHORIZED, e.getMessage());
-
-        return buildResponseEntity(apiError);
-    }
-
-    /**
-     * Handles ImageNotFoundException
-     *
-     * @param e       ImageNotFoundException
+     * @param e       {@link ImageNotFoundException}
      * @param request WebRequest
      * @return ResponseEntity<Object>
      */
@@ -132,9 +116,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
-     * Handles UserNotFoundException
+     * Handles {@link UserNotFoundException}
      *
-     * @param e       UserNotFoundException
+     * @param e       {@link UserNotFoundException}
      * @param request WebRequest
      * @return ResponseEntity<Object>
      */
@@ -148,9 +132,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
-     * Handles RoleNotFoundException
+     * Handles {@link RoleNotFoundException}
      *
-     * @param e       RoleNotFoundException
+     * @param e       {@link RoleNotFoundException}
      * @param request WebRequest
      * @return ResponseEntity<Object>
      */
@@ -164,9 +148,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
-     * Handles UnauthorizedAccessException
+     * Handles {@link UnauthorizedAccessException}
      *
-     * @param e       UnauthorizedAccessException
+     * @param e       {@link UnauthorizedAccessException}
      * @param request WebRequest
      * @return ResponseEntity<Object>
      */
@@ -180,9 +164,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
-     * Handles ImageValidationException
+     * Handles {@link ImageValidationException}
      *
-     * @param e       ImageValidationException
+     * @param e       {@link ImageValidationException}
      * @param request WebRequest
      * @return ResponseEntity<Object>
      */
@@ -223,6 +207,23 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             Exception e, WebRequest request) {
 
         ApiError apiError = new ApiError(HttpStatus.UNAUTHORIZED, e.getMessage());
+
+        return buildResponseEntity(apiError);
+    }
+
+    /**
+     * Handles ExpiredJwtException
+     *
+     * @param e       ExpiredJwtException
+     * @param request WebRequest
+     * @return ResponseEntity<Object>
+     */
+    @ExceptionHandler(ExpiredJwtException.class)
+    public ResponseEntity<Object> handleExpiredJwt(
+            ExpiredJwtException e, WebRequest request) {
+
+        ApiError apiError = new ApiError(HttpStatus.UNAUTHORIZED, e.getMessage())
+                .setDetail("Login again to get a valid token.");
 
         return buildResponseEntity(apiError);
     }

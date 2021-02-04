@@ -20,7 +20,7 @@ import java.util.Optional;
 import java.util.logging.Logger;
 
 /**
- * Service class used by {@link com.mine.gallery.controller.ImageController ImageController}.
+ * Service class used by {@link com.mine.gallery.controller.ImageController}.
  *
  * @author TrusTio
  */
@@ -82,7 +82,7 @@ public class ImageService {
     /**
      * Fetches the requested image.
      * <p>
-     * Throws {@link ImageValidationException ImageValidationException} if it's not found.
+     * Throws {@link ImageValidationException} if it's not found.
      *
      * @param userId      Long id of the user
      * @param galleryName String name of the gallery
@@ -142,7 +142,7 @@ public class ImageService {
      * Checks whether the image is valid by checking
      * if it's empty, bigger than 8 mb, not jpg/png
      * <p>
-     * Throws {@link ImageValidationException ImageValidationException}
+     * Throws {@link ImageValidationException}
      * if validation fails.
      *
      * @param image MultipartFile image to be checked
@@ -163,7 +163,7 @@ public class ImageService {
     }
 
     /**
-     * Returns the {@link Image Image} object based on user id, gallery name and image name
+     * Returns the {@link Image} object based on user id, gallery name and image name
      *
      * @param userId      Long user id
      * @param galleryName String name of the gallery

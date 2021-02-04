@@ -6,17 +6,17 @@ import com.mine.gallery.service.dto.UserDTO;
 import org.springframework.stereotype.Component;
 
 /**
- * Maps the {@link User User} object to a {@link SignupUserDTO UserDTO} object
+ * Maps the {@link User} object to a {@link SignupUserDTO} object
  *
  * @author TrusTio
  */
 @Component
 public class UserMapper {
     /**
-     * Returns new {@link SignupUserDTO} object created from the {@link User User} parameter
+     * Returns new {@link SignupUserDTO} object created from the {@link User} parameter
      *
-     * @param user User object to be mapped to UserDTO object
-     * @return SignupUserDTO object with username, email and password
+     * @param user {@link User} object to be mapped to UserDTO object
+     * @return {@link SignupUserDTO} object with username, email and password
      */
     public static SignupUserDTO toSignupUserDto(User user) {
         return new SignupUserDTO()
@@ -27,6 +27,7 @@ public class UserMapper {
 
     /**
      * Returns new {@link UserDTO} object mapped from {@link User} parameter
+     *
      * @param user {@link User} object to be mapped to UserDTO object
      * @return {@link UserDTO} object with username, email and password
      */

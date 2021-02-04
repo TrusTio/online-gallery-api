@@ -22,7 +22,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-
+/**
+ * Image controller that exposes gallery end points
+ *
+ * @author TrusTio
+ */
 @RestController
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RequestMapping(path = "api/v1/image")
@@ -40,7 +44,7 @@ public class ImageController {
      *
      * @param image          MultipartFile image to be uploaded
      * @param galleryName    String name of the gallery
-     * @param authentication IdUsernamePasswordAuthenticationToken holds information for the current user
+     * @param authentication {@link IdUsernamePasswordAuthenticationToken} holds data for the current user
      * @return ResponseEntity<String>
      */
     @PostMapping(value = "/upload", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
@@ -63,7 +67,7 @@ public class ImageController {
      * @param userId         Long id of the user of the image
      * @param galleryName    String name of the gallery
      * @param imageName      String name of the image
-     * @param authentication IdUsernamePasswordAuthenticationToken holds information for the current user
+     * @param authentication {@link IdUsernamePasswordAuthenticationToken} holds data for the current user
      * @return FileSystemResource
      */
     @PreAuthorize("#userId == #authentication.id || hasRole('ROLE_ADMIN')")
@@ -85,7 +89,7 @@ public class ImageController {
      * @param userId         Long id of the user of the image
      * @param galleryName    String name of the gallery
      * @param imageName      String name of the image
-     * @param authentication IdUsernamePasswordAuthenticationToken holds information for the current user
+     * @param authentication {@link IdUsernamePasswordAuthenticationToken} holds data for the current user
      * @return ResponseEntity<String>
      */
     @PreAuthorize("#userId == #authentication.id || hasRole('ROLE_ADMIN')")
@@ -110,7 +114,7 @@ public class ImageController {
      * @param galleryName    String name of the gallery
      * @param imageName      String name of the image
      * @param newImageName   String new name for the image
-     * @param authentication IdUsernamePasswordAuthenticationToken holds information for the current user
+     * @param authentication {@link IdUsernamePasswordAuthenticationToken} holds data for the current user
      * @return ResponseEntity<String>
      */
     @PreAuthorize("#userId == #authentication.id || hasRole('ROLE_ADMIN')")

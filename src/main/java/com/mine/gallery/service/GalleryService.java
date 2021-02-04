@@ -21,7 +21,7 @@ import org.springframework.validation.Errors;
 
 
 /**
- * Service class for the {@link com.mine.gallery.controller.GalleryController GalleryController}
+ * Service class for the {@link com.mine.gallery.controller.GalleryController}
  *
  * @author TrusTio
  */
@@ -40,12 +40,12 @@ public class GalleryService {
     private ImageRepository imageRepository;
 
     /**
-     * Checks if the gallery name is valid. Then creates a folder for it and a new {@link Gallery Gallery}
-     * and assigns the values of the DTO to it, then adds it to the database
-     * using {@link com.mine.gallery.persistence.repository.GalleryRepository GalleryRepository}
+     * Checks if the gallery name is valid. Then creates a folder for it and a new {@link Gallery} object
+     * to assign the values of the DTO to it, then adds it to the database.
+     * using {@link GalleryRepository}
      *
-     * @param galleryDTO The GalleryDTO object to be added as Gallery in the database
-     * @return The GalleryDTO object saved in the database as Gallery
+     * @param galleryDTO The {@link GalleryDTO} object to be added as Gallery in the database
+     * @return The {@link GalleryDTO} object saved as {@link Gallery} in the database as Gallery
      */
     public GalleryDTO create(GalleryDTO galleryDTO, Errors errors) {
         if (galleryRepository.findByNameAndUserId(galleryDTO.getName(), galleryDTO.getUserId()).isPresent()) {

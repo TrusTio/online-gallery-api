@@ -6,7 +6,7 @@ import org.springframework.security.core.GrantedAuthority;
 import java.util.Collection;
 
 /**
- * Custom implementation of the {@link UsernamePasswordAuthenticationToken UsernamePasswordAuthenticationToken}
+ * Custom implementation of the {@link UsernamePasswordAuthenticationToken}
  * Has the user id as well.
  *
  * @author TrusTio

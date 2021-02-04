@@ -22,7 +22,7 @@ import org.springframework.validation.Errors;
 import java.util.Collections;
 
 /**
- * Service class for the {@link com.mine.gallery.controller.UserController UserController}
+ * Service class for the {@link com.mine.gallery.controller.UserController}
  *
  * @author TrusTio
  */
@@ -41,11 +41,11 @@ public class UserService {
     /**
      * Checks if the email and username are taken and throws an exception if it fails to.
      * Then validates them and throws an exception if it fails to.
-     * Creates a new {@link User User} and assigns the values of the DTO to it, then adds it to the database
-     * using {@link com.mine.gallery.persistence.repository.UserRepository UserRepository}
+     * Creates a new {@link User} and assigns the values of the DTO to it, then adds it to the database
+     * using {@link com.mine.gallery.persistence.repository.UserRepository}
      *
-     * @param signupUserDTO The UserDTO object to be added as User in the database
-     * @return The UserDTO object saved in the database as User
+     * @param signupUserDTO The {@link SignupUserDTO} object to be added as User in the database
+     * @return The {@link SignupUserDTO} object saved in the database as {@link User}
      */
     public SignupUserDTO signUp(SignupUserDTO signupUserDTO, Errors errors) {
 

@@ -35,14 +35,14 @@ public class GalleryController {
     private GalleryService galleryService;
 
     /**
-     * A POST method that accepts {@link GalleryDTO GalleryDTO} body with it's parameters to create a new gallery in the database
-     * using the create service from {@link com.mine.gallery.service.GalleryService GalleryService}
+     * A POST method that accepts {@link GalleryDTO} body with it's parameters to create a new gallery in the database
+     * using the create service from {@link com.mine.gallery.service.GalleryService}
      * Users with role USER can only create galleries for their own accounts.
      * Users with role ADMIN can create galleries in any account.
      *
-     * @param galleryDTO     GalleryDTO object/body used to create new gallery
-     * @param authentication IdUsernamePasswordAuthenticationToken hold information for the user
-     * @return String confirming the creation
+     * @param galleryDTO     {@link GalleryDTO} object/body used to create new gallery
+     * @param authentication {@link IdUsernamePasswordAuthenticationToken} holds data for the current user
+     * @return ResponseEntity<String> confirming the creation
      */
     @PreAuthorize("#galleryDTO.userId == #authentication.id  || hasRole('ROLE_ADMIN')")
     @PostMapping("/create")
@@ -64,7 +64,7 @@ public class GalleryController {
      *
      * @param userId         Long id of the gallery owner
      * @param galleryName    String gallery name to be deleted
-     * @param authentication IdUsernamePasswordAuthenticationToken
+     * @param authentication {@link IdUsernamePasswordAuthenticationToken} holds data for the current user
      * @return ResponseEntity<String>
      */
     @PreAuthorize("#userId == #authentication.id || hasRole('ROLE_ADMIN')")
@@ -87,7 +87,7 @@ public class GalleryController {
      * @param userId         Long id of the gallery owner
      * @param galleryName    String gallery name to be renamed
      * @param newGalleryName String new gallery name
-     * @param authentication IdUsernamePasswordAuthenticationToken
+     * @param authentication {@link IdUsernamePasswordAuthenticationToken} holds data for the current user
      * @return ResponseEntity<String>
      */
     @PreAuthorize("#userId == #authentication.id || hasRole('ROLE_ADMIN')")

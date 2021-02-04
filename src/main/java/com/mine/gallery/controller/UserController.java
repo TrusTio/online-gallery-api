@@ -52,10 +52,10 @@ public class UserController {
 
 
     /**
-     * A POST method that accepts {@link SignupUserDTO UserDTO} body with it's parameters to create a new account in the database
-     * using the signUp service from {@link com.mine.gallery.service.UserService UserService}
+     * A POST method that accepts {@link SignupUserDTO} body with it's parameters to create a new account in the database
+     * using the signUp service from {@link com.mine.gallery.service.UserService}
      *
-     * @param user UserDTO object used to create new user
+     * @param user {@link SignupUserDTO} body object used to create new user
      * @return String confirming the sign up
      */
     @PostMapping("/signup")
@@ -67,15 +67,17 @@ public class UserController {
     }
 
     /**
-     * A GET method that fetches all the users with their galleries and images
+     * A GET method that fetches all the users mapped to {@link UserDTO}.
      * Only users with role ADMIN can access this endpoint.
      *
-     * @return JSON object with all the user information
+     * @return {@link List<UserDTO>} containing the user data
      */
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping(path = "/all/users")
     public List<UserDTO> getAllUsers() {
-        return userRepository.findAll().stream().map(UserMapper::toUserDto).collect(Collectors.toList());
+        return userRepository.findAll().stream()
+                .map(UserMapper::toUserDto)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -83,7 +85,7 @@ public class UserController {
      * Only users with role ADMIN can access this endpoint.
      *
      * @param id Long id of the user
-     * @return ResponseEntity<String>
+     * @return {@link ResponseEntity<String>}
      */
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/{id}/admin")
@@ -98,7 +100,7 @@ public class UserController {
      * Only users with role ADMIN can access this endpoint.
      *
      * @param id Long id of the user
-     * @return ResponseEntity<String>
+     * @return {@link ResponseEntity<String>}
      */
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/{id}/noadmin")
@@ -114,8 +116,8 @@ public class UserController {
      * Users with role ADMIN can access information about all users.
      *
      * @param id             Long id of the user to be fetched
-     * @param authentication IdUsernamePasswordAuthenticationToken holds information for the currently logged in user.
-     * @return the found {@link User User} if such exists
+     * @param authentication {@link IdUsernamePasswordAuthenticationToken} holds information for the currently logged in user.
+     * @return the found {@link UserDTO} if such exists
      */
     @PreAuthorize("#id == #authentication.id || hasRole('ROLE_ADMIN')")
     @GetMapping(path = "/{id}")
@@ -133,8 +135,8 @@ public class UserController {
      * Users with role ADMIN can access the galleries of everyone.
      *
      * @param id             Long id of the user to be fetched
-     * @param authentication IdUsernamePasswordAuthenticationToken holds information for the currently logged in user.
-     * @return List<String> of the galleries
+     * @param authentication {@link IdUsernamePasswordAuthenticationToken} holds information for the currently logged in user.
+     * @return {@link List<String>} of the gallery names
      */
     @PreAuthorize("#id == #authentication.id || hasRole('ROLE_ADMIN')")
     @GetMapping(path = "/{id}/galleries")
@@ -156,8 +158,8 @@ public class UserController {
      *
      * @param id             Long id of the user to be fetched
      * @param galleryName    String gallery name
-     * @param authentication IdUsernamePasswordAuthenticationToken holds information for the currently logged in user.
-     * @return List<ImageDTO>
+     * @param authentication {@link IdUsernamePasswordAuthenticationToken} holds information for the currently logged in user.
+     * @return {@link List<ImageDTO>}
      */
     @PreAuthorize("#id == #authentication.id || hasRole('ROLE_ADMIN')")
     @GetMapping(path = "/{id}/gallery/{galleryName}")

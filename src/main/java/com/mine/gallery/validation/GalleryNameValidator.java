@@ -11,7 +11,7 @@ import javax.validation.ConstraintValidatorContext;
 import java.util.Arrays;
 
 /**
- * Gallery name Validator that implements {@link ConstraintValidator ConstraintValidator}.
+ * Gallery name Validator that implements {@link ConstraintValidator}.
  * Uses the passay library to validate the gallery name field.
  *
  * @author TrusTio

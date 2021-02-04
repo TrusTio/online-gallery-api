@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 
 
 /**
- * Username Validator that implements {@link ConstraintValidator ConstraintValidator}.
+ * Username Validator that implements {@link ConstraintValidator}.
  * Validates if the given username field is valid by matching it with a regex pattern.
  *
  * @author TrusTio

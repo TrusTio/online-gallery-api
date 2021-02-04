@@ -6,7 +6,7 @@ import org.springframework.data.repository.CrudRepository;
 import java.util.Optional;
 
 /**
- * Repository for the Image class/table
+ * Repository for the {@link Image} class/table
  *
  * @author TrusTio
  */
@@ -16,6 +16,6 @@ public interface ImageRepository extends CrudRepository<Image, Integer> {
     Optional<Image> findByNameAndGalleryId(String name, Long galleryId);
 
     Iterable<Image> findAllByGalleryId(Long galleryId);
-    
+
     void delete(Image image);
 }

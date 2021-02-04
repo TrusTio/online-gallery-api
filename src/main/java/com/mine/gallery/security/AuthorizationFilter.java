@@ -21,7 +21,7 @@ import java.util.logging.Logger;
 import static com.mine.gallery.security.SecurityConstants.SECRET;
 
 /**
- * Authorization filter class that extends {@link BasicAuthenticationFilter BasicAuthenticationFilter}
+ * Authorization filter class that extends {@link BasicAuthenticationFilter}
  *
  * @author TrusTio
  */
@@ -54,7 +54,7 @@ public class AuthorizationFilter extends BasicAuthenticationFilter {
      * If the token isn't null, gets the user and claims(roles) from the token.
      *
      * @param request request parameter to be used for authentication
-     * @return returns new UsernamePasswordAuthenticationToken with user and list of authorities(roles)
+     * @return returns new {@link IdUsernamePasswordAuthenticationToken} with user and list of authorities(roles)
      * or null if the token has expired/is empty
      */
     private IdUsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) {

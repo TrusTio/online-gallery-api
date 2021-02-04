@@ -18,10 +18,10 @@ public class ExceptionStringUtil {
     }
 
     /**
-     * Creates an ArrayList of ConstraintViolations and fills it using the {@link Errors Errors} errors parameter.
+     * Creates an ArrayList of ConstraintViolations and fills it using the {@link Errors} errors parameter.
      * Then builds a string from it's violation messages
      *
-     * @param errors {@link Errors Errors} errors to be for building a message
+     * @param errors {@link Errors} errors to be for building a message
      * @return String message
      */
     public static String exceptionMessageBuilder(Errors errors) {

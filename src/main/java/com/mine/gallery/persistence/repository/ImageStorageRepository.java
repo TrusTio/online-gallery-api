@@ -77,7 +77,7 @@ public class ImageStorageRepository {
      * Finds the file in the system using the String path
      *
      * @param location String location of the file
-     * @return
+     * @return FileSystemResource
      */
     public FileSystemResource findInFileSystem(String location) {
         StringBuilder stringBuilder = new StringBuilder();
@@ -113,7 +113,7 @@ public class ImageStorageRepository {
      *
      * @param location     String location of the image to be renamed
      * @param newImageName String new image name
-     * @return new name of the image with the extension
+     * @return String new name of the image with the extension
      */
     public String renameImage(String location, String newImageName) {
         StringBuilder stringBuilder = new StringBuilder();

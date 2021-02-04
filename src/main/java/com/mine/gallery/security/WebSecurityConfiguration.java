@@ -6,7 +6,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -18,7 +17,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import static com.mine.gallery.security.SecurityConstants.SIGN_UP_URL;
 
 /**
- * Extends the {@link WebSecurityConfigurerAdapter WebSecurityConfigurerAdapter}
+ * Extends the {@link WebSecurityConfigurerAdapter}
  * Configures the Web Security of the application.
  *
  * @author TrusTio

@@ -25,7 +25,7 @@ import java.util.logging.Logger;
 import static com.mine.gallery.security.SecurityConstants.*;
 
 /**
- * Authentication filter class that extends {@link UsernamePasswordAuthenticationFilter UsernamePasswordAuthenticationFilter}
+ * Authentication filter class that extends {@link UsernamePasswordAuthenticationFilter}
  *
  * @author TrusTio
  */
