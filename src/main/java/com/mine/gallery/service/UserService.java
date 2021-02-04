@@ -8,7 +8,7 @@ import com.mine.gallery.persistence.entity.RoleName;
 import com.mine.gallery.persistence.entity.User;
 import com.mine.gallery.persistence.repository.RoleRepository;
 import com.mine.gallery.persistence.repository.UserRepository;
-import com.mine.gallery.service.dto.UserDTO;
+import com.mine.gallery.service.dto.SignupUserDTO;
 import com.mine.gallery.service.mapper.UserMapper;
 import com.mine.gallery.util.ExceptionStringUtil;
 import lombok.AllArgsConstructor;
@@ -44,16 +44,16 @@ public class UserService {
      * Creates a new {@link User User} and assigns the values of the DTO to it, then adds it to the database
      * using {@link com.mine.gallery.persistence.repository.UserRepository UserRepository}
      *
-     * @param userDTO The UserDTO object to be added as User in the database
+     * @param signupUserDTO The UserDTO object to be added as User in the database
      * @return The UserDTO object saved in the database as User
      */
-    public UserDTO signUp(UserDTO userDTO, Errors errors) {
+    public SignupUserDTO signUp(SignupUserDTO signupUserDTO, Errors errors) {
 
-        if (userRepository.existsByUsername(userDTO.getUsername())) {
+        if (userRepository.existsByUsername(signupUserDTO.getUsername())) {
             throw new SignUpValidationException("Username taken!");
         }
 
-        if (userRepository.existsByEmail(userDTO.getEmail())) {
+        if (userRepository.existsByEmail(signupUserDTO.getEmail())) {
             throw new SignUpValidationException("Email taken!");
         }
 
@@ -67,12 +67,12 @@ public class UserService {
                 .orElseThrow(RoleNotFoundException::new);
 
         User user = new User()
-                .setUsername(userDTO.getUsername())
-                .setEmail(userDTO.getEmail())
-                .setPassword(bCryptPasswordEncoder.encode(userDTO.getPassword()))
+                .setUsername(signupUserDTO.getUsername())
+                .setEmail(signupUserDTO.getEmail())
+                .setPassword(bCryptPasswordEncoder.encode(signupUserDTO.getPassword()))
                 .setRoles(Collections.singleton(role));
 
-        return UserMapper.toUserDto(userRepository.save(user));
+        return UserMapper.toSignupUserDto(userRepository.save(user));
     }
 
     /**

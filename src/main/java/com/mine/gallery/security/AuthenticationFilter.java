@@ -2,7 +2,7 @@ package com.mine.gallery.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mine.gallery.exception.user.LoginException;
-import com.mine.gallery.service.dto.UserDTO;
+import com.mine.gallery.service.dto.SignupUserDTO;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -47,8 +47,8 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
         Logger.getLogger(AuthenticationFilter.class.getName()).info("Attempting authentication!");
         try {
-            UserDTO creds = new ObjectMapper()
-                    .readValue(request.getInputStream(), UserDTO.class);
+            SignupUserDTO creds = new ObjectMapper()
+                    .readValue(request.getInputStream(), SignupUserDTO.class);
 
             return authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(

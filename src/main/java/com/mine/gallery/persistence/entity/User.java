@@ -61,7 +61,6 @@ public class User implements Serializable {
         roles.add(role);
     }
 
-    //@SQLUpdate(sql = "DELETE FROM user_roles WHERE user_id=4  ")
     public void removeRole(Role role) {
         roles.remove(role);
     }

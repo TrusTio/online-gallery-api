@@ -9,7 +9,7 @@ import com.mine.gallery.persistence.repository.UserRepository;
 import com.mine.gallery.security.IdUsernamePasswordAuthenticationToken;
 import com.mine.gallery.service.UserService;
 import com.mine.gallery.service.dto.ImageDTO;
-import com.mine.gallery.service.dto.UserDTO;
+import com.mine.gallery.service.dto.SignupUserDTO;
 import com.mine.gallery.service.mapper.ImageMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -50,14 +50,14 @@ public class UserController {
 
 
     /**
-     * A POST method that accepts {@link UserDTO UserDTO} body with it's parameters to create a new account in the database
+     * A POST method that accepts {@link SignupUserDTO UserDTO} body with it's parameters to create a new account in the database
      * using the signUp service from {@link com.mine.gallery.service.UserService UserService}
      *
      * @param user UserDTO object used to create new user
      * @return String confirming the sign up
      */
     @PostMapping("/signup")
-    public ResponseEntity<String> signUp(@Valid @RequestBody UserDTO user, Errors errors) {
+    public ResponseEntity<String> signUp(@Valid @RequestBody SignupUserDTO user, Errors errors) {
         userService.signUp(user, errors);
         Logger.getLogger(UserController.class.getName()).info("Created new user!");
 
@@ -139,8 +139,6 @@ public class UserController {
     public List<String> getUserGalleries(@PathVariable("id") Long id,
                                          @CurrentSecurityContext(expression = "authentication")
                                                  IdUsernamePasswordAuthenticationToken authentication) {
-        Logger.getLogger(UserController.class.getName()).info("Fetching user galleries!");
-
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id));
 
