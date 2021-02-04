@@ -74,8 +74,8 @@ public class UserController {
      */
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping(path = "/all/users")
-    public Iterable<User> getAllUsers() {
-        return userRepository.findAll();
+    public List<UserDTO> getAllUsers() {
+        return userRepository.findAll().stream().map(UserMapper::toUserDto).collect(Collectors.toList());
     }
 
     /**

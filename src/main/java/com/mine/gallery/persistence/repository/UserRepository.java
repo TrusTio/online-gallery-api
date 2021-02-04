@@ -1,6 +1,7 @@
 package com.mine.gallery.persistence.repository;
 
 import com.mine.gallery.persistence.entity.User;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.Optional;
@@ -10,7 +11,7 @@ import java.util.Optional;
  *
  * @author TrusTio
  */
-public interface UserRepository extends CrudRepository<User, Integer> {
+public interface UserRepository extends JpaRepository<User, Integer> {
     Optional<User> findById(Long id);
 
     Optional<User> findByUsername(String username);
