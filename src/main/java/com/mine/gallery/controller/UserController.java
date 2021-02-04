@@ -10,7 +10,9 @@ import com.mine.gallery.security.IdUsernamePasswordAuthenticationToken;
 import com.mine.gallery.service.UserService;
 import com.mine.gallery.service.dto.ImageDTO;
 import com.mine.gallery.service.dto.SignupUserDTO;
+import com.mine.gallery.service.dto.UserDTO;
 import com.mine.gallery.service.mapper.ImageMapper;
+import com.mine.gallery.service.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -73,7 +75,6 @@ public class UserController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping(path = "/all/users")
     public Iterable<User> getAllUsers() {
-        Logger.getLogger(UserController.class.getName()).info("Fetched all users!");
         return userRepository.findAll();
     }
 
@@ -118,11 +119,12 @@ public class UserController {
      */
     @PreAuthorize("#id == #authentication.id || hasRole('ROLE_ADMIN')")
     @GetMapping(path = "/{id}")
-    public User getUserById(@PathVariable("id") Long id,
-                            @CurrentSecurityContext(expression = "authentication")
-                                          IdUsernamePasswordAuthenticationToken authentication) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException(id));
+    public UserDTO getUserById(@PathVariable("id") Long id,
+                               @CurrentSecurityContext(expression = "authentication")
+                                       IdUsernamePasswordAuthenticationToken authentication) {
+
+        return UserMapper.toUserDto(userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException(id)));
     }
 
     /**
