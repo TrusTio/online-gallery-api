@@ -4,7 +4,6 @@ import com.mine.gallery.exception.gallery.GalleryNotFoundException;
 import com.mine.gallery.exception.gallery.GalleryValidationException;
 import com.mine.gallery.exception.user.UserNotFoundException;
 import com.mine.gallery.persistence.entity.Gallery;
-import com.mine.gallery.persistence.entity.Image;
 import com.mine.gallery.persistence.repository.GalleryRepository;
 import com.mine.gallery.persistence.repository.ImageRepository;
 import com.mine.gallery.persistence.repository.ImageStorageRepository;
@@ -18,6 +17,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 
 
@@ -48,6 +48,7 @@ public class GalleryService {
      * @param galleryDTO The {@link GalleryDTO} object to be added as Gallery in the database
      * @return The {@link GalleryDTO} object saved as {@link Gallery} in the database as Gallery
      */
+    @Transactional
     public UserGalleriesDTO create(GalleryDTO galleryDTO, Errors errors) {
         if (galleryRepository.findByNameAndUserId(galleryDTO.getName(), galleryDTO.getUserId()).isPresent()) {
             throw new GalleryValidationException("Duplicate gallery name.");
@@ -63,9 +64,11 @@ public class GalleryService {
                 .setUser(userRepository.findById(galleryDTO.getUserId())
                         .orElseThrow(() -> new UserNotFoundException(galleryDTO.getUserId())));
 
-        imageStorageRepository.saveGallery(gallery.getUser().getId(), gallery.getName());
+        gallery = galleryRepository.save(gallery);
 
-        return GalleryMapper.toUserGalleriesDTO(galleryRepository.save(gallery));
+        imageStorageRepository.saveGallery(gallery.getUser().getId(), gallery.getId());
+
+        return GalleryMapper.toUserGalleriesDTO(gallery);
     }
 
     /**
@@ -75,10 +78,11 @@ public class GalleryService {
      * @param galleryId Long id of the gallery to be deleted
      */
     public void delete(Long id, Long galleryId) {
-        Gallery gallery = galleryRepository.findById(galleryId)
+        Gallery gallery = galleryRepository.findByIdAndUserId(galleryId, id)
                 .orElseThrow(() -> new GalleryNotFoundException("" + galleryId));
 
-        imageStorageRepository.deleteGallery(id, gallery.getName());
+        imageStorageRepository.deleteGallery(id, galleryId);
+
         galleryRepository.delete(gallery);
     }
 
@@ -93,25 +97,11 @@ public class GalleryService {
      * @param newGalleryName String new gallery name
      */
     public void rename(Long id, Long galleryId, String newGalleryName) {
-        Gallery gallery = galleryRepository.findById(galleryId)
+        Gallery gallery = galleryRepository.findByIdAndUserId(galleryId, id)
                 .orElseThrow(() -> new GalleryNotFoundException("" + galleryId));
 
-        imageStorageRepository.renameGallery(
-                id,
-                gallery.getName(),
-                newGalleryName);
-
-        StringBuilder updatedImageLocation = new StringBuilder();
-        updatedImageLocation.append("/")
-                .append(id).append("/")
-                .append(newGalleryName).append("/");
-
         gallery.setName(newGalleryName);
+
         galleryRepository.save(gallery);
-
-        Iterable<Image> iterable = imageRepository.findAllByGalleryId(gallery.getId());
-        iterable.forEach(image -> image.setLocation(updatedImageLocation.toString() + image.getName()));
-
-        imageRepository.saveAll(iterable);
     }
 }

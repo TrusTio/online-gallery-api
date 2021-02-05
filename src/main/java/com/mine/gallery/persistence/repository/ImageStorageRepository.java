@@ -50,16 +50,16 @@ public class ImageStorageRepository {
     /**
      * Creates a gallery folder on the local directory using location
      *
-     * @param userId      Long user Id of the owner of the folder
-     * @param galleryName String name of the folder
+     * @param userId    Long user Id of the owner of the folder
+     * @param galleryId Long id of the folder
      * @return String with absolute path to the created folder
      */
-    public String saveGallery(Long userId, String galleryName) {
+    public String saveGallery(Long userId, Long galleryId) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder
                 .append(getStoragePath()).append("/")
                 .append(userId).append("/")
-                .append(galleryName);
+                .append(galleryId);
         String galleryLocation = stringBuilder.toString();
 
         Path newFolder = Paths.get(galleryLocation);
@@ -140,14 +140,14 @@ public class ImageStorageRepository {
     /**
      * Deletes the gallery at the specified location and it's contents
      *
-     * @param userId      Long id of the user owning the gallery
-     * @param galleryName String name of the gallery
+     * @param userId    Long id of the user owning the gallery
+     * @param galleryId Long id of the gallery
      */
-    public void deleteGallery(Long userId, String galleryName) {
+    public void deleteGallery(Long userId, Long galleryId) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(getStoragePath()).append("/")
                 .append(userId).append("/")
-                .append(galleryName);
+                .append(galleryId);
 
         try {
             FileSystemUtils.deleteRecursively(Paths.get(stringBuilder.toString()));

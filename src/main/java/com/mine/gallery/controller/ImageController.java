@@ -78,7 +78,7 @@ public class ImageController {
                                             @CurrentSecurityContext(expression = "authentication")
                                                     IdUsernamePasswordAuthenticationToken authentication) {
 
-        return imageService.find(galleryId, imageName);
+        return imageService.find(userId, galleryId, imageName);
     }
 
     /**
@@ -100,7 +100,7 @@ public class ImageController {
                                               @CurrentSecurityContext(expression = "authentication")
                                                       IdUsernamePasswordAuthenticationToken authentication) {
 
-        imageService.deleteImage(galleryId, imageName);
+        imageService.deleteImage(userId, galleryId, imageName);
 
         return new ResponseEntity<>("Image deleted successfully", HttpStatus.ACCEPTED);
     }

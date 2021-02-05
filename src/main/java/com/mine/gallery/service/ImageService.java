@@ -45,11 +45,10 @@ public class ImageService {
      * @return
      */
     public Long save(MultipartFile image, Long galleryId, Long userId) {
-        Gallery gallery = galleryRepository.findById(galleryId)
+        Gallery gallery = galleryRepository.findByIdAndUserId(galleryId, userId)
                 .orElseThrow(() -> new GalleryNotFoundException("" + galleryId));
 
-
-        if (getImage(galleryId, image.getOriginalFilename()).isPresent()) {
+        if (getImage(userId, galleryId, image.getOriginalFilename()).isPresent()) {
             throw new ImageValidationException("Image with that name already exists.");
         }
 
@@ -58,7 +57,7 @@ public class ImageService {
         stringBuilder
                 .append("/")
                 .append(userId).append("/")
-                .append(gallery.getName()).append("/")
+                .append(galleryId).append("/")
                 .append(imageName);
 
         String imageLocation = stringBuilder.toString();
@@ -83,12 +82,13 @@ public class ImageService {
      * <p>
      * Throws {@link ImageValidationException} if it's not found.
      *
+     * @param userId    Long id of hte user
      * @param galleryId Long id of the gallery
      * @param imageName String name of the image
      * @return FileSystemResource
      */
-    public FileSystemResource find(Long galleryId, String imageName) {
-        Image image = getImage(galleryId, imageName)
+    public FileSystemResource find(Long userId, Long galleryId, String imageName) {
+        Image image = getImage(userId, galleryId, imageName)
                 .orElseThrow(() -> new ImageNotFoundException(imageName));
 
         return imageStorageRepository.findInFileSystem(image.getLocation());
@@ -97,11 +97,12 @@ public class ImageService {
     /**
      * Deletes an image.
      *
+     * @param userId    Long id of the user
      * @param galleryId Long id of the gallery
      * @param imageName String name of the image
      */
-    public void deleteImage(Long galleryId, String imageName) {
-        Image image = getImage(galleryId, imageName)
+    public void deleteImage(Long userId, Long galleryId, String imageName) {
+        Image image = getImage(userId, galleryId, imageName)
                 .orElseThrow(() -> new ImageNotFoundException(imageName));
 
         imageStorageRepository.deleteImage(image.getLocation());
@@ -118,7 +119,7 @@ public class ImageService {
      */
     public void renameImage(Long userId, Long galleryId, String imageName, String newImageName) {
 
-        Image image = getImage(galleryId, imageName)
+        Image image = getImage(userId, galleryId, imageName)
                 .orElseThrow(() -> new ImageNotFoundException(imageName));
 
         newImageName = imageStorageRepository.renameImage(image.getLocation(), newImageName);
@@ -127,7 +128,7 @@ public class ImageService {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("/")
                 .append(userId).append("/")
-                .append(image.getGallery().getName()).append("/")
+                .append(galleryId).append("/")
                 .append(newImageName);
 
         image.setLocation(stringBuilder.toString());
@@ -166,9 +167,9 @@ public class ImageService {
      * @param imageName String name of the image
      * @return Optional<Image>
      */
-    private Optional<Image> getImage(Long galleryId, String imageName) {
+    private Optional<Image> getImage(Long userId, Long galleryId, String imageName) {
         return imageRepository.findByNameAndGalleryId(imageName,
-                galleryRepository.findById(galleryId)
+                galleryRepository.findByIdAndUserId(galleryId, userId)
                         .orElseThrow(() -> new GalleryNotFoundException("" + galleryId))
                         .getId());
     }
