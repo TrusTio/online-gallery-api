@@ -183,7 +183,7 @@ public class UserController {
                                                @CurrentSecurityContext(expression = "authentication")
                                                        IdUsernamePasswordAuthenticationToken authentication) {
         Gallery gallery = galleryRepository.findById(galleryId)
-                .orElseThrow(() -> new GalleryNotFoundException("" + galleryId));
+                .orElseThrow(() -> new GalleryNotFoundException(galleryId));
 
         return gallery.getImages()
                 .stream().map(ImageMapper::toImageDTO)

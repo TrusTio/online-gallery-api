@@ -46,7 +46,7 @@ public class ImageService {
      */
     public Long save(MultipartFile image, Long galleryId, Long userId) {
         Gallery gallery = galleryRepository.findByIdAndUserId(galleryId, userId)
-                .orElseThrow(() -> new GalleryNotFoundException("" + galleryId));
+                .orElseThrow(() -> new GalleryNotFoundException(galleryId));
 
         if (getImage(userId, galleryId, image.getOriginalFilename()).isPresent()) {
             throw new ImageValidationException("Image with that name already exists.");
@@ -170,7 +170,7 @@ public class ImageService {
     private Optional<Image> getImage(Long userId, Long galleryId, String imageName) {
         return imageRepository.findByNameAndGalleryId(imageName,
                 galleryRepository.findByIdAndUserId(galleryId, userId)
-                        .orElseThrow(() -> new GalleryNotFoundException("" + galleryId))
+                        .orElseThrow(() -> new GalleryNotFoundException(galleryId))
                         .getId());
     }
 }

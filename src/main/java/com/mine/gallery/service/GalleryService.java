@@ -79,7 +79,7 @@ public class GalleryService {
      */
     public void delete(Long id, Long galleryId) {
         Gallery gallery = galleryRepository.findByIdAndUserId(galleryId, id)
-                .orElseThrow(() -> new GalleryNotFoundException("" + galleryId));
+                .orElseThrow(() -> new GalleryNotFoundException(galleryId));
 
         imageStorageRepository.deleteGallery(id, galleryId);
 
@@ -98,7 +98,7 @@ public class GalleryService {
      */
     public void rename(Long id, Long galleryId, String newGalleryName) {
         Gallery gallery = galleryRepository.findByIdAndUserId(galleryId, id)
-                .orElseThrow(() -> new GalleryNotFoundException("" + galleryId));
+                .orElseThrow(() -> new GalleryNotFoundException(galleryId));
 
         gallery.setName(newGalleryName);
 
