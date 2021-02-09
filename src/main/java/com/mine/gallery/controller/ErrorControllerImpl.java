@@ -1,5 +1,6 @@
 package com.mine.gallery.controller;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
  *
  * @author TrusTio
  */
+@Hidden
 @RestController
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 public class ErrorControllerImpl implements ErrorController {
