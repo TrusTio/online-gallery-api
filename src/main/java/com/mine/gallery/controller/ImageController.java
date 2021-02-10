@@ -106,7 +106,7 @@ public class ImageController {
     }
 
     /**
-     * PUT Method that renames a specific image.
+     * PATCH Method that renames a specific image.
      * Users with role USER can rename only their own images.
      * Users with role ADMIN can rename any images.
      *

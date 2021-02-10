@@ -83,7 +83,7 @@ public class UserController {
     }
 
     /**
-     * A PUT method that gives the user an ADMIN role to an user.
+     * A PATCH method that gives the user an ADMIN role to an user.
      * Only users with role ADMIN can access this endpoint.
      *
      * @param id Long id of the user
@@ -98,7 +98,7 @@ public class UserController {
     }
 
     /**
-     * A PUT method that removes ADMIN role from the user.
+     * A PATCH method that removes ADMIN role from the user.
      * Only users with role ADMIN can access this endpoint.
      *
      * @param id Long id of the user

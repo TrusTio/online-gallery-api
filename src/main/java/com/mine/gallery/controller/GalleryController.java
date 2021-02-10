@@ -80,7 +80,7 @@ public class GalleryController {
     }
 
     /**
-     * PUT Method that renames the given gallery.
+     * PATCH Method that renames the given gallery.
      * Users with role USER can only rename galleries for their own accounts.
      * Users with role ADMIN can rename galleries in any account.
      *
