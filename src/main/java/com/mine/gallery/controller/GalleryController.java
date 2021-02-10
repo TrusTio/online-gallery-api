@@ -11,9 +11,9 @@ import org.springframework.security.core.annotation.CurrentSecurityContext;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -91,7 +91,7 @@ public class GalleryController {
      * @return ResponseEntity<String>
      */
     @PreAuthorize("#userId == #authentication.id || hasRole('ROLE_ADMIN')")
-    @PutMapping("/{userId}/{galleryId}")
+    @PatchMapping("/{userId}/{galleryId}")
     public ResponseEntity<String> rename(@PathVariable("userId") Long userId,
                                          @PathVariable("galleryId") Long galleryId,
                                          @RequestParam String newGalleryName,

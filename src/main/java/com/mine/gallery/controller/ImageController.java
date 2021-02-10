@@ -14,9 +14,9 @@ import org.springframework.security.core.annotation.CurrentSecurityContext;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -118,7 +118,7 @@ public class ImageController {
      * @return ResponseEntity<String>
      */
     @PreAuthorize("#userId == #authentication.id || hasRole('ROLE_ADMIN')")
-    @PutMapping(value = "/{userId}/{galleryId}/{imageName}")
+    @PatchMapping(value = "/{userId}/{galleryId}/{imageName}")
     public ResponseEntity<String> renameImage(@PathVariable("userId") Long userId,
                                               @PathVariable("galleryId") Long galleryId,
                                               @PathVariable("imageName") String imageName,

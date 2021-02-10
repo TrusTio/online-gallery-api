@@ -23,9 +23,9 @@ import org.springframework.security.core.annotation.CurrentSecurityContext;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -90,7 +90,7 @@ public class UserController {
      * @return {@link ResponseEntity<String>}
      */
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @PutMapping("/{id}/admin")
+    @PatchMapping("/{id}/admin")
     public ResponseEntity<String> setAdmin(@PathVariable("id") Long id) {
         userService.setAdmin(id);
 
@@ -105,7 +105,7 @@ public class UserController {
      * @return {@link ResponseEntity<String>}
      */
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @PutMapping("/{id}/noadmin")
+    @PatchMapping("/{id}/noadmin")
     public ResponseEntity<String> removeAdmin(@PathVariable("id") Long id) {
         userService.removeAdmin(id);
 
