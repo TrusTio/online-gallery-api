@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
  */
 @RestController
 @CrossOrigin(origins = "*", allowedHeaders = "*")
-@RequestMapping(path = "api/v1/user")
+@RequestMapping(path = "api/v1/users")
 public class UserController {
 
     @Autowired
@@ -60,7 +60,7 @@ public class UserController {
      * @param user {@link SignupUserDTO} body object used to create new user
      * @return String confirming the sign up
      */
-    @PostMapping("/signup")
+    @PostMapping
     public ResponseEntity<String> signUp(@Valid @RequestBody SignupUserDTO user, Errors errors) {
         userService.signUp(user, errors);
         Logger.getLogger(UserController.class.getName()).info("Created new user!");
@@ -75,7 +75,7 @@ public class UserController {
      * @return {@link List<UserDTO>} containing the user data
      */
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @GetMapping(path = "/all/users")
+    @GetMapping(path = "")
     public List<UserDTO> getAllUsers() {
         return userRepository.findAll().stream()
                 .map(UserMapper::toUserDto)

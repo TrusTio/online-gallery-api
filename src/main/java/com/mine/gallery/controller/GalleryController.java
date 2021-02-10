@@ -45,7 +45,7 @@ public class GalleryController {
      * @return ResponseEntity<String> confirming the creation
      */
     @PreAuthorize("#galleryDTO.userId == #authentication.id  || hasRole('ROLE_ADMIN')")
-    @PostMapping("/create")
+    @PostMapping
     public ResponseEntity<String> create(@Valid @RequestBody GalleryDTO galleryDTO,
                                          Errors errors,
                                          @CurrentSecurityContext(expression = "authentication")
