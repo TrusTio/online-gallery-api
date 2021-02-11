@@ -29,7 +29,7 @@ import java.util.logging.Logger;
  */
 @RestController
 @CrossOrigin(origins = "*", allowedHeaders = "*")
-@RequestMapping(path = "api/v1/gallery")
+@RequestMapping(path = "api/v1/galleries")
 public class GalleryController {
     @Autowired
     private GalleryService galleryService;

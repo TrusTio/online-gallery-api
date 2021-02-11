@@ -74,14 +74,14 @@ public class GalleryService {
     /**
      * Deletes a gallery and it's contents.
      *
-     * @param id        Long id used to find the gallery
+     * @param userId    Long id of the user used to find the gallery
      * @param galleryId Long id of the gallery to be deleted
      */
-    public void delete(Long id, Long galleryId) {
-        Gallery gallery = galleryRepository.findByIdAndUserId(galleryId, id)
+    public void delete(Long userId, Long galleryId) {
+        Gallery gallery = galleryRepository.findByIdAndUserId(galleryId, userId)
                 .orElseThrow(() -> new GalleryNotFoundException(galleryId));
 
-        imageStorageRepository.deleteGallery(id, galleryId);
+        imageStorageRepository.deleteGallery(userId, galleryId);
 
         galleryRepository.delete(gallery);
     }
@@ -92,12 +92,12 @@ public class GalleryService {
      * Then updates the gallery name in the database, after that changes the location of the
      * images in the database to their new location.
      *
-     * @param id             Long id of the user
+     * @param userId         Long id of the user
      * @param galleryId      Long id of the gallery of the gallery
      * @param newGalleryName String new gallery name
      */
-    public void rename(Long id, Long galleryId, String newGalleryName) {
-        Gallery gallery = galleryRepository.findByIdAndUserId(galleryId, id)
+    public void rename(Long userId, Long galleryId, String newGalleryName) {
+        Gallery gallery = galleryRepository.findByIdAndUserId(galleryId, userId)
                 .orElseThrow(() -> new GalleryNotFoundException(galleryId));
 
         gallery.setName(newGalleryName);

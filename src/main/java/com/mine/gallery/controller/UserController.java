@@ -75,7 +75,7 @@ public class UserController {
      * @return {@link List<UserDTO>} containing the user data
      */
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @GetMapping(path = "")
+    @GetMapping
     public List<UserDTO> getAllUsers() {
         return userRepository.findAll().stream()
                 .map(UserMapper::toUserDto)
@@ -86,13 +86,13 @@ public class UserController {
      * A PATCH method that gives the user an ADMIN role to an user.
      * Only users with role ADMIN can access this endpoint.
      *
-     * @param id Long id of the user
+     * @param userId Long id of the user
      * @return {@link ResponseEntity<String>}
      */
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @PatchMapping("/{id}/admin")
-    public ResponseEntity<String> setAdmin(@PathVariable("id") Long id) {
-        userService.setAdmin(id);
+    @PatchMapping("/{userId}/admin")
+    public ResponseEntity<String> setAdmin(@PathVariable("userId") Long userId) {
+        userService.setAdmin(userId);
 
         return new ResponseEntity<>("User updated to admin successfully", HttpStatus.ACCEPTED);
     }
@@ -101,13 +101,13 @@ public class UserController {
      * A PATCH method that removes ADMIN role from the user.
      * Only users with role ADMIN can access this endpoint.
      *
-     * @param id Long id of the user
+     * @param userId Long id of the user
      * @return {@link ResponseEntity<String>}
      */
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @PatchMapping("/{id}/noadmin")
-    public ResponseEntity<String> removeAdmin(@PathVariable("id") Long id) {
-        userService.removeAdmin(id);
+    @PatchMapping("/{userId}/noadmin")
+    public ResponseEntity<String> removeAdmin(@PathVariable("userId") Long userId) {
+        userService.removeAdmin(userId);
 
         return new ResponseEntity<>("User updated to normal user successfully", HttpStatus.ACCEPTED);
     }
@@ -117,18 +117,18 @@ public class UserController {
      * Users with role USER can access only their own user information.
      * Users with role ADMIN can access information about all users.
      *
-     * @param id             Long id of the user to be fetched
+     * @param userId         Long id of the user to be fetched
      * @param authentication {@link IdUsernamePasswordAuthenticationToken} holds information for the currently logged in user.
      * @return the found {@link UserDTO} if such exists
      */
-    @PreAuthorize("#id == #authentication.id || hasRole('ROLE_ADMIN')")
-    @GetMapping(path = "/{id}")
-    public UserDTO getUserById(@PathVariable("id") Long id,
+    @PreAuthorize("#userId == #authentication.id || hasRole('ROLE_ADMIN')")
+    @GetMapping(path = "/{userId}")
+    public UserDTO getUserById(@PathVariable("userId") Long userId,
                                @CurrentSecurityContext(expression = "authentication")
                                        IdUsernamePasswordAuthenticationToken authentication) {
 
-        return UserMapper.toUserDto(userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException(id)));
+        return UserMapper.toUserDto(userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(userId)));
     }
 
     /**
@@ -149,17 +149,17 @@ public class UserController {
      * Users with role USER can access only their own user galleries.
      * Users with role ADMIN can access the galleries of everyone.
      *
-     * @param id             Long id of the user to be fetched
+     * @param userId         Long id of the user to be fetched
      * @param authentication {@link IdUsernamePasswordAuthenticationToken} holds information for the currently logged in user.
      * @return {@link List<UserGalleriesDTO>} of the gallery names
      */
-    @PreAuthorize("#id == #authentication.id || hasRole('ROLE_ADMIN')")
-    @GetMapping(path = "/{id}/galleries")
-    public List<UserGalleriesDTO> getUserGalleries(@PathVariable("id") Long id,
+    @PreAuthorize("#userId == #authentication.id || hasRole('ROLE_ADMIN')")
+    @GetMapping(path = "/{userId}/galleries")
+    public List<UserGalleriesDTO> getUserGalleries(@PathVariable("userId") Long userId,
                                                    @CurrentSecurityContext(expression = "authentication")
                                                            IdUsernamePasswordAuthenticationToken authentication) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException(id));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(userId));
 
         return user.getGalleries()
                 .stream().map(GalleryMapper::toUserGalleriesDTO)
@@ -171,18 +171,18 @@ public class UserController {
      * Users with role USER can access only their own user images.
      * Users with role ADMIN can access the images of everyone.
      *
-     * @param id             Long id of the user to be fetched
+     * @param userId         Long id of the user to be fetched
      * @param galleryId      Long id of the gallery
      * @param authentication {@link IdUsernamePasswordAuthenticationToken} holds information for the currently logged in user.
      * @return {@link List<ImageDTO>}
      */
-    @PreAuthorize("#id == #authentication.id || hasRole('ROLE_ADMIN')")
-    @GetMapping(path = "/{id}/gallery/{galleryId}")
-    public List<ImageDTO> getUserGalleryImages(@PathVariable("id") Long id,
+    @PreAuthorize("#userId == #authentication.id || hasRole('ROLE_ADMIN')")
+    @GetMapping(path = "/{userId}/galleries/{galleryId}")
+    public List<ImageDTO> getUserGalleryImages(@PathVariable("userId") Long userId,
                                                @PathVariable("galleryId") Long galleryId,
                                                @CurrentSecurityContext(expression = "authentication")
                                                        IdUsernamePasswordAuthenticationToken authentication) {
-        Gallery gallery = galleryRepository.findById(galleryId)
+        Gallery gallery = galleryRepository.findByIdAndUserId(galleryId, userId)
                 .orElseThrow(() -> new GalleryNotFoundException(galleryId));
 
         return gallery.getImages()
