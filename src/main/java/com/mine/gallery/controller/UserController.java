@@ -8,12 +8,12 @@ import com.mine.gallery.persistence.repository.GalleryRepository;
 import com.mine.gallery.persistence.repository.UserRepository;
 import com.mine.gallery.security.IdUsernamePasswordAuthenticationToken;
 import com.mine.gallery.service.UserService;
+import com.mine.gallery.service.dto.GalleryContentsDTO;
 import com.mine.gallery.service.dto.ImageDTO;
 import com.mine.gallery.service.dto.SignupUserDTO;
 import com.mine.gallery.service.dto.UserDTO;
 import com.mine.gallery.service.dto.UserGalleriesDTO;
 import com.mine.gallery.service.mapper.GalleryMapper;
-import com.mine.gallery.service.mapper.ImageMapper;
 import com.mine.gallery.service.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -178,15 +178,16 @@ public class UserController {
      */
     @PreAuthorize("#userId == #authentication.id || hasRole('ROLE_ADMIN')")
     @GetMapping(path = "/{userId}/galleries/{galleryId}")
-    public List<ImageDTO> getUserGalleryImages(@PathVariable("userId") Long userId,
-                                               @PathVariable("galleryId") Long galleryId,
-                                               @CurrentSecurityContext(expression = "authentication")
-                                                       IdUsernamePasswordAuthenticationToken authentication) {
+    public GalleryContentsDTO getUserGalleryImages(@PathVariable("userId") Long userId,
+                                                   @PathVariable("galleryId") Long galleryId,
+                                                   @CurrentSecurityContext(expression = "authentication")
+                                                           IdUsernamePasswordAuthenticationToken authentication) {
         Gallery gallery = galleryRepository.findByIdAndUserId(galleryId, userId)
                 .orElseThrow(() -> new GalleryNotFoundException(galleryId));
 
-        return gallery.getImages()
+        return GalleryMapper.toGalleryContentsDTO(gallery);
+       /* return gallery.getImages()
                 .stream().map(ImageMapper::toImageDTO)
-                .collect(Collectors.toList());
+                .collect(Collectors.toList());*/
     }
 }
