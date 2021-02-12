@@ -35,9 +35,9 @@ public class GalleryMapper {
         return new UserGalleriesDTO()
                 .setId(gallery.getId())
                 .setName(gallery.getName())
-                .setUrl("http://localhost:8080/api/v1/user/"
+                .setUrl("http://localhost:8080/api/v1/users/"
                         + gallery.getUser().getId()
-                        + "/gallery/"
+                        + "/galleries/"
                         + gallery.getId());
     }
 

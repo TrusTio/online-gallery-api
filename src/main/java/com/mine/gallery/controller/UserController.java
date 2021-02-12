@@ -186,8 +186,5 @@ public class UserController {
                 .orElseThrow(() -> new GalleryNotFoundException(galleryId));
 
         return GalleryMapper.toGalleryContentsDTO(gallery);
-       /* return gallery.getImages()
-                .stream().map(ImageMapper::toImageDTO)
-                .collect(Collectors.toList());*/
     }
 }
