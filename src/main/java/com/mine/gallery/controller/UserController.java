@@ -3,7 +3,6 @@ package com.mine.gallery.controller;
 import com.mine.gallery.exception.gallery.GalleryNotFoundException;
 import com.mine.gallery.exception.user.UserNotFoundException;
 import com.mine.gallery.persistence.entity.Gallery;
-import com.mine.gallery.persistence.entity.User;
 import com.mine.gallery.persistence.repository.GalleryRepository;
 import com.mine.gallery.persistence.repository.UserRepository;
 import com.mine.gallery.security.IdUsernamePasswordAuthenticationToken;
@@ -161,13 +160,14 @@ public class UserController {
      */
     @PreAuthorize("#userId == #authentication.id || hasRole('ROLE_ADMIN')")
     @GetMapping(path = "/{userId}/galleries")
-    public List<UserGalleriesDTO> getUserGalleries(@PathVariable("userId") Long userId,
+    public List<UserGalleriesDTO> getUserGalleries(@RequestParam(defaultValue = "0") Integer pageNo,
+                                                   @RequestParam(defaultValue = "20") Integer pageSize,
+                                                   @RequestParam(defaultValue = "id") String sortBy,
+                                                   @PathVariable("userId") Long userId,
                                                    @CurrentSecurityContext(expression = "authentication")
                                                            IdUsernamePasswordAuthenticationToken authentication) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException(userId));
 
-        return user.getGalleries()
+        return galleryRepository.findAllByUserId(userId, PageRequest.of(pageNo, pageSize, Sort.by(sortBy)))
                 .stream().map(GalleryMapper::toUserGalleriesDTO)
                 .collect(Collectors.toList());
     }

@@ -1,7 +1,9 @@
 package com.mine.gallery.persistence.repository;
 
 import com.mine.gallery.persistence.entity.Gallery;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
@@ -10,7 +12,7 @@ import java.util.Optional;
  *
  * @author TrusTio
  */
-public interface GalleryRepository extends CrudRepository<Gallery, Integer> {
+public interface GalleryRepository extends JpaRepository<Gallery, Integer> {
     Optional<Gallery> findById(Long id);
 
     Optional<Gallery> findByIdAndUserId(Long id, Long userId);
@@ -18,6 +20,8 @@ public interface GalleryRepository extends CrudRepository<Gallery, Integer> {
     Optional<Gallery> findByName(String name);
 
     Optional<Gallery> findByNameAndUserId(String name, Long userId);
+
+    Page<Gallery> findAllByUserId(Long userId, Pageable pageable);
 
     void delete(Gallery gallery);
 }
