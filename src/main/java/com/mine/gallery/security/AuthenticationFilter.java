@@ -31,6 +31,7 @@ import static com.mine.gallery.security.SecurityConstants.*;
  */
 public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
+
     public AuthenticationFilter(AuthenticationManager authenticationManager) {
         this.authenticationManager = authenticationManager;
         setFilterProcessesUrl("/login");

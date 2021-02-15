@@ -16,6 +16,8 @@ import com.mine.gallery.service.dto.UserGalleriesDTO;
 import com.mine.gallery.service.mapper.GalleryMapper;
 import com.mine.gallery.service.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,6 +30,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
@@ -69,15 +72,18 @@ public class UserController {
     }
 
     /**
-     * A GET method that fetches all the users mapped to {@link UserDTO}.
+     * A GET method that fetches all the users paginated, sorted and mapped to {@link UserDTO}.
      * Only users with role ADMIN can access this endpoint.
      *
      * @return {@link List<UserDTO>} containing the user data
      */
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping
-    public List<UserDTO> getAllUsers() {
-        return userRepository.findAll().stream()
+    public List<UserDTO> getAllUsers(@RequestParam(defaultValue = "0") Integer pageNo,
+                                     @RequestParam(defaultValue = "10") Integer pageSize,
+                                     @RequestParam(defaultValue = "id") String sortBy) {
+        return userRepository.findAll(PageRequest.of(pageNo, pageSize, Sort.by(sortBy)))
+                .stream()
                 .map(UserMapper::toUserDto)
                 .collect(Collectors.toList());
     }
