@@ -77,6 +77,9 @@ public class UserController {
      * A GET method that fetches all the users paginated, sorted and mapped to {@link UserDTO}.
      * Only users with role ADMIN can access this endpoint.
      *
+     * @param pageNo   Integer Number of the page to be fetched
+     * @param pageSize Integer Size of the pages
+     * @param sortBy   String sort by field
      * @return {@link List<UserDTO>} containing the user data
      */
     @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -157,6 +160,9 @@ public class UserController {
      * Users with role USER can access only their own user galleries.
      * Users with role ADMIN can access the galleries of everyone.
      *
+     * @param pageNo         Integer Number of the page to be fetched
+     * @param pageSize       Integer Size of the pages
+     * @param sortBy         String sort by field
      * @param userId         Long id of the user to be fetched
      * @param authentication {@link IdUsernamePasswordAuthenticationToken} holds information for the currently logged in user.
      * @return {@link List<UserGalleriesDTO>} of the gallery names
@@ -180,6 +186,9 @@ public class UserController {
      * Users with role USER can access only their own user images.
      * Users with role ADMIN can access the images of everyone.
      *
+     * @param pageNo         Integer Number of the page to be fetched
+     * @param pageSize       Integer Size of the pages
+     * @param sortBy         String sort by field
      * @param userId         Long id of the user to be fetched
      * @param galleryId      Long id of the gallery
      * @param authentication {@link IdUsernamePasswordAuthenticationToken} holds information for the currently logged in user.
@@ -200,6 +209,36 @@ public class UserController {
                 .orElseThrow(() -> new GalleryNotFoundException(galleryId));
 
         return imageRepository.findAllByGalleryId(gallery.getId(), PageRequest.of(pageNo, pageSize, Sort.by(sortBy)))
+                .stream().map(ImageMapper::toImageDTO)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Get method that returns a list of the images(name and url) the user has in all galleries.
+     * Users with role USER can access only their own user images.
+     * Users with role ADMIN can access the images of everyone.
+     *
+     * @param pageNo         Integer Number of the page to be fetched
+     * @param pageSize       Integer Size of the pages
+     * @param sortBy         String sort by field
+     * @param userId         Long id of the user to be fetched
+     * @param authentication {@link IdUsernamePasswordAuthenticationToken} holds information for the currently logged in user.
+     * @return {@link List<ImageDTO>}
+     */
+    @PreAuthorize("#userId == #authentication.id || hasRole('ROLE_ADMIN')")
+    @GetMapping(path = "/{userId}/images")
+    public List<ImageDTO> getUserImages(@RequestParam(defaultValue = "0") Integer pageNo,
+                                        @RequestParam(defaultValue = "20") Integer pageSize,
+                                        @RequestParam(defaultValue = "id") String sortBy,
+                                        @PathVariable("userId") Long userId,
+                                        @CurrentSecurityContext(expression = "authentication")
+                                                IdUsernamePasswordAuthenticationToken authentication) {
+
+        List<Gallery> userGalleries = galleryRepository.findAllByUserId(userId);
+        Long[] galleryIds = userGalleries
+                .stream().map(Gallery::getId).toArray(Long[]::new);
+
+        return imageRepository.findAllByGalleryIdIn(galleryIds, PageRequest.of(pageNo, pageSize, Sort.by(sortBy)))
                 .stream().map(ImageMapper::toImageDTO)
                 .collect(Collectors.toList());
     }

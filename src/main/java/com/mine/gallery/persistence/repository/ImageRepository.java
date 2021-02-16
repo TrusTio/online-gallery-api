@@ -20,6 +20,7 @@ public interface ImageRepository extends JpaRepository<Image, Integer> {
     Iterable<Image> findAllByGalleryId(Long galleryId);
 
     Page<Image> findAllByGalleryId(Long galleryId, Pageable pageable);
+    Page<Image> findAllByGalleryIdIn(Long[] galleryId, Pageable pageable);
 
     void delete(Image image);
 }
