@@ -12,6 +12,7 @@ import com.mine.gallery.exception.user.UserNotFoundException;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureException;
+import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -224,6 +225,38 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
         ApiError apiError = new ApiError(HttpStatus.UNAUTHORIZED, e.getMessage())
                 .setDetail("Login again to get a valid token.");
+
+        return buildResponseEntity(apiError);
+    }
+
+    /**
+     * Handles IllegalArgumentException
+     *
+     * @param e       IllegalArgumentException
+     * @param request WebRequest
+     * @return ResponseEntity<Object>
+     */
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Object> handleIllegalArgument(
+            IllegalArgumentException e, WebRequest request) {
+
+        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, e.getMessage());
+
+        return buildResponseEntity(apiError);
+    }
+
+    /**
+     * Handles PropertyReferenceException
+     *
+     * @param e       PropertyReferenceException
+     * @param request WebRequest
+     * @return ResponseEntity<Object>
+     */
+    @ExceptionHandler(PropertyReferenceException.class)
+    public ResponseEntity<Object> handlePropertyReference(
+            PropertyReferenceException e, WebRequest request) {
+
+        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, e.getMessage());
 
         return buildResponseEntity(apiError);
     }
