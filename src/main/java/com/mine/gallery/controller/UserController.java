@@ -4,15 +4,16 @@ import com.mine.gallery.exception.gallery.GalleryNotFoundException;
 import com.mine.gallery.exception.user.UserNotFoundException;
 import com.mine.gallery.persistence.entity.Gallery;
 import com.mine.gallery.persistence.repository.GalleryRepository;
+import com.mine.gallery.persistence.repository.ImageRepository;
 import com.mine.gallery.persistence.repository.UserRepository;
 import com.mine.gallery.security.IdUsernamePasswordAuthenticationToken;
 import com.mine.gallery.service.UserService;
-import com.mine.gallery.service.dto.GalleryContentsDTO;
 import com.mine.gallery.service.dto.ImageDTO;
 import com.mine.gallery.service.dto.SignupUserDTO;
 import com.mine.gallery.service.dto.UserDTO;
 import com.mine.gallery.service.dto.UserGalleriesDTO;
 import com.mine.gallery.service.mapper.GalleryMapper;
+import com.mine.gallery.service.mapper.ImageMapper;
 import com.mine.gallery.service.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -53,6 +54,8 @@ public class UserController {
     private UserService userService;
     @Autowired
     private GalleryRepository galleryRepository;
+    @Autowired
+    private ImageRepository imageRepository;
 
 
     /**
@@ -184,13 +187,20 @@ public class UserController {
      */
     @PreAuthorize("#userId == #authentication.id || hasRole('ROLE_ADMIN')")
     @GetMapping(path = "/{userId}/galleries/{galleryId}")
-    public GalleryContentsDTO getUserGalleryImages(@PathVariable("userId") Long userId,
-                                                   @PathVariable("galleryId") Long galleryId,
-                                                   @CurrentSecurityContext(expression = "authentication")
-                                                           IdUsernamePasswordAuthenticationToken authentication) {
+    public List<ImageDTO> getUserGalleryImages(@RequestParam(defaultValue = "0") Integer pageNo,
+                                               @RequestParam(defaultValue = "20") Integer pageSize,
+                                               @RequestParam(defaultValue = "id") String sortBy,
+                                               @PathVariable("userId") Long userId,
+                                               @PathVariable("galleryId") Long galleryId,
+                                               @CurrentSecurityContext(expression = "authentication")
+                                                       IdUsernamePasswordAuthenticationToken authentication) {
+
+
         Gallery gallery = galleryRepository.findByIdAndUserId(galleryId, userId)
                 .orElseThrow(() -> new GalleryNotFoundException(galleryId));
 
-        return GalleryMapper.toGalleryContentsDTO(gallery);
+        return imageRepository.findAllByGalleryId(gallery.getId(), PageRequest.of(pageNo, pageSize, Sort.by(sortBy)))
+                .stream().map(ImageMapper::toImageDTO)
+                .collect(Collectors.toList());
     }
 }
