@@ -6,6 +6,7 @@ import com.mine.gallery.service.dto.SignupUserDTO;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,7 +21,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Logger;
 
 import static com.mine.gallery.security.SecurityConstants.*;
 
@@ -29,6 +29,7 @@ import static com.mine.gallery.security.SecurityConstants.*;
  *
  * @author TrusTio
  */
+@Slf4j
 public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
 
@@ -45,7 +46,8 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
      */
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
-        Logger.getLogger(AuthenticationFilter.class.getName()).info("Attempting authentication!");
+        log.info("Attempting authentication!");
+
         try {
             SignupUserDTO creds = new ObjectMapper()
                     .readValue(request.getInputStream(), SignupUserDTO.class);
@@ -60,7 +62,8 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         } catch (IOException e) {
             throw new RuntimeException("Could not read request" + e);
         } catch (BadCredentialsException e) {
-            Logger.getLogger(AuthenticationFilter.class.getName()).info("Authentication failed!");
+            log.info("Authentication failed!");
+
             throw new LoginException("Incorrect username or password!") {
             };
         }
@@ -99,7 +102,8 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
                         .signWith(SignatureAlgorithm.HS512, SECRET.getBytes())
                         .compact();
                 response.addHeader(HEADER_STRING, TOKEN_PREFIX + token);
-                Logger.getLogger(AuthenticationFilter.class.getName()).info("Successful authentication!");
+
+                log.info("Successful authentication!");
             }
 
         }

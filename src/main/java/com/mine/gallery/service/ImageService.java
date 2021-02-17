@@ -11,11 +11,13 @@ import com.mine.gallery.persistence.repository.ImageStorageRepository;
 import com.mine.gallery.persistence.repository.UserRepository;
 import com.mine.gallery.service.dto.ImageDTO;
 import com.mine.gallery.service.mapper.ImageMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,7 +26,6 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
@@ -33,6 +34,7 @@ import java.util.stream.Collectors;
  * @author TrusTio
  */
 @Service
+@Slf4j
 public class ImageService {
     @Autowired
     private ImageStorageRepository imageStorageRepository;
@@ -52,6 +54,7 @@ public class ImageService {
      * @param userId    Long user id of the user
      * @return
      */
+    @Transactional
     public Long save(MultipartFile image, Long galleryId, Long userId) {
         Gallery gallery = galleryRepository.findByIdAndUserId(galleryId, userId)
                 .orElseThrow(() -> new GalleryNotFoundException(galleryId));
@@ -75,7 +78,7 @@ public class ImageService {
         try {
             imageStorageRepository.saveImage(image.getBytes(), imageLocation);
         } catch (IOException e) {
-            Logger.getLogger(ImageService.class.getName()).warning(e.getMessage());
+            log.error(e.getMessage());
         }
 
         return imageRepository.save(new Image()

@@ -2,6 +2,7 @@ package com.mine.gallery.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AuthorizationServiceException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.GrantedAuthority;
@@ -16,7 +17,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.logging.Logger;
 
 import static com.mine.gallery.security.SecurityConstants.SECRET;
 
@@ -25,6 +25,7 @@ import static com.mine.gallery.security.SecurityConstants.SECRET;
  *
  * @author TrusTio
  */
+@Slf4j
 public class AuthorizationFilter extends BasicAuthenticationFilter {
 
     public AuthorizationFilter(AuthenticationManager authenticationManager) {
@@ -43,9 +44,12 @@ public class AuthorizationFilter extends BasicAuthenticationFilter {
             filterChain.doFilter(request, response);
             throw new AuthorizationServiceException("Missing Authorization header or 'Bearer' prefix.");
         }
-        Logger.getLogger(AuthorizationFilter.class.getName()).info("Getting authentication!");
+        log.info("Checking authorization!");
+
         IdUsernamePasswordAuthenticationToken authenticationToken = getAuthentication(request);
+
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+
         filterChain.doFilter(request, response);
     }
 
@@ -83,6 +87,8 @@ public class AuthorizationFilter extends BasicAuthenticationFilter {
             }
 
             if (user != null) {
+                log.info("Authorization successful!");
+
                 return new IdUsernamePasswordAuthenticationToken(id, user, id, list);
             }
             return null;

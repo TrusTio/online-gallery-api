@@ -8,6 +8,7 @@ import com.mine.gallery.service.dto.ImageDTO;
 import com.mine.gallery.service.dto.SignupUserDTO;
 import com.mine.gallery.service.dto.UserDTO;
 import com.mine.gallery.service.dto.UserGalleriesDTO;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +27,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * User controller that exposes user end points
@@ -36,6 +36,7 @@ import java.util.logging.Logger;
 @RestController
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RequestMapping(path = "api/v1/users")
+@Slf4j
 public class UserController {
     @Autowired
     private UserService userService;
@@ -55,9 +56,9 @@ public class UserController {
     @PostMapping
     public ResponseEntity<String> signUp(@Valid @RequestBody SignupUserDTO user, Errors errors) {
         userService.signUp(user, errors);
-        Logger.getLogger(UserController.class.getName()).info("Created new user!");
+        log.info("User created successfully!");
 
-        return new ResponseEntity<>("User created successfully", HttpStatus.CREATED);
+        return new ResponseEntity<>("User created successfully!", HttpStatus.CREATED);
     }
 
     /**
@@ -74,6 +75,8 @@ public class UserController {
     public List<UserDTO> getAllUsers(@RequestParam(defaultValue = "0") Integer pageNo,
                                      @RequestParam(defaultValue = "10") Integer pageSize,
                                      @RequestParam(defaultValue = "id") String sortBy) {
+        log.info("Users fetched successfully!");
+
         return userService.getAllUsers(pageNo, pageSize, sortBy);
     }
 
@@ -88,8 +91,9 @@ public class UserController {
     @PatchMapping("/{userId}/admin")
     public ResponseEntity<String> setAdmin(@PathVariable("userId") Long userId) {
         userService.setAdmin(userId);
+        log.info("User updated to admin successfully!");
 
-        return new ResponseEntity<>("User updated to admin successfully", HttpStatus.ACCEPTED);
+        return new ResponseEntity<>("User updated to admin successfully!", HttpStatus.ACCEPTED);
     }
 
     /**
@@ -103,8 +107,9 @@ public class UserController {
     @PatchMapping("/{userId}/noadmin")
     public ResponseEntity<String> removeAdmin(@PathVariable("userId") Long userId) {
         userService.removeAdmin(userId);
+        log.info("User updated to normal user successfully!");
 
-        return new ResponseEntity<>("User updated to normal user successfully", HttpStatus.ACCEPTED);
+        return new ResponseEntity<>("User updated to normal user successfully!", HttpStatus.ACCEPTED);
     }
 
     /**
@@ -121,6 +126,8 @@ public class UserController {
     public UserDTO getUserById(@PathVariable("userId") Long userId,
                                @CurrentSecurityContext(expression = "authentication")
                                        IdUsernamePasswordAuthenticationToken authentication) {
+        log.info("User fetched successfully!");
+
         return userService.getUserById(userId);
     }
 
@@ -133,6 +140,8 @@ public class UserController {
     @GetMapping(path = "/me")
     public UserDTO getCurrentUser(@CurrentSecurityContext(expression = "authentication")
                                           IdUsernamePasswordAuthenticationToken authentication) {
+        log.info("Current User fetched successfully!");
+
         return userService.getUserById(authentication.getId());
     }
 
@@ -156,6 +165,8 @@ public class UserController {
                                                    @PathVariable("userId") Long userId,
                                                    @CurrentSecurityContext(expression = "authentication")
                                                            IdUsernamePasswordAuthenticationToken authentication) {
+        log.info("User Galleries fetched successfully!");
+
         return galleryService.getUserGalleries(pageNo, pageSize, sortBy, userId);
     }
 
@@ -181,6 +192,8 @@ public class UserController {
                                                @PathVariable("galleryId") Long galleryId,
                                                @CurrentSecurityContext(expression = "authentication")
                                                        IdUsernamePasswordAuthenticationToken authentication) {
+        log.info("User Images in Gallery fetched successfully!");
+
         return imageService.getUserGalleryImages(pageNo, pageSize, sortBy, userId, galleryId);
     }
 
@@ -204,6 +217,8 @@ public class UserController {
                                         @PathVariable("userId") Long userId,
                                         @CurrentSecurityContext(expression = "authentication")
                                                 IdUsernamePasswordAuthenticationToken authentication) {
+        log.info("User Images fetched successfully!");
+
         return imageService.getUserImages(pageNo, pageSize, sortBy, userId);
     }
 }

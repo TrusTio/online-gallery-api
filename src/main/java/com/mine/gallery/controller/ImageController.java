@@ -1,9 +1,8 @@
 package com.mine.gallery.controller;
 
-import com.mine.gallery.persistence.repository.RoleRepository;
-import com.mine.gallery.persistence.repository.UserRepository;
 import com.mine.gallery.security.IdUsernamePasswordAuthenticationToken;
 import com.mine.gallery.service.ImageService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpStatus;
@@ -30,13 +29,10 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RequestMapping(path = "api/v1/image")
+@Slf4j
 public class ImageController {
     @Autowired
     private ImageService imageService;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private RoleRepository roleRepository;
 
     /**
      * A POST method that lets the user upload an image
@@ -52,11 +48,10 @@ public class ImageController {
                                               @RequestParam("galleryId") Long galleryId,
                                               @CurrentSecurityContext(expression = "authentication")
                                                       IdUsernamePasswordAuthenticationToken authentication) {
-        imageService.save(image,
-                galleryId,
-                authentication.getId());
+        imageService.save(image, galleryId, authentication.getId());
+        log.info("Image uploaded successfully!");
 
-        return new ResponseEntity<>("Image uploaded successfully", HttpStatus.CREATED);
+        return new ResponseEntity<>("Image uploaded successfully!", HttpStatus.CREATED);
     }
 
     /**
@@ -77,6 +72,7 @@ public class ImageController {
                                             @PathVariable("imageName") String imageName,
                                             @CurrentSecurityContext(expression = "authentication")
                                                     IdUsernamePasswordAuthenticationToken authentication) {
+        log.info("Image fetched successfully!");
 
         return imageService.find(userId, galleryId, imageName);
     }
@@ -99,10 +95,10 @@ public class ImageController {
                                               @PathVariable("imageName") String imageName,
                                               @CurrentSecurityContext(expression = "authentication")
                                                       IdUsernamePasswordAuthenticationToken authentication) {
-
         imageService.deleteImage(userId, galleryId, imageName);
+        log.info("Image deleted successfully!");
 
-        return new ResponseEntity<>("Image deleted successfully", HttpStatus.ACCEPTED);
+        return new ResponseEntity<>("Image deleted successfully!", HttpStatus.ACCEPTED);
     }
 
     /**
@@ -125,10 +121,10 @@ public class ImageController {
                                               @RequestParam String newImageName,
                                               @CurrentSecurityContext(expression = "authentication")
                                                       IdUsernamePasswordAuthenticationToken authentication) {
-
         imageService.renameImage(userId, galleryId, imageName, newImageName);
+        log.info("Image renamed successfully!");
 
-        return new ResponseEntity<>("Image renamed successfully", HttpStatus.ACCEPTED);
+        return new ResponseEntity<>("Image renamed successfully!", HttpStatus.ACCEPTED);
     }
 
 }

@@ -3,6 +3,7 @@ package com.mine.gallery.controller;
 import com.mine.gallery.security.IdUsernamePasswordAuthenticationToken;
 import com.mine.gallery.service.GalleryService;
 import com.mine.gallery.service.dto.GalleryDTO;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.util.logging.Logger;
 
 /**
  * Gallery controller that exposes gallery end points
@@ -30,6 +30,7 @@ import java.util.logging.Logger;
 @RestController
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RequestMapping(path = "api/v1/galleries")
+@Slf4j
 public class GalleryController {
     @Autowired
     private GalleryService galleryService;
@@ -50,11 +51,10 @@ public class GalleryController {
                                          Errors errors,
                                          @CurrentSecurityContext(expression = "authentication")
                                                  IdUsernamePasswordAuthenticationToken authentication) {
-
         galleryService.create(galleryDTO, errors);
-        Logger.getLogger(UserController.class.getName()).info("Created new gallery!");
+        log.info("Gallery created successfully!");
 
-        return new ResponseEntity<>("Gallery created successfully", HttpStatus.CREATED);
+        return new ResponseEntity<>("Gallery created successfully!", HttpStatus.CREATED);
     }
 
     /**
@@ -73,10 +73,10 @@ public class GalleryController {
                                          @PathVariable("galleryId") Long galleryId,
                                          @CurrentSecurityContext(expression = "authentication")
                                                  IdUsernamePasswordAuthenticationToken authentication) {
-
         galleryService.delete(userId, galleryId);
+        log.info("Gallery deleted successfully!");
 
-        return new ResponseEntity<>("Gallery deleted successfully", HttpStatus.ACCEPTED);
+        return new ResponseEntity<>("Gallery deleted successfully!", HttpStatus.ACCEPTED);
     }
 
     /**
@@ -97,9 +97,9 @@ public class GalleryController {
                                          @RequestParam String newGalleryName,
                                          @CurrentSecurityContext(expression = "authentication")
                                                  IdUsernamePasswordAuthenticationToken authentication) {
-
         galleryService.rename(userId, galleryId, newGalleryName);
+        log.info("Gallery updated successfully!");
 
-        return new ResponseEntity<>("Gallery updated successfully", HttpStatus.ACCEPTED);
+        return new ResponseEntity<>("Gallery updated successfully!", HttpStatus.ACCEPTED);
     }
 }
