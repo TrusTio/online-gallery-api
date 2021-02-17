@@ -6,23 +6,29 @@ import com.mine.gallery.exception.user.UserNotFoundException;
 import com.mine.gallery.persistence.entity.Role;
 import com.mine.gallery.persistence.entity.RoleName;
 import com.mine.gallery.persistence.entity.User;
+import com.mine.gallery.persistence.repository.GalleryRepository;
 import com.mine.gallery.persistence.repository.RoleRepository;
 import com.mine.gallery.persistence.repository.UserRepository;
 import com.mine.gallery.service.dto.SignupUserDTO;
+import com.mine.gallery.service.dto.UserDTO;
 import com.mine.gallery.service.mapper.UserMapper;
 import com.mine.gallery.util.ExceptionStringUtil;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
- * Service class for the {@link com.mine.gallery.controller.UserController}
+ * Service class for User related methods.
  *
  * @author TrusTio
  */
@@ -35,6 +41,8 @@ public class UserService {
     private UserRepository userRepository;
     @Autowired
     private RoleRepository roleRepository;
+    @Autowired
+    private GalleryRepository galleryRepository;
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
@@ -76,6 +84,22 @@ public class UserService {
     }
 
     /**
+     * Fetches all the users paginated, sorted and mapped to {@link UserDTO}.
+     *
+     * @param pageNo   Integer Number of the page to be fetched
+     * @param pageSize Integer Size of the pages
+     * @param sortBy   String sort by field
+     * @return {@link List<UserDTO>} containing the user data
+     */
+    public List<UserDTO> getAllUsers(Integer pageNo, Integer pageSize, String sortBy) {
+        return userRepository.findAll(PageRequest.of(pageNo, pageSize, Sort.by(sortBy)))
+                .stream()
+                .map(UserMapper::toUserDto)
+                .collect(Collectors.toList());
+    }
+
+
+    /**
      * Adds ADMIN role to the user.
      *
      * @param userId Long id of the user
@@ -105,5 +129,16 @@ public class UserService {
         user.removeRole(role);
 
         userRepository.save(user);
+    }
+
+    /**
+     * Fetches all the information about specific user using user id
+     *
+     * @param userId Long id of the user to be fetched
+     * @return the found {@link UserDTO} if such exists
+     */
+    public UserDTO getUserById(Long userId) {
+        return UserMapper.toUserDto(userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(userId)));
     }
 }

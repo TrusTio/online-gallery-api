@@ -1,23 +1,14 @@
 package com.mine.gallery.controller;
 
-import com.mine.gallery.exception.gallery.GalleryNotFoundException;
-import com.mine.gallery.exception.user.UserNotFoundException;
-import com.mine.gallery.persistence.entity.Gallery;
-import com.mine.gallery.persistence.repository.GalleryRepository;
-import com.mine.gallery.persistence.repository.ImageRepository;
-import com.mine.gallery.persistence.repository.UserRepository;
 import com.mine.gallery.security.IdUsernamePasswordAuthenticationToken;
+import com.mine.gallery.service.GalleryService;
+import com.mine.gallery.service.ImageService;
 import com.mine.gallery.service.UserService;
 import com.mine.gallery.service.dto.ImageDTO;
 import com.mine.gallery.service.dto.SignupUserDTO;
 import com.mine.gallery.service.dto.UserDTO;
 import com.mine.gallery.service.dto.UserGalleriesDTO;
-import com.mine.gallery.service.mapper.GalleryMapper;
-import com.mine.gallery.service.mapper.ImageMapper;
-import com.mine.gallery.service.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -36,7 +27,6 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 /**
  * User controller that exposes user end points
@@ -47,15 +37,12 @@ import java.util.stream.Collectors;
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RequestMapping(path = "api/v1/users")
 public class UserController {
-
-    @Autowired
-    private UserRepository userRepository;
     @Autowired
     private UserService userService;
     @Autowired
-    private GalleryRepository galleryRepository;
+    private GalleryService galleryService;
     @Autowired
-    private ImageRepository imageRepository;
+    private ImageService imageService;
 
 
     /**
@@ -87,10 +74,7 @@ public class UserController {
     public List<UserDTO> getAllUsers(@RequestParam(defaultValue = "0") Integer pageNo,
                                      @RequestParam(defaultValue = "10") Integer pageSize,
                                      @RequestParam(defaultValue = "id") String sortBy) {
-        return userRepository.findAll(PageRequest.of(pageNo, pageSize, Sort.by(sortBy)))
-                .stream()
-                .map(UserMapper::toUserDto)
-                .collect(Collectors.toList());
+        return userService.getAllUsers(pageNo, pageSize, sortBy);
     }
 
     /**
@@ -137,9 +121,7 @@ public class UserController {
     public UserDTO getUserById(@PathVariable("userId") Long userId,
                                @CurrentSecurityContext(expression = "authentication")
                                        IdUsernamePasswordAuthenticationToken authentication) {
-
-        return UserMapper.toUserDto(userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException(userId)));
+        return userService.getUserById(userId);
     }
 
     /**
@@ -151,8 +133,7 @@ public class UserController {
     @GetMapping(path = "/me")
     public UserDTO getCurrentUser(@CurrentSecurityContext(expression = "authentication")
                                           IdUsernamePasswordAuthenticationToken authentication) {
-        return UserMapper.toUserDto(userRepository.findById(authentication.getId())
-                .orElseThrow(() -> new UserNotFoundException(authentication.getId())));
+        return userService.getUserById(authentication.getId());
     }
 
     /**
@@ -175,14 +156,11 @@ public class UserController {
                                                    @PathVariable("userId") Long userId,
                                                    @CurrentSecurityContext(expression = "authentication")
                                                            IdUsernamePasswordAuthenticationToken authentication) {
-
-        return galleryRepository.findAllByUserId(userId, PageRequest.of(pageNo, pageSize, Sort.by(sortBy)))
-                .stream().map(GalleryMapper::toUserGalleriesDTO)
-                .collect(Collectors.toList());
+        return galleryService.getUserGalleries(pageNo, pageSize, sortBy, userId);
     }
 
     /**
-     * GET method that returns a list of the images(name and url) the user has in specific gallery
+     * GET method that returns a list of the images(id, name and url) the user has in specific gallery
      * Users with role USER can access only their own user images.
      * Users with role ADMIN can access the images of everyone.
      *
@@ -203,18 +181,11 @@ public class UserController {
                                                @PathVariable("galleryId") Long galleryId,
                                                @CurrentSecurityContext(expression = "authentication")
                                                        IdUsernamePasswordAuthenticationToken authentication) {
-
-
-        Gallery gallery = galleryRepository.findByIdAndUserId(galleryId, userId)
-                .orElseThrow(() -> new GalleryNotFoundException(galleryId));
-
-        return imageRepository.findAllByGalleryId(gallery.getId(), PageRequest.of(pageNo, pageSize, Sort.by(sortBy)))
-                .stream().map(ImageMapper::toImageDTO)
-                .collect(Collectors.toList());
+        return imageService.getUserGalleryImages(pageNo, pageSize, sortBy, userId, galleryId);
     }
 
     /**
-     * Get method that returns a list of the images(name and url) the user has in all galleries.
+     * Get method that returns a list of the images(id, name and url) the user has in all galleries.
      * Users with role USER can access only their own user images.
      * Users with role ADMIN can access the images of everyone.
      *
@@ -233,13 +204,6 @@ public class UserController {
                                         @PathVariable("userId") Long userId,
                                         @CurrentSecurityContext(expression = "authentication")
                                                 IdUsernamePasswordAuthenticationToken authentication) {
-
-        List<Gallery> userGalleries = galleryRepository.findAllByUserId(userId);
-        Long[] galleryIds = userGalleries
-                .stream().map(Gallery::getId).toArray(Long[]::new);
-
-        return imageRepository.findAllByGalleryIdIn(galleryIds, PageRequest.of(pageNo, pageSize, Sort.by(sortBy)))
-                .stream().map(ImageMapper::toImageDTO)
-                .collect(Collectors.toList());
+        return imageService.getUserImages(pageNo, pageSize, sortBy, userId);
     }
 }

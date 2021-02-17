@@ -16,13 +16,18 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 
 /**
- * Service class for the {@link com.mine.gallery.controller.GalleryController}
+ * Service class for Gallery related methods.
  *
  * @author TrusTio
  */
@@ -103,5 +108,20 @@ public class GalleryService {
         gallery.setName(newGalleryName);
 
         galleryRepository.save(gallery);
+    }
+
+    /**
+     * Fetches a list of the gallery names a specific user has, using his id
+     *
+     * @param pageNo   Integer Number of the page to be fetched
+     * @param pageSize Integer Size of the pages
+     * @param sortBy   String sort by field
+     * @param userId   Long id of the user to be fetched
+     * @return {@link List <UserGalleriesDTO>} of the gallery names
+     */
+    public List<UserGalleriesDTO> getUserGalleries(Integer pageNo, Integer pageSize, String sortBy, Long userId) {
+        return galleryRepository.findAllByUserId(userId, PageRequest.of(pageNo, pageSize, Sort.by(sortBy)))
+                .stream().map(GalleryMapper::toUserGalleriesDTO)
+                .collect(Collectors.toList());
     }
 }

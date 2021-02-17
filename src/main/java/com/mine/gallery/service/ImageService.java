@@ -9,18 +9,26 @@ import com.mine.gallery.persistence.repository.GalleryRepository;
 import com.mine.gallery.persistence.repository.ImageRepository;
 import com.mine.gallery.persistence.repository.ImageStorageRepository;
 import com.mine.gallery.persistence.repository.UserRepository;
+import com.mine.gallery.service.dto.ImageDTO;
+import com.mine.gallery.service.mapper.ImageMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
- * Service class used by {@link com.mine.gallery.controller.ImageController}.
+ * Service class for Image related methods.
  *
  * @author TrusTio
  */
@@ -134,6 +142,48 @@ public class ImageService {
         image.setLocation(stringBuilder.toString());
 
         imageRepository.save(image);
+    }
+
+    /**
+     * Fetches a list of the images(id, name and url) the user has in specific gallery
+     *
+     * @param pageNo    Integer Number of the page to be fetched
+     * @param pageSize  Integer Size of the pages
+     * @param sortBy    String sort by field
+     * @param userId    Long id of the user to be fetched
+     * @param galleryId Long id of the gallery
+     * @return {@link List<ImageDTO>}
+     */
+    public List<ImageDTO> getUserGalleryImages(Integer pageNo, Integer pageSize, String sortBy,
+                                               Long userId, Long galleryId) {
+        Gallery gallery = galleryRepository.findByIdAndUserId(galleryId, userId)
+                .orElseThrow(() -> new GalleryNotFoundException(galleryId));
+
+        return imageRepository.findAllByGalleryId(gallery.getId(), PageRequest.of(pageNo, pageSize, Sort.by(sortBy)))
+                .stream().map(ImageMapper::toImageDTO)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Fetches a list of the images(id, name and url) the user has in all galleries.
+     *
+     * @param pageNo   Integer Number of the page to be fetched
+     * @param pageSize Integer Size of the pages
+     * @param sortBy   String sort by field
+     * @param userId   Long id of the user to be fetched
+     * @return {@link List<ImageDTO>}
+     */
+    public List<ImageDTO> getUserImages(@RequestParam(defaultValue = "0") Integer pageNo,
+                                        @RequestParam(defaultValue = "20") Integer pageSize,
+                                        @RequestParam(defaultValue = "id") String sortBy,
+                                        @PathVariable("userId") Long userId) {
+        List<Gallery> userGalleries = galleryRepository.findAllByUserId(userId);
+        Long[] galleryIds = userGalleries
+                .stream().map(Gallery::getId).toArray(Long[]::new);
+
+        return imageRepository.findAllByGalleryIdIn(galleryIds, PageRequest.of(pageNo, pageSize, Sort.by(sortBy)))
+                .stream().map(ImageMapper::toImageDTO)
+                .collect(Collectors.toList());
     }
 
     /**
