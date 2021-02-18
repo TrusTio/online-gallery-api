@@ -4,8 +4,8 @@
 This is a personal gallery REST API that lets users:
 
 - Create and login into personal accounts 
-- Create galleries
-- Upload images in those galleries
+- Create, rename, delete galleries
+- Upload, rename, delete images in those galleries
 - Retrieve images
 
 ## Installation
