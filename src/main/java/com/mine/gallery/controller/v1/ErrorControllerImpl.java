@@ -1,4 +1,4 @@
-package com.mine.gallery.controller;
+package com.mine.gallery.controller.v1;
 
 import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.boot.web.servlet.error.ErrorController;

@@ -190,7 +190,6 @@ public class ImageStorageRepository {
     private String getStoragePath() {
         StringBuilder stringBuilder = new StringBuilder();
         final String PROJECT_DIRECTORY = System.getProperty("user.dir");
-        //TODO: Can this be extracted elsewhere
         return stringBuilder.append(PROJECT_DIRECTORY).append("/image-storage").toString();
     }
 

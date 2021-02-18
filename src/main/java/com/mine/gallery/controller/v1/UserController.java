@@ -1,4 +1,4 @@
-package com.mine.gallery.controller;
+package com.mine.gallery.controller.v1;
 
 import com.mine.gallery.security.IdUsernamePasswordAuthenticationToken;
 import com.mine.gallery.service.GalleryService;
