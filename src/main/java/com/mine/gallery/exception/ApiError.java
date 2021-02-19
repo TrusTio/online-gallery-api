@@ -27,5 +27,6 @@ public class ApiError {
         this.error = status.value();
         this.timestamp = LocalDateTime.now();
         this.message = message;
+        this.detail = "";
     }
 }
