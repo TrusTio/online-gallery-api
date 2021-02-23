@@ -42,7 +42,10 @@ public class AuthorizationFilter extends BasicAuthenticationFilter {
         String header = request.getHeader("Authorization");
         if (header == null || !header.startsWith("Bearer")) {
             filterChain.doFilter(request, response);
-            throw new AuthorizationServiceException("Missing Authorization header or 'Bearer' prefix.");
+            if(header == null){
+                throw new AuthorizationServiceException("Missing Authorization header.");
+            }
+            throw new AuthorizationServiceException("Missing 'Bearer' prefix.");
         }
         log.info("Checking authorization!");
 
