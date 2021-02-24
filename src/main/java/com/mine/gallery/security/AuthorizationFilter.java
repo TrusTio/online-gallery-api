@@ -12,11 +12,14 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.Optional;
 
 import static com.mine.gallery.security.SecurityConstants.SECRET;
 
@@ -33,23 +36,39 @@ public class AuthorizationFilter extends BasicAuthenticationFilter {
     }
 
     /**
+     * Checks for an authorization header, then checks if the Bearer prefix is present.
+     * After that checks for token cookie.
+     * <p>
      * {@inheritDoc}
      */
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws IOException, ServletException {
+        String token;
         String header = request.getHeader("Authorization");
+
         if (header == null || !header.startsWith("Bearer")) {
-            filterChain.doFilter(request, response);
-            if(header == null){
-                throw new AuthorizationServiceException("Missing Authorization header.");
+            Optional<Cookie> tokenCookie = Optional.empty();
+
+            if (request.getCookies() != null) {
+                tokenCookie = Arrays.stream(request.getCookies())
+                        .filter(cookie -> cookie.getName().equals("token"))
+                        .findFirst();
+
             }
-            throw new AuthorizationServiceException("Missing 'Bearer' prefix.");
+            if (tokenCookie.isPresent()) {
+                token = tokenCookie.get().getValue();
+            } else {
+                filterChain.doFilter(request, response);
+                throw new AuthorizationServiceException("Missing token cookie or authorization header or 'bearer' prefix");
+            }
+        } else {
+            token = request.getHeader("Authorization");
         }
         log.info("Checking authorization!");
 
-        IdUsernamePasswordAuthenticationToken authenticationToken = getAuthentication(request);
+        IdUsernamePasswordAuthenticationToken authenticationToken = getAuthentication(token);
 
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
@@ -57,16 +76,14 @@ public class AuthorizationFilter extends BasicAuthenticationFilter {
     }
 
     /**
-     * Uses the header provided in the request parameter to get the token.
-     * If the token isn't null, gets the user and claims(roles) from the token.
+     * Uses the token provided in the String parameter to
+     * get the user and claims(roles) from the it.
      *
-     * @param request request parameter to be used for authentication
+     * @param token String token to be used for authentication
      * @return returns new {@link IdUsernamePasswordAuthenticationToken} with user and list of authorities(roles)
      * or null if the token has expired/is empty
      */
-    private IdUsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) {
-        String token = request.getHeader("Authorization");
-
+    private IdUsernamePasswordAuthenticationToken getAuthentication(String token) {
         if (token != null) {
             Claims claims = Jwts.parser()
                     .setSigningKey(SECRET.getBytes())

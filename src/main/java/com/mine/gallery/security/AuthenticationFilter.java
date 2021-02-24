@@ -15,6 +15,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -107,6 +108,11 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
                 response.getWriter().write(
                         "{\"" + "username" + "\":\"" + login + "\"}"
                 );
+
+                Cookie cookie = new Cookie("token",token);
+                cookie.setHttpOnly(true);
+                response.addCookie(cookie);
+
                 log.info("Successful authentication!");
             }
 
