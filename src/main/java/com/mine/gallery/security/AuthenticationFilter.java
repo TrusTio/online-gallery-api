@@ -102,7 +102,11 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
                         .signWith(SignatureAlgorithm.HS512, SECRET.getBytes())
                         .compact();
                 response.addHeader(HEADER_STRING, TOKEN_PREFIX + token);
-
+                response.setContentType("application/json");
+                response.setCharacterEncoding("UTF-8");
+                response.getWriter().write(
+                        "{\"" + "username" + "\":\"" + login + "\"}"
+                );
                 log.info("Successful authentication!");
             }
 
