@@ -53,7 +53,7 @@ public class UserController {
      * @param user {@link SignupUserDTO} body object used to create new user
      * @return String confirming the sign up
      */
-    @PostMapping
+    @PostMapping("/signup")
     public ResponseEntity<String> signUp(@Valid @RequestBody SignupUserDTO user, Errors errors) {
         userService.signUp(user, errors);
         log.info("User created successfully!");
