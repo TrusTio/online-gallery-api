@@ -17,5 +17,6 @@ import lombok.experimental.Accessors;
 public class ImageDTO {
     private Long id;
     private String name;
+    private String thumbnail;
     private String url;
 }

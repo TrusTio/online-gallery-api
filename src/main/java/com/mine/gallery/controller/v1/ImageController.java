@@ -74,8 +74,32 @@ public class ImageController {
                                                     IdUsernamePasswordAuthenticationToken authentication) {
         log.info("Image fetched successfully!");
 
-        return imageService.find(userId, galleryId, imageName);
+        return imageService.findImage(userId, galleryId, imageName);
     }
+
+    /**
+     * A GET method that fetches the thumbnail of a specific image.
+     * Users with role USER can access only their own images.
+     * Users with role ADMIN can access all images.
+     *
+     * @param userId         Long id of the user of the image
+     * @param galleryId      Long id of the gallery
+     * @param imageName      String name of the image
+     * @param authentication {@link IdUsernamePasswordAuthenticationToken} holds data for the current user
+     * @return FileSystemResource
+     */
+    @PreAuthorize("#userId == #authentication.id || hasRole('ROLE_ADMIN')")
+    @GetMapping(value = "/{userId}/{galleryId}/{imageName}/thumbnail", produces = MediaType.IMAGE_JPEG_VALUE)
+    public FileSystemResource retrieveImageThumbnail(@PathVariable("userId") Long userId,
+                                            @PathVariable("galleryId") Long galleryId,
+                                            @PathVariable("imageName") String imageName,
+                                            @CurrentSecurityContext(expression = "authentication")
+                                                    IdUsernamePasswordAuthenticationToken authentication) {
+        log.info("Image thumbnail fetched successfully!");
+
+        return imageService.findImageThumbnail(userId, galleryId, imageName);
+    }
+
 
     /**
      * DELETE method that deletes a specific image

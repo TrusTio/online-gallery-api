@@ -23,7 +23,7 @@ import java.nio.file.Paths;
  */
 @Repository
 public class ImageStorageRepository {
-
+    private static String THUMBNAIL_PREFIX = "thumbnail.";
     /**
      * Saves the image to local directory for using the userId and gallery name.
      *
@@ -101,6 +101,27 @@ public class ImageStorageRepository {
     }
 
     /**
+     * Finds the file in the system using the String path
+     *
+     * @param userId    Long id of the user
+     * @param galleryId Long id of the gallery
+     * @param imageName String name of image
+     * @return FileSystemResource
+     */
+    public FileSystemResource findImageThumbnail(Long userId, Long galleryId, String imageName) {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(getStoragePath()).append("/")
+                .append(userId).append("/")
+                .append(galleryId).append("/")
+                .append(THUMBNAIL_PREFIX).append(imageName);
+        try {
+            return new FileSystemResource(Paths.get(stringBuilder.toString()));
+        } catch (Exception e) {
+            throw new RuntimeException(e.getClass().toString());
+        }
+    }
+
+    /**
      * Deletes the image in the specified location.
      *
      * @param userId    Long id of the user
@@ -113,7 +134,7 @@ public class ImageStorageRepository {
                 .append(userId).append("/")
                 .append(galleryId).append("/");
         String imageLocation = stringBuilder.toString() + imageName;
-        String thumbnailLocation = stringBuilder.toString() + "thumbnail." + imageName;
+        String thumbnailLocation = stringBuilder.toString() + THUMBNAIL_PREFIX + imageName;
 
         try {
             Files.delete(Paths.get(imageLocation));
@@ -138,7 +159,7 @@ public class ImageStorageRepository {
                 .append(userId).append("/")
                 .append(galleryId).append("/");
         String imageLocation = stringBuilder.toString() + imageName;
-        String thumbnailLocation = stringBuilder.toString() + "thumbnail." + imageName;
+        String thumbnailLocation = stringBuilder.toString() + THUMBNAIL_PREFIX + imageName;
 
         try {
             // image
@@ -151,7 +172,7 @@ public class ImageStorageRepository {
             //thumbnail
             Path thumbnailSource = Paths.get(thumbnailLocation);
             String thumbnailExtension = FilenameUtils.getExtension(thumbnailLocation);
-            String thumbnailNameWithExtension = "thumbnail." + newImageName + "." + thumbnailExtension;
+            String thumbnailNameWithExtension = THUMBNAIL_PREFIX + newImageName + "." + thumbnailExtension;
 
             Files.move(thumbnailSource, thumbnailSource.resolveSibling(thumbnailNameWithExtension));
 

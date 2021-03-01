@@ -98,11 +98,31 @@ public class ImageService {
      * @param imageName String name of the image
      * @return FileSystemResource
      */
-    public FileSystemResource find(Long userId, Long galleryId, String imageName) {
+    public FileSystemResource findImage(Long userId, Long galleryId, String imageName) {
         Image image = getImage(userId, galleryId, imageName)
                 .orElseThrow(() -> new ImageNotFoundException(imageName));
 
         return imageStorageRepository.findInFileSystem(image.getLocation());
+    }
+
+    /**
+     * Fetches the requested image thumbnail.
+     * <p>
+     * Throws {@link ImageValidationException} if it's not found.
+     *
+     * @param userId    Long id of hte user
+     * @param galleryId Long id of the gallery
+     * @param imageName String name of the image
+     * @return FileSystemResource
+     */
+    public FileSystemResource findImageThumbnail(Long userId, Long galleryId, String imageName) {
+        Image image = getImage(userId, galleryId, imageName)
+                .orElseThrow(() -> new ImageNotFoundException(imageName));
+
+        if(image !=null){
+            return imageStorageRepository.findImageThumbnail(userId, galleryId, imageName);
+        }
+        throw new ImageNotFoundException(imageName);
     }
 
     /**
