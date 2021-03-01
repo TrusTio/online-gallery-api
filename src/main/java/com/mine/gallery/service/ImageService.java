@@ -116,7 +116,7 @@ public class ImageService {
         Image image = getImage(userId, galleryId, imageName)
                 .orElseThrow(() -> new ImageNotFoundException(imageName));
 
-        imageStorageRepository.deleteImage(image.getLocation());
+        imageStorageRepository.deleteImage(userId, galleryId, imageName);
         imageRepository.delete(image);
     }
 
@@ -133,7 +133,7 @@ public class ImageService {
         Image image = getImage(userId, galleryId, imageName)
                 .orElseThrow(() -> new ImageNotFoundException(imageName));
 
-        newImageName = imageStorageRepository.renameImage(image.getLocation(), newImageName);
+        newImageName = imageStorageRepository.renameImage(userId, galleryId, imageName, newImageName);
         image.setName(newImageName);
 
         StringBuilder stringBuilder = new StringBuilder();

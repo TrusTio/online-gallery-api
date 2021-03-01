@@ -40,6 +40,7 @@ dependencies {
     implementation "org.hibernate:hibernate-validator:6.1.6.Final"
     implementation "io.jsonwebtoken:jjwt:0.9.1"
     implementation "org.passay:passay:1.0"
+    implementation group: 'net.coobird', name: 'thumbnailator', version: '0.4.13'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 

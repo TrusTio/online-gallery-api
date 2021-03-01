@@ -2,11 +2,14 @@ package com.mine.gallery.persistence.repository;
 
 import com.mine.gallery.exception.gallery.GalleryValidationException;
 import com.mine.gallery.exception.image.ImageValidationException;
+import net.coobird.thumbnailator.Thumbnails;
+import net.coobird.thumbnailator.name.Rename;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.FileSystemUtils;
 
+import java.io.File;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
@@ -39,6 +42,12 @@ public class ImageStorageRepository {
             Files.createDirectories(newFile.getParent());
 
             Files.write(newFile, content);
+
+            String absolutePath = newFile.toAbsolutePath().toString();
+            Thumbnails.of(new File(absolutePath))
+                    .size(250, 140)
+                    .toFiles(Rename.PREFIX_DOT_THUMBNAIL);
+
         } catch (Exception e) {
             throw new RuntimeException(e.getClass().toString());
         }
@@ -94,15 +103,21 @@ public class ImageStorageRepository {
     /**
      * Deletes the image in the specified location.
      *
-     * @param location String location of the image to be deleted
+     * @param userId    Long id of the user
+     * @param galleryId Long id of the gallery
+     * @param imageName String name of image
      */
-    public void deleteImage(String location) {
+    public void deleteImage(Long userId, Long galleryId, String imageName) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(getStoragePath()).append("/")
-                .append(location);
+                .append(userId).append("/")
+                .append(galleryId).append("/");
+        String imageLocation = stringBuilder.toString() + imageName;
+        String thumbnailLocation = stringBuilder.toString() + "thumbnail." + imageName;
 
         try {
-            Files.delete(Paths.get(stringBuilder.toString()));
+            Files.delete(Paths.get(imageLocation));
+            Files.delete(Paths.get(thumbnailLocation));
         } catch (Exception e) {
             throw new RuntimeException(e.getClass().toString());
         }
@@ -111,21 +126,34 @@ public class ImageStorageRepository {
     /**
      * Rename image on local storage.
      *
-     * @param location     String location of the image to be renamed
+     * @param userId       Long id of the user
+     * @param galleryId    Long id of the gallery
+     * @param imageName    String name of image
      * @param newImageName String new image name
      * @return String new name of the image with the extension
      */
-    public String renameImage(String location, String newImageName) {
+    public String renameImage(Long userId, Long galleryId, String imageName, String newImageName) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(getStoragePath()).append("/")
-                .append(location);
+                .append(userId).append("/")
+                .append(galleryId).append("/");
+        String imageLocation = stringBuilder.toString() + imageName;
+        String thumbnailLocation = stringBuilder.toString() + "thumbnail." + imageName;
 
         try {
-            Path source = Paths.get(stringBuilder.toString());
-            String extension = FilenameUtils.getExtension(stringBuilder.toString());
+            // image
+            Path source = Paths.get(imageLocation);
+            String extension = FilenameUtils.getExtension(imageLocation);
             String nameWithExtension = newImageName + "." + extension;
 
             Files.move(source, source.resolveSibling(nameWithExtension));
+
+            //thumbnail
+            Path thumbnailSource = Paths.get(thumbnailLocation);
+            String thumbnailExtension = FilenameUtils.getExtension(thumbnailLocation);
+            String thumbnailNameWithExtension = "thumbnail." + newImageName + "." + thumbnailExtension;
+
+            Files.move(thumbnailSource, thumbnailSource.resolveSibling(thumbnailNameWithExtension));
 
             return nameWithExtension;
         } catch (FileAlreadyExistsException e) {
