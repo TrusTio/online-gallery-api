@@ -106,10 +106,13 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
                 response.setContentType("application/json");
                 response.setCharacterEncoding("UTF-8");
                 response.getWriter().write(
-                        "{\"" + "username" + "\":\"" + login + "\"}"
+                        "{\"" +
+                                "id" + "\":" + user.getId() + "," +
+                                "\"" + "username" + "\":\"" + login +
+                                "\"}"
                 );
 
-                Cookie cookie = new Cookie("token",token);
+                Cookie cookie = new Cookie("token", token);
                 cookie.setHttpOnly(true);
                 response.addCookie(cookie);
 
