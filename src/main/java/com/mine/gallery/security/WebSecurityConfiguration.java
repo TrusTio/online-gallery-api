@@ -31,7 +31,8 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     private static final String[] AUTH_WHITELIST = {
             "/login/**",
             "/error/**",
-            "/error"
+            "/error",
+            "/logout"
     };
     private static final String[] AUTH_WHITELIST_SWAGGER = {
             "/v3/api-docs/**",
@@ -64,6 +65,10 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .anyRequest().authenticated()
                 .and().addFilter(new AuthenticationFilter(authenticationManager()))
                 .addFilter(new AuthorizationFilter(authenticationManager()))
+                .logout()
+                .logoutUrl("/logout")
+                .deleteCookies("token")
+                .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     }
 
@@ -77,7 +82,9 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
      */
     @Override
     public void configure(WebSecurity web) throws Exception {
-        web.ignoring().antMatchers(AUTH_WHITELIST_SWAGGER).antMatchers(SIGN_UP_URL);
+        web.ignoring()
+                .antMatchers(AUTH_WHITELIST_SWAGGER)
+                .antMatchers(SIGN_UP_URL);
     }
 
     /**
