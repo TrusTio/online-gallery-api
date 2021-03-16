@@ -122,7 +122,7 @@ public class ImageController {
         imageService.deleteImage(userId, galleryId, imageName);
         log.info("Image deleted successfully!");
 
-        return new ResponseEntity<>("Image deleted successfully!", HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     /**
@@ -148,7 +148,7 @@ public class ImageController {
         imageService.renameImage(userId, galleryId, imageName, newImageName);
         log.info("Image renamed successfully!");
 
-        return new ResponseEntity<>("Image renamed successfully!", HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
 }

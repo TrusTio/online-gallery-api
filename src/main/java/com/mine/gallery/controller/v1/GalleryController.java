@@ -76,7 +76,7 @@ public class GalleryController {
         galleryService.delete(userId, galleryId);
         log.info("Gallery deleted successfully!");
 
-        return new ResponseEntity<>("Gallery deleted successfully!", HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     /**
@@ -100,6 +100,6 @@ public class GalleryController {
         galleryService.rename(userId, galleryId, newGalleryName);
         log.info("Gallery updated successfully!");
 
-        return new ResponseEntity<>("Gallery updated successfully!", HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
