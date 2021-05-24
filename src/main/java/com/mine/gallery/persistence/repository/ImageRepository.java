@@ -23,5 +23,7 @@ public interface ImageRepository extends JpaRepository<Image, Integer> {
 
     Page<Image> findAllByGalleryIdIn(Long[] galleryId, Pageable pageable);
 
+    Page<Image> findAllByGalleryIdInAndNameContaining(Long[] galleryId, String name, Pageable pageable);
+
     void delete(Image image);
 }

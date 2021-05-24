@@ -18,8 +18,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -119,7 +117,7 @@ public class ImageService {
         Image image = getImage(userId, galleryId, imageName)
                 .orElseThrow(() -> new ImageNotFoundException(imageName));
 
-        if(image !=null){
+        if (image != null) {
             return imageStorageRepository.findImageThumbnail(userId, galleryId, imageName);
         }
         throw new ImageNotFoundException(imageName);
@@ -196,15 +194,33 @@ public class ImageService {
      * @param userId   Long id of the user to be fetched
      * @return {@link List<ImageDTO>}
      */
-    public List<ImageDTO> getUserImages(@RequestParam(defaultValue = "0") Integer pageNo,
-                                        @RequestParam(defaultValue = "20") Integer pageSize,
-                                        @RequestParam(defaultValue = "id") String sortBy,
-                                        @PathVariable("userId") Long userId) {
+    public List<ImageDTO> getUserImages(Integer pageNo, Integer pageSize, String sortBy,
+                                        Long userId) {
         List<Gallery> userGalleries = galleryRepository.findAllByUserId(userId);
         Long[] galleryIds = userGalleries
                 .stream().map(Gallery::getId).toArray(Long[]::new);
 
         return imageRepository.findAllByGalleryIdIn(galleryIds, PageRequest.of(pageNo, pageSize, Sort.by(sortBy)))
+                .stream().map(ImageMapper::toImageDTO)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Fetches a list of the images(id, name and url) matching the given name the user has in all galleries.
+     *
+     * @param pageNo   Integer Number of the page to be fetched
+     * @param pageSize Integer Size of the pages
+     * @param sortBy   String sort by field
+     * @param userId   Long id of the user to be fetched
+     * @return {@link List<ImageDTO>}
+     */
+    public List<ImageDTO> getUserImagesByName(Integer pageNo, Integer pageSize, String sortBy,
+                                              Long userId, String imageName) {
+        List<Gallery> userGalleries = galleryRepository.findAllByUserId(userId);
+        Long[] galleryIds = userGalleries
+                .stream().map(Gallery::getId).toArray(Long[]::new);
+
+        return imageRepository.findAllByGalleryIdInAndNameContaining(galleryIds, imageName, PageRequest.of(pageNo, pageSize, Sort.by(sortBy)))
                 .stream().map(ImageMapper::toImageDTO)
                 .collect(Collectors.toList());
     }

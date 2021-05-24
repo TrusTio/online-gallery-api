@@ -221,4 +221,31 @@ public class UserController {
 
         return imageService.getUserImages(pageNo, pageSize, sortBy, userId);
     }
+
+    /**
+     * Get method that returns a list of the images(id, name and url) matching the given name
+     * the user has in all galleries.
+     * Users with role USER can access only their own user images.
+     * Users with role ADMIN can access the images of everyone.
+     * @param pageNo         Integer Number of the page to be fetched
+     * @param pageSize       Integer Size of the pages
+     * @param sortBy         String sort by field
+     * @param userId         Long id of the user to be fetched
+     * @param authentication {@link IdUsernamePasswordAuthenticationToken} holds information for the currently logged in user.
+     * @return {@link List<ImageDTO>}
+     * @return
+     */
+    @PreAuthorize("#userId == #authentication.id || hasRole('ROLE_ADMIN')")
+    @GetMapping(path = "/{userId}/images/{imageName}")
+    public List<ImageDTO> getUserImagesByName(@RequestParam(defaultValue = "0") Integer pageNo,
+                                              @RequestParam(defaultValue = "20") Integer pageSize,
+                                              @RequestParam(defaultValue = "id") String sortBy,
+                                              @PathVariable("userId") Long userId,
+                                              @PathVariable("imageName") String imageName,
+                                              @CurrentSecurityContext(expression = "authentication")
+                                                      IdUsernamePasswordAuthenticationToken authentication) {
+        log.info("User Images fetched successfully!");
+
+        return imageService.getUserImagesByName(pageNo, pageSize, sortBy, userId, imageName);
+    }
 }
