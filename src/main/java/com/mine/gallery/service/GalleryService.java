@@ -97,15 +97,19 @@ public class GalleryService {
      * Then updates the gallery name in the database, after that changes the location of the
      * images in the database to their new location.
      *
-     * @param userId         Long id of the user
-     * @param galleryId      Long id of the gallery of the gallery
-     * @param newGalleryName String new gallery name
+     * @param galleryId  Long id of the gallery of the gallery
+     * @param galleryDTO {@link GalleryDTO} object used to rename the gallery
      */
-    public void rename(Long userId, Long galleryId, String newGalleryName) {
-        Gallery gallery = galleryRepository.findByIdAndUserId(galleryId, userId)
+    public void rename(Long galleryId, GalleryDTO galleryDTO, Errors errors) {
+        if (errors.hasErrors()) {
+            String exceptionMessage = ExceptionStringUtil.exceptionMessageBuilder(errors);
+            throw new GalleryValidationException(exceptionMessage);
+        }
+
+        Gallery gallery = galleryRepository.findByIdAndUserId(galleryId, galleryDTO.getUserId())
                 .orElseThrow(() -> new GalleryNotFoundException(galleryId));
 
-        gallery.setName(newGalleryName);
+        gallery.setName(galleryDTO.getName());
 
         galleryRepository.save(gallery);
     }

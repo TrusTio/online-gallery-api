@@ -98,6 +98,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
                 claims.put("id", user.getId());
 
                 String token = Jwts.builder()
+                        .setHeaderParam("typ","JWT")
                         .setClaims(claims)
                         .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                         .signWith(SignatureAlgorithm.HS512, SECRET.getBytes())

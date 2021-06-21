@@ -12,6 +12,7 @@ import com.mine.gallery.persistence.repository.UserRepository;
 import com.mine.gallery.service.dto.ImageDTO;
 import com.mine.gallery.service.mapper.ImageMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.data.domain.PageRequest;
@@ -147,7 +148,7 @@ public class ImageService {
      * @param newImageName String new name for the image
      */
     public void renameImage(Long userId, Long galleryId, String imageName, String newImageName) {
-
+        if(StringUtils.isBlank(newImageName.trim())) throw new ImageValidationException("Image name should be valid");
         Image image = getImage(userId, galleryId, imageName)
                 .orElseThrow(() -> new ImageNotFoundException(imageName));
 
@@ -220,7 +221,8 @@ public class ImageService {
         Long[] galleryIds = userGalleries
                 .stream().map(Gallery::getId).toArray(Long[]::new);
 
-        return imageRepository.findAllByGalleryIdInAndNameContaining(galleryIds, imageName, PageRequest.of(pageNo, pageSize, Sort.by(sortBy)))
+        return imageRepository.findAllByGalleryIdInAndNameContaining(galleryIds, imageName,
+                PageRequest.of(pageNo, pageSize, Sort.by(sortBy)))
                 .stream().map(ImageMapper::toImageDTO)
                 .collect(Collectors.toList());
     }

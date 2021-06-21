@@ -84,9 +84,8 @@ public class GalleryController {
      * Users with role USER can only rename galleries for their own accounts.
      * Users with role ADMIN can rename galleries in any account.
      *
-     * @param userId         Long id of the gallery owner
      * @param galleryId      Long id of the gallery to be deleted
-     * @param newGalleryName String new gallery name
+     * @param galleryDTO {@link GalleryDTO} object/body used to rename the gallery
      * @param authentication {@link IdUsernamePasswordAuthenticationToken} holds data for the current user
      * @return ResponseEntity<String>
      */
@@ -94,10 +93,11 @@ public class GalleryController {
     @PatchMapping("/{userId}/{galleryId}")
     public ResponseEntity<String> rename(@PathVariable("userId") Long userId,
                                          @PathVariable("galleryId") Long galleryId,
-                                         @RequestParam String newGalleryName,
+                                         @Valid @RequestBody GalleryDTO galleryDTO,
+                                         Errors errors,
                                          @CurrentSecurityContext(expression = "authentication")
                                                  IdUsernamePasswordAuthenticationToken authentication) {
-        galleryService.rename(userId, galleryId, newGalleryName);
+        galleryService.rename(galleryId, galleryDTO, errors);
         log.info("Gallery updated successfully!");
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);

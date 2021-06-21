@@ -5,6 +5,7 @@ import org.passay.LengthRule;
 import org.passay.PasswordData;
 import org.passay.PasswordValidator;
 import org.passay.RuleResult;
+import org.passay.WhitespaceRule;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -23,7 +24,8 @@ public class GalleryNameValidator implements ConstraintValidator<ValidGalleryNam
         char[] illegalChars = ("~`!@#$%^&*()-+{}[]<>?/]\\").toCharArray();
         PasswordValidator validator = new PasswordValidator(Arrays.asList(
                 new LengthRule(1, 50),
-                new IllegalCharacterRule(illegalChars)
+                new IllegalCharacterRule(illegalChars),
+                new WhitespaceRule()
         ));
 
         RuleResult result = validator.validate(new PasswordData(galleryName));
