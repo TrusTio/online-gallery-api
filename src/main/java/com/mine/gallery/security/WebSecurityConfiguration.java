@@ -17,8 +17,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import javax.servlet.http.HttpServletResponse;
 
-import java.util.Arrays;
-
 import static com.mine.gallery.security.SecurityConstants.SIGN_UP_URL;
 
 /**
@@ -112,11 +110,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
         CorsConfiguration corsConfiguration = new CorsConfiguration().applyPermitDefaultValues();
         corsConfiguration.addExposedHeader("authorization");
-        corsConfiguration.setAllowedOrigins(Arrays.asList("https://online-gallery-react.herokuapp.com"));
-        corsConfiguration.setAllowedMethods(Arrays.asList("GET","POST", "PUT", "DELETE", "OPTIONS"));
-        corsConfiguration.setAllowedHeaders(Arrays.asList("*"));
-
-        urlBasedCorsConfigurationSource.registerCorsConfiguration("/**", corsConfiguration);
+        urlBasedCorsConfigurationSource.registerCorsConfiguration("https://online-gallery-react.herokuapp.com", corsConfiguration);
 
         return urlBasedCorsConfigurationSource;
     }
