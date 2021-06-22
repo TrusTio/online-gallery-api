@@ -53,7 +53,6 @@ public class UserController {
      * @param user {@link SignupUserDTO} body object used to create new user
      * @return String confirming the sign up
      */
-    @CrossOrigin(origins = "https://online-gallery-react.herokuapp.com")
     @PostMapping("/signup")
     public ResponseEntity<String> signUp(@Valid @RequestBody SignupUserDTO user, Errors errors) {
         userService.signUp(user, errors);
