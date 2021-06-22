@@ -110,7 +110,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
         CorsConfiguration corsConfiguration = new CorsConfiguration().applyPermitDefaultValues();
         corsConfiguration.addExposedHeader("authorization");
-        urlBasedCorsConfigurationSource.registerCorsConfiguration("/**", corsConfiguration);
+        urlBasedCorsConfigurationSource.registerCorsConfiguration("https://online-gallery-react.herokuapp.com", corsConfiguration);
 
         return urlBasedCorsConfigurationSource;
     }
