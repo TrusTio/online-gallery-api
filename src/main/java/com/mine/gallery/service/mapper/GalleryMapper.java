@@ -32,7 +32,7 @@ public class GalleryMapper {
         return new UserGalleriesDTO()
                 .setId(gallery.getId())
                 .setName(gallery.getName())
-                .setUrl("http://localhost:8080/api/v1/users/"
+                .setUrl("https://gallery-rest-api.herokuapp.com/api/v1/users/"
                         + gallery.getUser().getId()
                         + "/galleries/"
                         + gallery.getId());
