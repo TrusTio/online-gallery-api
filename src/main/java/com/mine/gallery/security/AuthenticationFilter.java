@@ -7,6 +7,8 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -15,7 +17,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -98,7 +99,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
                 claims.put("id", user.getId());
 
                 String token = Jwts.builder()
-                        .setHeaderParam("typ","JWT")
+                        .setHeaderParam("typ", "JWT")
                         .setClaims(claims)
                         .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                         .signWith(SignatureAlgorithm.HS512, SECRET.getBytes())
@@ -113,9 +114,14 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
                                 "\"}"
                 );
 
-                Cookie cookie = new Cookie("token", token);
-                cookie.setHttpOnly(true);
-                response.addCookie(cookie);
+                ResponseCookie responseCookie = ResponseCookie.from("token", token)
+                        .httpOnly(true)
+                        .secure(false)
+                        .domain("localhost")
+                        .path("/")
+                        .sameSite("none")
+                        .build();
+                response.setHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());
 
                 log.info("Successful authentication!");
             }
