@@ -117,7 +117,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
                 ResponseCookie responseCookie = ResponseCookie.from("token", token)
                         .httpOnly(true)
                         .secure(false)
-                        .domain("localhost")
+                        .domain("online-gallery-react.herokuapp.com")
                         .path("/")
                         .sameSite("none")
                         .build();
