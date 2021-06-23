@@ -116,7 +116,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
                 ResponseCookie responseCookie = ResponseCookie.from("token", token)
                         .httpOnly(true)
-                        .secure(false)
+                        .secure(true)
                         .path("/")
                         .sameSite("none")
                         .build();
