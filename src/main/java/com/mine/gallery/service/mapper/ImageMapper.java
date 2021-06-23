@@ -22,12 +22,12 @@ public class ImageMapper {
         return new ImageDTO()
                 .setId(image.getId())
                 .setName(image.getName())
-                .setThumbnail("http://localhost:8080/api/v1/image"
+                .setThumbnail("https://gallery-rest-api.herokuapp.com/"
                         + "/" + image.getGallery().getUser().getId()
                         + "/" + image.getGallery().getId()
                         + "/" + image.getName()
                         + "/thumbnail")
-                .setUrl("http://localhost:8080/api/v1/image"
+                .setUrl("https://gallery-rest-api.herokuapp.com/"
                         + "/" + image.getGallery().getUser().getId()
                         + "/" + image.getGallery().getId()
                         + "/" + image.getName());
