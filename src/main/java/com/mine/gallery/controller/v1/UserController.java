@@ -34,7 +34,6 @@ import java.util.List;
  * @author TrusTio
  */
 @RestController
-@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RequestMapping(path = "api/v1/users")
 @Slf4j
 public class UserController {
