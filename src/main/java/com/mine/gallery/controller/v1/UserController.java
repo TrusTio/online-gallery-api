@@ -34,7 +34,7 @@ import java.util.List;
  * @author TrusTio
  */
 @RestController
-@CrossOrigin(origins = "*", allowedHeaders = "*")
+@CrossOrigin(origins = "https://online-gallery-react.herokuapp.com", allowedHeaders = "*")
 @RequestMapping(path = "api/v1/users")
 @Slf4j
 public class UserController {
