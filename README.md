@@ -1,4 +1,6 @@
-# Personal Gallery
+# Personal Gallery - live demo: https://gallery-rest-api.herokuapp.com/
+**Note: After opening the api demo, you can test it with the react frontend demo: 
+https://online-gallery-react.herokuapp.com/**
 
 ## Description
 This is a personal gallery REST API that lets users:
